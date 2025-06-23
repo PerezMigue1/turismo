@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Navbar, Nav, Button, Form, FormControl } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FaSearch, FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaBars } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import logo from "../image/turismo.jpeg";
 
