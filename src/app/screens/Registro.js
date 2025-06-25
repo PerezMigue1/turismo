@@ -296,7 +296,7 @@ const Register = () => {
                                     Esta pregunta te ayudará a recuperar tu cuenta si olvidas tu contraseña.
                                 </Form.Text>
                             </Form.Group>
-
+                            
 
                             <Form.Group id="securityAnswer" className="mb-3">
                                 <Form.Label>Respuesta de Seguridad</Form.Label>
