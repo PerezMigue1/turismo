@@ -1,7 +1,7 @@
 // src/screens/Checkout.js
 import React, { useState, useContext } from 'react';
 import { Container, Row, Col, Card, Form, Button, Alert } from 'react-bootstrap';
-import { FaArrowLeft, FaCreditCard, FaMapMarkerAlt, FaUser } from 'react-icons/fa';
+import { FaArrowLeft, FaCreditCard, FaMapMarkerAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import { CartContext } from '../Navigation/CartContext'

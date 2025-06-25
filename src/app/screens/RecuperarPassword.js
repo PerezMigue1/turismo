@@ -32,7 +32,7 @@ const RecoverPassword = () => {
     setLoading(true);
 
     try {
-        const response = await fetch(`http://localhost:5000/api/usuarios/pregunta-secreta`, {
+        const response = await fetch(`https://backend-iota-nine-32.vercel.app/api/usuarios/pregunta-secreta`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -68,7 +68,7 @@ const RecoverPassword = () => {
     setLoading(true);
 
     try {
-        const response = await fetch(`http://localhost:5000/api/usuarios/verificar-respuesta`, {
+        const response = await fetch(`https://backend-iota-nine-32.vercel.app/api/usuarios/verificar-respuesta`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -108,7 +108,7 @@ const RecoverPassword = () => {
     }
 
     try {
-        const response = await fetch(`http://localhost:5000/api/usuarios/cambiar-password`, {
+        const response = await fetch(`https://backend-iota-nine-32.vercel.app/api/usuarios/cambiar-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -32,13 +32,13 @@ const Register = () => {
     useEffect(() => {
         const fetchSecurityQuestions = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/preguntas");
+                const response = await fetch("https://backend-iota-nine-32.vercel.app/api/preguntas");
                 const data = await response.json();
-                
+
                 if (!response.ok) {
                     throw new Error(data.message || "Error al cargar preguntas de seguridad");
                 }
-                
+
                 setSecurityQuestions(data);
                 setLoadingQuestions(false);
             } catch (err) {
@@ -82,7 +82,7 @@ const Register = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:5000/api/usuarios", {
+            const response = await fetch("https://backend-iota-nine-32.vercel.app/api/usuarios", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -234,7 +234,7 @@ const Register = () => {
                                         onChange={handleChange}
                                         style={{ borderColor: '#0FA89C' }}
                                     />
-                                    <InputGroup.Text 
+                                    <InputGroup.Text
                                         style={{ cursor: 'pointer', backgroundColor: 'white', borderColor: '#0FA89C' }}
                                         onClick={togglePasswordVisibility}
                                     >
@@ -257,7 +257,7 @@ const Register = () => {
                                         onChange={handleChange}
                                         style={{ borderColor: '#0FA89C' }}
                                     />
-                                    <InputGroup.Text 
+                                    <InputGroup.Text
                                         style={{ cursor: 'pointer', backgroundColor: 'white', borderColor: '#0FA89C' }}
                                         onClick={toggleConfirmPasswordVisibility}
                                     >
@@ -272,7 +272,7 @@ const Register = () => {
                                     <Form.Control as="select" disabled>
                                         <option>Cargando preguntas...</option>
                                     </Form.Control>
-                                ) : (
+                                ) : securityQuestions.length > 0 ? (
                                     <Form.Select
                                         name="securityQuestion"
                                         value={formData.securityQuestion}
@@ -287,11 +287,16 @@ const Register = () => {
                                             </option>
                                         ))}
                                     </Form.Select>
+                                ) : (
+                                    <Form.Control as="select" disabled>
+                                        <option>No hay preguntas disponibles</option>
+                                    </Form.Control>
                                 )}
                                 <Form.Text className="text-muted">
                                     Esta pregunta te ayudará a recuperar tu cuenta si olvidas tu contraseña.
                                 </Form.Text>
                             </Form.Group>
+
 
                             <Form.Group id="securityAnswer" className="mb-3">
                                 <Form.Label>Respuesta de Seguridad</Form.Label>
