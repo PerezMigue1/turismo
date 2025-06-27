@@ -1,7 +1,7 @@
 // src/components/CardArtesania.js
 import React, { useContext } from 'react';
-import { Card, Button, Badge } from 'react-bootstrap';
-import { FaShoppingCart, FaHeart, FaStar, FaShippingFast } from 'react-icons/fa';
+import { Card, Button, Badge, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { FaShoppingCart, FaHeart, FaStar, FaShippingFast, FaInfoCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../Navigation/CartContext';
 
@@ -17,6 +17,19 @@ const CardArtesania = ({ artesania }) => {
             categoria: artesania.categoria
         });
     };
+
+    const renderTooltip = (props) => (
+        <Tooltip id="info-tooltip" {...props}>
+            <div style={{ textAlign: 'left' }}>
+                <p><strong>Materiales:</strong> {artesania.materiales}</p>
+                <p><strong>Dimensiones:</strong> {artesania.dimensiones}</p>
+                <p><strong>Forma:</strong> {artesania.forma}</p>
+                {artesania.tiempoEntrega && (
+                    <p><strong>Tiempo estimado de entrega:</strong> {new Date(artesania.tiempoEntrega).toLocaleDateString()}</p>
+                )}
+            </div>
+        </Tooltip>
+    );
 
     return (
         <Card className="h-100" style={{
@@ -49,6 +62,24 @@ const CardArtesania = ({ artesania }) => {
                     Envío disponible
                 </div>
             )}
+            
+            <div style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                zIndex: 1
+            }}>
+                <OverlayTrigger placement="left" overlay={renderTooltip}>
+                    <Button variant="light" size="sm" style={{ 
+                        padding: '5px',
+                        backgroundColor: 'rgba(255,255,255,0.8)',
+                        border: '1px solid #9A1E47'
+                    }}>
+                        <FaInfoCircle style={{ color: '#9A1E47' }} />
+                    </Button>
+                </OverlayTrigger>
+            </div>
+
             <Link to={`/artesanias/${artesania.id}`}>
                 <Card.Img
                     variant="top"
@@ -57,6 +88,10 @@ const CardArtesania = ({ artesania }) => {
                         height: '200px',
                         objectFit: 'cover',
                         borderBottom: '3px solid #F28B27'
+                    }}
+                    alt={artesania.nombre}
+                    onError={(e) => {
+                        e.target.src = '/placeholder-product.jpg'; // Imagen de respaldo
                     }}
                 />
             </Link>
@@ -69,13 +104,13 @@ const CardArtesania = ({ artesania }) => {
                         {artesania.comunidad}
                     </Badge>
                 </div>
-                <Card.Title style={{ color: '#9A1E47' }}>
+                <Card.Title style={{ color: '#9A1E47', minHeight: '48px' }}>
                     <Link to={`/artesanias/${artesania.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                         {artesania.nombre}
                     </Link>
                 </Card.Title>
-                <Card.Text className="flex-grow-1" style={{ color: '#555' }}>
-                    {artesania.descripcion.substring(0, 100)}...
+                <Card.Text className="flex-grow-1" style={{ color: '#555', minHeight: '60px' }}>
+                    {artesania.descripcion?.substring(0, 100)}...
                 </Card.Text>
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <div style={{ color: '#F28B27' }}>
@@ -84,12 +119,7 @@ const CardArtesania = ({ artesania }) => {
                         ))}
                     </div>
                     <div>
-                        <h5 style={{ color: '#9A1E47', margin: 0 }}>${artesania.precio}</h5>
-                        {artesania.precioOriginal && (
-                            <small style={{ color: '#A0C070', textDecoration: 'line-through' }}>
-                                ${artesania.precioOriginal}
-                            </small>
-                        )}
+                        <h5 style={{ color: '#9A1E47', margin: 0 }}>${artesania.precio.toFixed(2)}</h5>
                     </div>
                 </div>
                 <div className="d-grid gap-2">

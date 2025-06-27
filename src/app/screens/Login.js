@@ -17,7 +17,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("https://backend-iota-nine-32.vercel.app/api/usuarios/login", {
+            const response = await fetch("http://localhost:5000/api/usuarios/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -34,13 +34,14 @@ const Login = () => {
                 throw new Error(data.message || "Error al iniciar sesión");
             }
 
-            // Guardar el token y redirigir
+            // Solo estas dos líneas son esenciales
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.usuario));
             
-            navigate('/home'); // Redirigir al dashboard después del login
+            navigate(-1); // Redirigir a la página principal
         } catch (err) {
-            setError(err.message || 'Credenciales incorrectas. Por favor intenta nuevamente.');
+            setError(err.message);
+        } finally {
             setLoading(false);
         }
     };

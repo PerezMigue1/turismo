@@ -1,11 +1,9 @@
 // src/components/ListaArtesanias.js
 import React from 'react';
-import { Row, Col, Container, Form } from 'react-bootstrap';
+import { Row, Col, Container, Form, Spinner } from 'react-bootstrap';
 import CardArtesania from './CardArtesania';
 
-const ListaArtesanias = ({ artesanias, categoriaFiltro, setCategoriaFiltro }) => {
-    const categorias = ['Textiles', 'Madera', 'Cerámica', 'Orfebrería'];
-
+const ListaArtesanias = ({ artesanias, categorias, categoriaFiltro, setCategoriaFiltro }) => {
     return (
         <Container className="py-4" style={{
             backgroundColor: '#FDF2E0',
@@ -27,18 +25,33 @@ const ListaArtesanias = ({ artesanias, categoriaFiltro, setCategoriaFiltro }) =>
                     onChange={(e) => setCategoriaFiltro(e.target.value)}
                 >
                     <option value="">Todas las categorías</option>
-                    {categorias.map((categoria, index) => (
-                        <option key={index} value={categoria}>{categoria}</option>
+                    {categorias.map((categoria) => (
+                        <option key={categoria.idCategoria} value={categoria.idCategoria}>
+                            {categoria.Nombre}
+                        </option>
                     ))}
                 </Form.Select>
             </div>
-            <Row xs={1} md={2} lg={3} className="g-4">
-                {artesanias.map((artesania) => (
-                    <Col key={artesania.id}>
-                        <CardArtesania artesania={artesania} />
-                    </Col>
-                ))}
-            </Row>
+            {artesanias.length === 0 ? (
+                <div style={{
+                    textAlign: 'center',
+                    padding: '40px',
+                    color: '#9A1E47',
+                    backgroundColor: '#FEF8ED',
+                    borderRadius: '8px',
+                    border: '1px dashed #9A1E47'
+                }}>
+                    No se encontraron productos en esta categoría
+                </div>
+            ) : (
+                <Row xs={1} md={2} lg={3} className="g-4">
+                    {artesanias.map((artesania) => (
+                        <Col key={artesania.id}>
+                            <CardArtesania artesania={artesania} />
+                        </Col>
+                    ))}
+                </Row>
+            )}
         </Container>
     );
 };

@@ -1,6 +1,6 @@
 // src/Navigation.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Home from '../components/Home';
 import Artesanias from '../screens/Artesanias';
@@ -13,25 +13,83 @@ import { CartProvider } from './CartContext';
 import Login from '../screens/Login';
 import Registro from '../screens/Registro';
 import RecuperarPassword from '../screens/RecuperarPassword';
+import Perfil from '../screens/Perfil';
+import CambiarContrasena from '../screens/CambiarContrasena'
 
 const Navigation = () => {
     return (
-        <CartProvider> {/* Envuelve todo con CartProvider */}
+        <CartProvider>
             <Router>
                 <div style={{ backgroundColor: '#FDF2E0', minHeight: '100vh' }}>
-                    <Header />
                     <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/artesanias" element={<Artesanias />} />
-                        <Route path="/artesanias/:id" element={<DetalleArtesania />} />
-                        <Route path="/carrito" element={<Carrito />} />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route path="/confirmacion" element={<ConfirmacionCompra />} />
+                        {/* Ruta principal redirige a Home */}
+                        <Route path="/" element={<Navigate to="/home" replace />} />
+
+                        {/* Rutas públicas con Header y Footer */}
+                        <Route path="/home" element={
+                            <>
+                                <Header />
+                                <Home />
+                                <Footer />
+                            </>
+                        } />
+                        <Route path="/artesanias" element={
+                            <>
+                                <Header />
+                                <Artesanias />
+                                <Footer />
+                            </>
+                        } />
+                        <Route path="/artesanias/:id" element={
+                            <>
+                                <Header />
+                                <DetalleArtesania />
+                                <Footer />
+                            </>
+                        } />
+                        <Route path="/carrito" element={
+                            <>
+                                <Header />
+                                <Carrito />
+                                <Footer />
+                            </>
+                        } />
+                        <Route path="/checkout" element={
+                            <>
+                                <Header />
+                                <Checkout />
+                                <Footer />
+                            </>
+                        } />
+                        <Route path="/confirmacion" element={
+                            <>
+                                <Header />
+                                <ConfirmacionCompra />
+                                <Footer />
+                            </>
+                        } />
+
+                        <Route path="/perfil/:id" element={
+                            <>
+                                <Header />
+                                <Perfil />
+                                <Footer />
+                            </>
+                        } />
+
+                        <Route path="/cambiar-contrasena" element={
+                            <>
+                                <Header />
+                                <CambiarContrasena />
+                                <Footer />
+                            </>
+                        } />
+
+                        {/* Rutas de autenticación SIN Header y Footer */}
                         <Route path="/login" element={<Login />} />
                         <Route path="/registro" element={<Registro />} />
                         <Route path="/recuperarContra" element={<RecuperarPassword />} />
                     </Routes>
-                    <Footer />
                 </div>
             </Router>
         </CartProvider>
