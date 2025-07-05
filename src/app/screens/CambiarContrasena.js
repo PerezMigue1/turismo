@@ -28,7 +28,7 @@ const CambiarContrasena = () => {
         }
 
         try {
-            const res = await axios.put(`http://localhost:5000/api/usuarios/${usuarioId}/cambiar-password`, {
+            const res = await axios.put(`https://backend-iota-seven-19.vercel.app/api/usuarios/${usuarioId}/cambiar-password`, {
                 actualPassword,
                 nuevaPassword
             });

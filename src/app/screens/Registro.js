@@ -32,7 +32,7 @@ const Register = () => {
     useEffect(() => {
         const fetchSecurityQuestions = async () => {
             try {
-                const response = await fetch("http://backend-iota-seven-19.vercel.app/api/preguntas");
+                const response = await fetch("https://backend-iota-seven-19.vercel.app/api/preguntas");
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -82,7 +82,7 @@ const Register = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://backend-iota-seven-19.vercel.app/api/usuarios", {
+            const response = await fetch("https://backend-iota-seven-19.vercel.app/api/usuarios", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

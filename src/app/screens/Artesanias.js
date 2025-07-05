@@ -15,8 +15,8 @@ const Artesanias = () => {
             try {
                 // Obtener productos y categorías en paralelo
                 const [productosRes, categoriasRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/productos'),
-                    axios.get('http://localhost:5000/api/categoriProducto')
+                    axios.get('https://backend-iota-seven-19.vercel.app/api/productos'),
+                    axios.get('https://backend-iota-seven-19.vercel.app/api/categoriProducto')
                 ]);
 
                 setProductos(productosRes.data);

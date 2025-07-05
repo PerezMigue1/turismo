@@ -159,7 +159,7 @@ const Checkout = () => {
         console.log("📋 Pedido a enviar:", pedido); // Agrega este log para depuración
 
         try {
-            const response = await fetch("http://localhost:5000/api/pedidos", {
+            const response = await fetch("https://backend-iota-seven-19.vercel.app/api/pedidos", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

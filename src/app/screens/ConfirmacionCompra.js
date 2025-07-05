@@ -20,7 +20,7 @@ const ConfirmacionCompra = () => {
 
         const obtenerPedido = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/pedidos/${ultimoPedidoId}`, {
+                const res = await fetch(`https://backend-iota-seven-19.vercel.app/api/pedidos/${ultimoPedidoId}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }

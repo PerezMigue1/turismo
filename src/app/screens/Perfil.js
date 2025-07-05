@@ -29,7 +29,7 @@ const Perfil = () => {
 
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/usuarios/${id}/perfil`);
+                const response = await axios.get(`https://backend-iota-seven-19.vercel.app/api/usuarios/${id}/perfil`);
                 setUser(response.data);
                 setFormData(response.data);
             } catch (error) {
@@ -53,7 +53,7 @@ const Perfil = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:5000/api/usuarios/${id}/perfil`, formData);
+            const response = await axios.put(`https://backend-iota-seven-19.vercel.app/api/usuarios/${id}/perfil`, formData);
             setUser(response.data.usuario);
             setEditMode(false);
             setAlert({

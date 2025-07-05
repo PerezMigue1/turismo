@@ -20,7 +20,7 @@ const DetalleArtesania = () => {
     useEffect(() => {
         const fetchProducto = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/productos/${id}`);
+                const response = await axios.get(`https://backend-iota-seven-19.vercel.app/api/productos/${id}`);
                 setArtesania(response.data);
                 setLoading(false);
             } catch (err) {
