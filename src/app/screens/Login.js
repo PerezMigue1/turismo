@@ -11,40 +11,44 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:5000/api/usuarios/login", {
+            const response = await fetch("http://backend-iota-seven-19.vercel.app/api/usuarios/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    email,
-                    password
-                })
+                body: JSON.stringify({ email, password })
             });
 
             const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || "Error al iniciar sesión");
+            if (!response.ok) throw new Error(data.message || "Error al iniciar sesión");
+
+            // ✅ Renombrar id a _id para mantener consistencia
+            const usuario = { ...data.usuario };
+            if (usuario.id) {
+                usuario._id = usuario.id;
+                delete usuario.id;
             }
 
-            // Solo estas dos líneas son esenciales
+            // ✅ Guardar token y usuario en localStorage
             localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.usuario));
-            
-            navigate(-1); // Redirigir a la página principal
+            localStorage.setItem('user', JSON.stringify(usuario));
+
+            navigate("/home"); // o navigate(-1) si estás regresando
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
     };
+
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -89,7 +93,7 @@ const Login = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         style={{ borderColor: '#0FA89C' }}
                                     />
-                                    <InputGroup.Text 
+                                    <InputGroup.Text
                                         style={{ cursor: 'pointer', backgroundColor: 'white', borderColor: '#0FA89C' }}
                                         onClick={togglePasswordVisibility}
                                     >

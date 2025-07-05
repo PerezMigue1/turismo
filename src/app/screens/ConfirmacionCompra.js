@@ -1,21 +1,66 @@
 // src/screens/ConfirmacionCompra.js
-import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
 import { FaCheckCircle, FaHome, FaShoppingBag } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ConfirmacionCompra = () => {
-    // Datos de ejemplo (en una app real vendrían del estado o de una API)
-    const ordenEjemplo = {
-        id: 'ORD-123456',
-        fecha: new Date().toLocaleDateString(),
-        total: 1250,
-        productos: [
-            { id: 1, nombre: 'Bordado Tenango', cantidad: 2, precio: 350 },
-            { id: 2, nombre: 'Máscara de Carnaval', cantidad: 1, precio: 280 }
-        ],
-        direccion: 'Calle Falsa 123, Ciudad, CP 12345'
-    };
+    const [pedido, setPedido] = useState(null);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
+    const token = localStorage.getItem("token");
+    const ultimoPedidoId = localStorage.getItem("ultimoPedidoId");
+
+    useEffect(() => {
+        if (!ultimoPedidoId || !token) {
+            return navigate('/');
+        }
+
+        const obtenerPedido = async () => {
+            try {
+                const res = await fetch(`http://localhost:5000/api/pedidos/${ultimoPedidoId}`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (!res.ok) throw new Error("No se pudo obtener el pedido");
+
+                const data = await res.json();
+                setPedido(data);
+                setCargando(false);
+            } catch (err) {
+                setError(err.message);
+                setCargando(false);
+            }
+        };
+
+        obtenerPedido();
+    }, [ultimoPedidoId, token, navigate]);
+
+    if (cargando) {
+        return (
+            <Container className="text-center" style={{ paddingTop: "100px" }}>
+                <Spinner animation="border" variant="primary" />
+                <p>Cargando detalles de tu pedido...</p>
+            </Container>
+        );
+    }
+
+    if (error || !pedido) {
+        return (
+            <Container className="text-center" style={{ paddingTop: "100px" }}>
+                <h4 style={{ color: '#D24D1C' }}>Ocurrió un error: {error || "Pedido no encontrado"}</h4>
+                <Link to="/">
+                    <Button style={{ backgroundColor: '#9A1E47', border: 'none' }}>
+                        <FaHome className="me-2" /> Volver al Inicio
+                    </Button>
+                </Link>
+            </Container>
+        );
+    }
 
     return (
         <Container style={{ backgroundColor: '#FDF2E0', minHeight: '100vh', padding: '30px 0' }}>
@@ -29,16 +74,16 @@ const ConfirmacionCompra = () => {
 
                             <div className="text-start mt-4">
                                 <h4 style={{ color: '#9A1E47' }}>Detalles de la Orden</h4>
-                                <p><strong>Número de Orden:</strong> {ordenEjemplo.id}</p>
-                                <p><strong>Fecha:</strong> {ordenEjemplo.fecha}</p>
-                                <p><strong>Total:</strong> ${ordenEjemplo.total}</p>
-                                <p><strong>Dirección de envío:</strong> {ordenEjemplo.direccion}</p>
+                                <p><strong>Número de Orden:</strong> {pedido.idPedido}</p>
+                                <p><strong>Fecha:</strong> {new Date(pedido.createdAt).toLocaleString()}</p>
+                                <p><strong>Total:</strong> ${pedido.total}</p>
+                                <p><strong>Dirección de envío:</strong> {pedido.direccionEnvio?.Direccion}, {pedido.direccionEnvio?.Ciudad}, CP {pedido.direccionEnvio?.CodigoPostal}</p>
 
                                 <h4 style={{ color: '#9A1E47', marginTop: '30px' }}>Productos</h4>
                                 <ul>
-                                    {ordenEjemplo.productos.map((producto) => (
-                                        <li key={producto.id}>
-                                            {producto.nombre} - {producto.cantidad} x ${producto.precio}
+                                    {pedido.productos.map((producto, index) => (
+                                        <li key={index}>
+                                            {producto.Nombre} - {producto.Cantidad} x ${producto.Precio}
                                         </li>
                                     ))}
                                 </ul>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Card, Button, Form, Row, Col, Alert } from "react-bootstrap";
 import { FaUser, FaPhone, FaEnvelope, FaVenusMars, FaBirthdayCake, FaEdit, FaSave } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Perfil = () => {
@@ -10,9 +10,23 @@ const Perfil = () => {
     const [formData, setFormData] = useState({});
     const [alert, setAlert] = useState({ show: false, message: "", variant: "success" });
     const navigate = useNavigate();
-    const { id } = useParams();
+
+    // ✅ Obtener ID del usuario desde localStorage
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const id = storedUser?._id;
 
     useEffect(() => {
+        if (!id) {
+            console.error("❌ ID de usuario no encontrado en localStorage");
+            setAlert({
+                show: true,
+                message: "No se pudo cargar el perfil. Por favor, inicia sesión nuevamente.",
+                variant: "danger"
+            });
+            return;
+        }
+
+
         const fetchUserData = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/usuarios/${id}/perfil`);
@@ -58,27 +72,31 @@ const Perfil = () => {
         setTimeout(() => setAlert({ ...alert, show: false }), 3000);
     };
 
-    if (!user) return <div style={{ 
-        display: "flex", 
-        justifyContent: "center", 
-        alignItems: "center", 
-        height: "100vh",
-        color: "#9A1E47"
-    }}>Cargando perfil...</div>;
+    if (!user) return (
+        <div style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+            color: "#9A1E47"
+        }}>
+            Cargando perfil...
+        </div>
+    );
 
     return (
         <Container className="py-5">
             <Row className="justify-content-center">
                 <Col md={8} lg={6}>
-                    <Card style={{ 
-                        border: "none", 
-                        borderRadius: "15px", 
+                    <Card style={{
+                        border: "none",
+                        borderRadius: "15px",
                         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                         backgroundColor: "#FDF2E0"
                     }}>
-                        <Card.Header style={{ 
-                            backgroundColor: "#9A1E47", 
-                            color: "white", 
+                        <Card.Header style={{
+                            backgroundColor: "#9A1E47",
+                            color: "white",
                             borderTopLeftRadius: "15px",
                             borderTopRightRadius: "15px",
                             padding: "1.5rem"
@@ -88,7 +106,7 @@ const Perfil = () => {
                                     <FaUser className="me-2" />
                                     Mi Perfil
                                 </h3>
-                                <Button 
+                                <Button
                                     variant={editMode ? "success" : "outline-light"}
                                     onClick={editMode ? handleSubmit : () => setEditMode(true)}
                                     style={{
@@ -129,7 +147,7 @@ const Perfil = () => {
                                             name="nombre"
                                             value={formData.nombre || ""}
                                             onChange={handleInputChange}
-                                            style={{ 
+                                            style={{
                                                 borderColor: "#0FA89C",
                                                 borderRadius: "10px",
                                                 padding: "10px 15px"
@@ -159,7 +177,7 @@ const Perfil = () => {
                                                     name="telefono"
                                                     value={formData.telefono || ""}
                                                     onChange={handleInputChange}
-                                                    style={{ 
+                                                    style={{
                                                         borderColor: "#0FA89C",
                                                         borderRadius: "10px",
                                                         padding: "10px 15px"
@@ -206,7 +224,7 @@ const Perfil = () => {
                                                     name="sexo"
                                                     value={formData.sexo || ""}
                                                     onChange={handleInputChange}
-                                                    style={{ 
+                                                    style={{
                                                         borderColor: "#0FA89C",
                                                         borderRadius: "10px",
                                                         padding: "10px 15px"
@@ -239,7 +257,7 @@ const Perfil = () => {
                                                     name="edad"
                                                     value={formData.edad || ""}
                                                     onChange={handleInputChange}
-                                                    style={{ 
+                                                    style={{
                                                         borderColor: "#0FA89C",
                                                         borderRadius: "10px",
                                                         padding: "10px 15px"
@@ -278,8 +296,8 @@ const Perfil = () => {
                             </Form>
 
                             <div className="d-flex justify-content-between mt-4">
-                                <Button 
-                                    variant="outline" 
+                                <Button
+                                    variant="outline"
                                     onClick={() => navigate('/reservaciones')}
                                     style={{
                                         color: "#9A1E47",
@@ -291,9 +309,18 @@ const Perfil = () => {
                                 >
                                     Ver mis reservaciones
                                 </Button>
-                                <Button 
+                                <Button
                                     variant="primary"
-                                    onClick={() => navigate('/cambiar-contrasena')}
+                                    onClick={() => {
+                                        const user = JSON.parse(localStorage.getItem('user'));
+                                        const usuarioId = user?._id;
+
+                                        if (usuarioId) {
+                                            navigate(`/cambiar-contrasena`);
+                                        } else {
+                                            console.error("ID de usuario no encontrado");
+                                        }
+                                    }}
                                     style={{
                                         backgroundColor: "#D24D1C",
                                         border: "none",

@@ -1,15 +1,22 @@
 import React, { useState } from "react";
-import { Container, Card, Button, Form, Alert } from "react-bootstrap";
+import { Container, Card, Button, Form, Alert, InputGroup } from "react-bootstrap";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { Eye, EyeSlash } from "react-bootstrap-icons"; // Asegúrate de tener react-bootstrap-icons instalado
 
 const CambiarContrasena = () => {
     const [actualPassword, setActualPassword] = useState("");
     const [nuevaPassword, setNuevaPassword] = useState("");
     const [confirmarPassword, setConfirmarPassword] = useState("");
+    const [mostrarPasswords, setMostrarPasswords] = useState({
+        actual: false,
+        nueva: false,
+        confirmar: false
+    });
     const [alerta, setAlerta] = useState({ show: false, message: "", variant: "danger" });
 
-    const { id } = useParams();
+    const usuarioId = JSON.parse(localStorage.getItem("user"))?._id;
+
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -21,7 +28,7 @@ const CambiarContrasena = () => {
         }
 
         try {
-            const res = await axios.put(`http://localhost:5000/api/usuarios/${id}/cambiar-password`, {
+            const res = await axios.put(`http://localhost:5000/api/usuarios/${usuarioId}/cambiar-password`, {
                 actualPassword,
                 nuevaPassword
             });
@@ -30,7 +37,7 @@ const CambiarContrasena = () => {
 
             setTimeout(() => {
                 setAlerta({ show: false });
-                navigate(`/perfil/${id}`);
+                navigate(`/perfil`);
             }, 2000);
         } catch (error) {
             setAlerta({
@@ -41,16 +48,20 @@ const CambiarContrasena = () => {
         }
     };
 
+    const toggleVerPassword = (campo) => {
+        setMostrarPasswords(prev => ({ ...prev, [campo]: !prev[campo] }));
+    };
+
     return (
         <Container className="py-5">
             <Card className="p-4 mx-auto" style={{
                 maxWidth: 500,
                 border: "none",
                 borderRadius: "15px",
-                backgroundColor: "#FDF2E0", // Beige Claro
+                backgroundColor: "#FDF2E0",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
             }}>
-                <h3 className="text-center mb-4" style={{ color: "#9A1E47" /* Rojo Guinda */ }}>
+                <h3 className="text-center mb-4" style={{ color: "#9A1E47" }}>
                     Cambiar Contraseña
                 </h3>
 
@@ -62,61 +73,88 @@ const CambiarContrasena = () => {
 
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label style={{ color: "#1E8546", fontWeight: "500" /* Verde Bosque */ }}>
+                        <Form.Label style={{ color: "#1E8546", fontWeight: "500" }}>
                             Contraseña Actual
                         </Form.Label>
-                        <Form.Control
-                            type="password"
-                            value={actualPassword}
-                            onChange={(e) => setActualPassword(e.target.value)}
-                            style={{
-                                borderColor: "#0FA89C", // Turquesa Agua
-                                borderRadius: "10px",
-                                padding: "10px 15px"
-                            }}
-                            required
-                        />
+                        <InputGroup>
+                            <Form.Control
+                                type={mostrarPasswords.actual ? "text" : "password"}
+                                value={actualPassword}
+                                onChange={(e) => setActualPassword(e.target.value)}
+                                style={{
+                                    borderColor: "#0FA89C",
+                                    borderRadius: "10px",
+                                    padding: "10px 15px"
+                                }}
+                                required
+                            />
+                            <Button
+                                variant="outline-secondary"
+                                onClick={() => toggleVerPassword("actual")}
+                                style={{ borderColor: "#0FA89C" }}
+                            >
+                                {mostrarPasswords.actual ? <EyeSlash /> : <Eye />}
+                            </Button>
+                        </InputGroup>
                     </Form.Group>
 
                     <Form.Group className="mb-3">
                         <Form.Label style={{ color: "#1E8546", fontWeight: "500" }}>
                             Nueva Contraseña
                         </Form.Label>
-                        <Form.Control
-                            type="password"
-                            value={nuevaPassword}
-                            onChange={(e) => setNuevaPassword(e.target.value)}
-                            style={{
-                                borderColor: "#0FA89C",
-                                borderRadius: "10px",
-                                padding: "10px 15px"
-                            }}
-                            required
-                        />
+                        <InputGroup>
+                            <Form.Control
+                                type={mostrarPasswords.nueva ? "text" : "password"}
+                                value={nuevaPassword}
+                                onChange={(e) => setNuevaPassword(e.target.value)}
+                                style={{
+                                    borderColor: "#0FA89C",
+                                    borderRadius: "10px",
+                                    padding: "10px 15px"
+                                }}
+                                required
+                            />
+                            <Button
+                                variant="outline-secondary"
+                                onClick={() => toggleVerPassword("nueva")}
+                                style={{ borderColor: "#0FA89C" }}
+                            >
+                                {mostrarPasswords.nueva ? <EyeSlash /> : <Eye />}
+                            </Button>
+                        </InputGroup>
                     </Form.Group>
 
                     <Form.Group className="mb-4">
                         <Form.Label style={{ color: "#1E8546", fontWeight: "500" }}>
                             Confirmar Nueva Contraseña
                         </Form.Label>
-                        <Form.Control
-                            type="password"
-                            value={confirmarPassword}
-                            onChange={(e) => setConfirmarPassword(e.target.value)}
-                            style={{
-                                borderColor: "#0FA89C",
-                                borderRadius: "10px",
-                                padding: "10px 15px"
-                            }}
-                            required
-                        />
+                        <InputGroup>
+                            <Form.Control
+                                type={mostrarPasswords.confirmar ? "text" : "password"}
+                                value={confirmarPassword}
+                                onChange={(e) => setConfirmarPassword(e.target.value)}
+                                style={{
+                                    borderColor: "#0FA89C",
+                                    borderRadius: "10px",
+                                    padding: "10px 15px"
+                                }}
+                                required
+                            />
+                            <Button
+                                variant="outline-secondary"
+                                onClick={() => toggleVerPassword("confirmar")}
+                                style={{ borderColor: "#0FA89C" }}
+                            >
+                                {mostrarPasswords.confirmar ? <EyeSlash /> : <Eye />}
+                            </Button>
+                        </InputGroup>
                     </Form.Group>
 
                     <Button
                         type="submit"
                         className="w-100"
                         style={{
-                            backgroundColor: "#9A1E47", // Rojo Guinda
+                            backgroundColor: "#9A1E47",
                             border: "none",
                             borderRadius: "25px",
                             padding: "10px",

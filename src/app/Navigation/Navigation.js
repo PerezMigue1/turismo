@@ -14,7 +14,12 @@ import Login from '../screens/Login';
 import Registro from '../screens/Registro';
 import RecuperarPassword from '../screens/RecuperarPassword';
 import Perfil from '../screens/Perfil';
-import CambiarContrasena from '../screens/CambiarContrasena'
+import CambiarContrasena from '../screens/CambiarContrasena';
+
+import PrivateRoute from '../admin/PrivateRoute'; // Nuevo componente
+import AdminDashboard from '../admin/AdminDashboard'; // Nuevo
+import EditarUsuario from '../admin/EditarUsuario'; // Nuevo
+import AdminLayout from '../admin/AdminLayout'; // Nuevo
 
 const Navigation = () => {
     return (
@@ -69,7 +74,7 @@ const Navigation = () => {
                             </>
                         } />
 
-                        <Route path="/perfil/:id" element={
+                        <Route path="/perfil" element={
                             <>
                                 <Header />
                                 <Perfil />
@@ -89,6 +94,17 @@ const Navigation = () => {
                         <Route path="/login" element={<Login />} />
                         <Route path="/registro" element={<Registro />} />
                         <Route path="/recuperarContra" element={<RecuperarPassword />} />
+
+                        {/* Nuevas rutas de administración */}
+                        <Route path="/admin" element={
+                            <PrivateRoute roles={['admin']}>
+                                <AdminLayout />
+                            </PrivateRoute>
+                        }>
+                            <Route index element={<AdminDashboard />} />
+                            <Route path="usuarios" element={<AdminDashboard />} />
+                            <Route path="usuarios/editar/:id" element={<EditarUsuario />} />
+                        </Route>
                     </Routes>
                 </div>
             </Router>

@@ -1,6 +1,6 @@
 // src/components/ListaArtesanias.js
 import React from 'react';
-import { Row, Col, Container, Form, Spinner } from 'react-bootstrap';
+import { Row, Col, Container, Form } from 'react-bootstrap';
 import CardArtesania from './CardArtesania';
 
 const ListaArtesanias = ({ artesanias, categorias, categoriaFiltro, setCategoriaFiltro }) => {

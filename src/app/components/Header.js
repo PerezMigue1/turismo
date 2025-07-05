@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Container, Navbar, Nav, Button, Form, FormControl, Dropdown } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import logo from "../image/turismo.jpeg";
+import { CartContext } from '../Navigation/CartContext';
 
 const Header = () => {
+    // Dentro del componente Header
+    const { carrito } = useContext(CartContext);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -113,7 +117,7 @@ const Header = () => {
                             position: "relative"
                         }}>
                             <FaShoppingCart />
-                            {isLoggedIn && (
+                            {carrito.length > 0 && (
                                 <span style={{
                                     position: "absolute",
                                     top: "-8px",
@@ -128,7 +132,7 @@ const Header = () => {
                                     justifyContent: "center",
                                     fontSize: "0.7rem"
                                 }}>
-                                    {userData?.cartItems?.length || 0}
+                                    {carrito.reduce((total, item) => total + item.cantidad, 0)}
                                 </span>
                             )}
                         </Link>
@@ -170,7 +174,7 @@ const Header = () => {
                                 }}>
                                     <Dropdown.Item
                                         as={Link}
-                                        to={`/perfil/${userData?._id}`}
+                                        to={`/perfil`}
                                         style={{
                                             color: "#9A1E47",
                                             padding: "10px 15px",

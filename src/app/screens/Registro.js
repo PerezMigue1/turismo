@@ -26,13 +26,13 @@ const Register = () => {
     const navigate = useNavigate();
 
     const sexoOptions = ['Masculino', 'Femenino', 'Otro'];
-    const userTypes = ['turista', 'miembro'];
+    const userTypes = ['turista', 'miembro', 'admin'];
 
     // Cargar preguntas de seguridad al montar el componente
     useEffect(() => {
         const fetchSecurityQuestions = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/preguntas");
+                const response = await fetch("http://backend-iota-seven-19.vercel.app/api/preguntas");
                 const data = await response.json();
 
                 if (!response.ok) {
@@ -82,7 +82,7 @@ const Register = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:5000/api/usuarios", {
+            const response = await fetch("http://backend-iota-seven-19.vercel.app/api/usuarios", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -216,7 +216,7 @@ const Register = () => {
                                 >
                                     {userTypes.map((type, index) => (
                                         <option key={index} value={type}>
-                                            {type === 'turista' ? 'Turista' : 'Miembro de la Comunidad'}
+                                            {type === 'turista' ? 'Turista' : type === 'miembro' ? 'Miembro de la Comunidad' : 'Administrador'}
                                         </option>
                                     ))}
                                 </Form.Select>

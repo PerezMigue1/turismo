@@ -1,10 +1,19 @@
 // src/Navigation/CartContext.js
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect  } from 'react';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const [carrito, setCarrito] = useState([]);
+    // Cargar el carrito desde localStorage al inicio
+    const [carrito, setCarrito] = useState(() => {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    });
+
+    // Guardar en localStorage cada vez que cambie el carrito
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(carrito));
+    }, [carrito]);
 
     const agregarAlCarrito = (producto) => {
         setCarrito((prevCarrito) => {
@@ -32,9 +41,20 @@ export const CartProvider = ({ children }) => {
         setCarrito((prevCarrito) => prevCarrito.filter((item) => item.id !== id));
     };
 
+    
+    const vaciarCarrito = () => {
+        setCarrito([]);
+    };
+
     return (
         <CartContext.Provider
-            value={{ carrito, agregarAlCarrito, actualizarCantidad, eliminarDelCarrito }}
+            value={{
+                carrito,
+                agregarAlCarrito,
+                actualizarCantidad,
+                eliminarDelCarrito,
+                vaciarCarrito // ← agrega aquí la función al contexto
+            }}
         >
             {children}
         </CartContext.Provider>
