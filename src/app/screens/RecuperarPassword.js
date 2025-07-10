@@ -41,7 +41,7 @@ const RecoverPassword = () => {
         });
 
         const data = await response.json();
-        console.log("Respuesta completa:", data); // Agrega esto para depuración
+        console.log("Respuesta pregunta secreta:", data); // Agrega esto para depuración
 
         if (!response.ok) {
             throw new Error(data.message || 'Error al obtener pregunta');
