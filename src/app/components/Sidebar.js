@@ -146,7 +146,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaUtensils style={{ marginRight: "10px" }} /> Gastronomía
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/alojamiento" onClick={onClose} style={{
+                <Nav.Link as={Link} to="/Hoteles" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
                     marginBottom: "5px",
@@ -154,7 +154,31 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Alojamiento
+                    <FaBed style={{ marginRight: "10px" }} /> Hoteles
+                </Nav.Link>
+
+
+
+                <Nav.Link as={Link} to="/RegistroArtesano" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Registro Artesano
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicarProducto" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones
                 </Nav.Link>
             </Nav>
         </div>

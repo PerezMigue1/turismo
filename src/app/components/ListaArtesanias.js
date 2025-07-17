@@ -46,7 +46,7 @@ const ListaArtesanias = ({ artesanias, categorias, categoriaFiltro, setCategoria
             ) : (
                 <Row xs={1} md={2} lg={3} className="g-4">
                     {artesanias.map((artesania) => (
-                        <Col key={artesania.id}>
+                        <Col key={artesania.idProducto}>
                             <CardArtesania artesania={artesania} />
                         </Col>
                     ))}

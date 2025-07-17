@@ -15,100 +15,152 @@ import Registro from '../screens/Registro';
 import RecuperarPassword from '../screens/RecuperarPassword';
 import Perfil from '../screens/Perfil';
 import CambiarContrasena from '../screens/CambiarContrasena';
+import RegistroArtesano from '../screens/RegistroArtesano';
+import PublicarProducto from '../screens/PublicarProducto';
+import { AuthProvider, useAuth } from '../Navigation/AuthContext';
+import Hoteles from '../screens/Hoteles'
+import DetallesHoteles from '../screens/HotelesDetalle'
 
-import PrivateRoute from '../admin/PrivateRoute'; // Nuevo componente
-import AdminDashboard from '../admin/AdminDashboard'; // Nuevo
-import EditarUsuario from '../admin/EditarUsuario'; // Nuevo
-import AdminLayout from '../admin/AdminLayout'; // Nuevo
+
+import AdminLayout from '../admin/AdminLayout';
+
+
+// Componente para proteger rutas
+const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
+    const { currentUser } = useAuth();
+
+    if (!currentUser) {
+        return <Navigate to="/login" />;
+    }
+
+    // Si se requiere un rol específico y el usuario no lo tiene
+    if (requiredRole !== 'user' && currentUser.rol !== requiredRole) {
+        return <Navigate to="/home" />;
+    }
+
+    return children;
+};
+
 
 const Navigation = () => {
     return (
-        <CartProvider>
-            <Router>
-                <div style={{ backgroundColor: '#FDF2E0', minHeight: '100vh' }}>
-                    <Routes>
-                        {/* Ruta principal redirige a Home */}
-                        <Route path="/" element={<Navigate to="/home" replace />} />
+        <AuthProvider>
+            <CartProvider>
+                <Router>
+                    <div style={{ backgroundColor: '#FDF2E0', minHeight: '100vh' }}>
+                        <Routes>
+                            {/* Ruta principal redirige a Home */}
+                            <Route path="/" element={<Navigate to="/home" replace />} />
 
-                        {/* Rutas públicas con Header y Footer */}
-                        <Route path="/home" element={
-                            <>
-                                <Header />
-                                <Home />
-                                <Footer />
-                            </>
-                        } />
-                        <Route path="/artesanias" element={
-                            <>
-                                <Header />
-                                <Artesanias />
-                                <Footer />
-                            </>
-                        } />
-                        <Route path="/artesanias/:id" element={
-                            <>
-                                <Header />
-                                <DetalleArtesania />
-                                <Footer />
-                            </>
-                        } />
-                        <Route path="/carrito" element={
-                            <>
-                                <Header />
-                                <Carrito />
-                                <Footer />
-                            </>
-                        } />
-                        <Route path="/checkout" element={
-                            <>
-                                <Header />
-                                <Checkout />
-                                <Footer />
-                            </>
-                        } />
-                        <Route path="/confirmacion" element={
-                            <>
-                                <Header />
-                                <ConfirmacionCompra />
-                                <Footer />
-                            </>
-                        } />
+                            {/* Rutas públicas con Header y Footer */}
+                            <Route path="/home" element={
+                                <>
+                                    <Header />
+                                    <Home />
+                                    <Footer />
+                                </>
+                            } />
+                            <Route path="/artesanias" element={
+                                <>
+                                    <Header />
+                                    <Artesanias />
+                                    <Footer />
+                                </>
+                            } />
+                            <Route path="/artesanias/:id" element={
+                                <>
+                                    <Header />
+                                    <DetalleArtesania />
+                                    <Footer />
+                                </>
+                            } />
+                            <Route path="/carrito" element={
+                                <>
+                                    <Header />
+                                    <Carrito />
+                                    <Footer />
+                                </>
+                            } />
+                            <Route path="/checkout" element={
+                                <>
+                                    <Header />
+                                    <Checkout />
+                                    <Footer />
+                                </>
+                            } />
+                            <Route path="/confirmacion" element={
+                                <>
+                                    <Header />
+                                    <ConfirmacionCompra />
+                                    <Footer />
+                                </>
+                            } />
 
-                        <Route path="/perfil" element={
-                            <>
-                                <Header />
-                                <Perfil />
-                                <Footer />
-                            </>
-                        } />
+                            <Route path="/perfil" element={
+                                <>
+                                    <Header />
+                                    <Perfil />
+                                    <Footer />
+                                </>
+                            } />
 
-                        <Route path="/cambiar-contrasena" element={
-                            <>
-                                <Header />
-                                <CambiarContrasena />
-                                <Footer />
-                            </>
-                        } />
+                            <Route path="/cambiar-contrasena" element={
+                                <>
+                                    <Header />
+                                    <CambiarContrasena />
+                                    <Footer />
+                                </>
+                            } />
 
-                        {/* Rutas de autenticación SIN Header y Footer */}
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/registro" element={<Registro />} />
-                        <Route path="/recuperarContra" element={<RecuperarPassword />} />
+                            <Route path="/RegistroArtesano" element={
+                                <>
+                                    <Header />
+                                    <RegistroArtesano />
+                                    <Footer />
+                                </>
+                            } />
 
-                        {/* Nuevas rutas de administración */}
-                        <Route path="/admin" element={
-                            <PrivateRoute roles={['admin']}>
-                                <AdminLayout />
-                            </PrivateRoute>
-                        }>
-                            <Route index element={<AdminDashboard />} />
-                            <Route path="usuarios" element={<AdminDashboard />} />
-                            <Route path="usuarios/editar/:id" element={<EditarUsuario />} />
-                        </Route>
-                    </Routes>
-                </div>
-            </Router>
-        </CartProvider>
+                            <Route path="/PublicarProducto" element={
+                                <>
+                                    <Header />
+                                    <PublicarProducto />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/Hoteles" element={
+                                <>
+                                    <Header />
+                                    <Hoteles />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/DetallesHoteles" element={
+                                <>
+                                    <Header />
+                                    <DetallesHoteles />
+                                    <Footer />
+                                </>
+                            } />
+
+
+                            {/* Rutas de autenticación SIN Header y Footer */}
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/registro" element={<Registro />} />
+                            <Route path="/recuperarContra" element={<RecuperarPassword />} />
+
+                            {/* Rutas de administración */}
+                            <Route path="/admin/*" element={
+                                <ProtectedRoute requiredRole="admin">
+                                    <AdminLayout />
+                                </ProtectedRoute>
+                            } />
+                        </Routes>
+                    </div>
+                </Router>
+            </CartProvider>
+        </AuthProvider >
     );
 };
 

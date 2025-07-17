@@ -1,7 +1,9 @@
+
 // src/screens/DetalleArtesania.js
+
 import React, { useState, useContext, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Button, Alert, Badge, ListGroup, Form, Spinner, Tab, Tabs } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Alert, Badge, ListGroup, Form, Spinner, Tab, Tabs, Carousel } from 'react-bootstrap';
 import { FaShoppingCart, FaArrowLeft, FaCreditCard, FaMapMarkerAlt, FaStar, FaTruck, FaCalendarAlt, FaTags } from 'react-icons/fa';
 import axios from 'axios';
 import { CartContext } from '../Navigation/CartContext';
@@ -9,19 +11,23 @@ import { CartContext } from '../Navigation/CartContext';
 const DetalleArtesania = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [cantidad, setCantidad] = useState(1);
-    const [metodoPago, setMetodoPago] = useState('mercadoPago');
     const [showSuccess, setShowSuccess] = useState(false);
     const [artesania, setArtesania] = useState(null);
+    const [artesano, setArtesano] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { agregarAlCarrito } = useContext(CartContext);
 
     useEffect(() => {
-        const fetchProducto = async () => {
+        const fetchProductoYArtesano = async () => {
             try {
                 const response = await axios.get(`https://backend-iota-seven-19.vercel.app/api/productos/${id}`);
-                setArtesania(response.data);
+                const producto = response.data;
+                setArtesania(producto);
+
+                // Cargar datos del artesano asociado
+                const resArtesano = await axios.get(`https://backend-iota-seven-19.vercel.app/api/artesano/${producto.idArtesano}`);
+                setArtesano(resArtesano.data);
+
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -29,32 +35,38 @@ const DetalleArtesania = () => {
             }
         };
 
-        fetchProducto();
+        fetchProductoYArtesano();
     }, [id]);
 
-    const handleSubmit = (e) => {
+    const [nombre, setNombre] = useState('');
+    const [correo, setCorreo] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [comentario, setComentario] = useState('');
+    const [mensajeEnviado, setMensajeEnviado] = useState(null);
+
+    const handleEnviarComentario = async (e) => {
         e.preventDefault();
-        agregarAlCarrito({ 
-            id: artesania.idProducto,
-            nombre: artesania.Nombre,
-            precio: artesania.Precio,
-            imagen: artesania.Imagen,
-            categoria: artesania.idCategoria,
-            cantidad 
-        });
-        setShowSuccess(true);
+        try {
+            await axios.post("https://backend-iota-seven-19.vercel.app/api/contacto", {
+                nombre,
+                correo,
+                telefono,
+                comentario,
+                idProducto: artesania.idProducto,
+                idArtesano: artesano?.idArtesano
+            });
+
+            setMensajeEnviado("Comentario enviado correctamente.");
+            setNombre('');
+            setCorreo('');
+            setTelefono('');
+            setComentario('');
+        } catch (error) {
+            setMensajeEnviado("Error al enviar el comentario.");
+            console.error(error);
+        }
     };
 
-    const handleAgregarAlCarrito = () => {
-        agregarAlCarrito({ 
-            id: artesania.idProducto,
-            nombre: artesania.Nombre,
-            precio: artesania.Precio,
-            imagen: artesania.Imagen,
-            categoria: artesania.idCategoria,
-            cantidad: 1
-        });
-    };
 
     if (loading) {
         return (
@@ -109,17 +121,6 @@ const DetalleArtesania = () => {
         );
     }
 
-    // Función para formatear la fecha de llegada estimada
-    const formatFecha = (fechaString) => {
-        if (!fechaString) return 'No especificado';
-        const fecha = new Date(fechaString);
-        return fecha.toLocaleDateString('es-MX', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-        });
-    };
-
     return (
         <Container style={{ backgroundColor: '#FDF2E0', padding: '30px 0', minHeight: '100vh' }}>
             <Button
@@ -133,40 +134,53 @@ const DetalleArtesania = () => {
             <Row>
                 <Col md={7}>
                     <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
-                        <Card.Img
-                            variant="top"
-                            src={artesania.Imagen}
-                            style={{
-                                maxHeight: '500px',
-                                objectFit: 'cover',
-                                borderBottom: '3px solid #F28B27'
-                            }}
-                            alt={artesania.Nombre}
-                            onError={(e) => {
-                                e.target.src = '/placeholder-product.jpg';
-                            }}
-                        />
+                        {Array.isArray(artesania.Imagen) ? (
+                            <Carousel interval={3000} pause={false} indicators controls>
+                                {artesania.Imagen.map((img, i) => (
+                                    <Carousel.Item key={i}>
+                                        <img
+                                            src={img}
+                                            alt={`Imagen ${i + 1}`}
+                                            className="d-block w-100"
+                                            style={{ objectFit: 'cover', height: '500px' }}
+                                            onError={(e) => e.target.src = '/placeholder-product.jpg'}
+                                        />
+                                    </Carousel.Item>
+                                ))}
+                            </Carousel>
+                        ) : (
+                            <Card.Img
+                                variant="top"
+                                src={artesania.Imagen}
+                                alt={artesania.Nombre}
+                                style={{ maxHeight: '500px', objectFit: 'cover', borderBottom: '3px solid #F28B27' }}
+                                onError={(e) => e.target.src = '/placeholder-product.jpg'}
+                            />
+                        )}
                     </Card>
-                    
+
                     <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
                         <Card.Body style={{ backgroundColor: '#FDF2E0' }}>
                             <Tabs defaultActiveKey="descripcion" id="product-tabs" className="mb-3">
                                 <Tab eventKey="descripcion" title="Descripción">
                                     <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Descripción del producto</h4>
                                     <p style={{ color: '#555' }}>{artesania.Descripción}</p>
-                                    
+
                                     <h4 style={{ color: '#9A1E47', marginTop: '20px' }}>Comentarios adicionales</h4>
                                     <p style={{ color: '#555' }}>{artesania.Comentarios || 'No hay comentarios adicionales'}</p>
                                 </Tab>
-                                
+
                                 <Tab eventKey="especificaciones" title="Especificaciones">
                                     <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Detalles técnicos</h4>
                                     <ListGroup variant="flush">
                                         <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                                            <strong>Forma:</strong> {artesania.Forma || 'No especificado'}
+                                            <strong>Colores:</strong> {artesania.Colores || 'No especificado'}
                                         </ListGroup.Item>
                                         <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                                            <strong>Dimensiones:</strong> {artesania["Largo x Ancho"] || 'No especificado'}
+                                            <strong>Dimensiones:</strong> {artesania.Dimensiones || 'No especificado'}
+                                        </ListGroup.Item>
+                                        <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                            <strong>Especificaciones:</strong> {artesania.Especificaciones || 'No especificado'}
                                         </ListGroup.Item>
                                         <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
                                             <strong>Materiales:</strong> {artesania.Materiales || 'No especificado'}
@@ -176,24 +190,17 @@ const DetalleArtesania = () => {
                                         </ListGroup.Item>
                                     </ListGroup>
                                 </Tab>
-                                
+
                                 <Tab eventKey="envio" title="Envío y disponibilidad">
                                     <div className="d-flex align-items-center mb-3" style={{ color: '#0FA89C' }}>
                                         <FaTruck className="me-2" size={20} />
-                                        <h5 style={{ margin: 0 }}>Disponibilidad: 
+                                        <h5 style={{ margin: 0 }}>Disponibilidad:
                                             <Badge bg={artesania.Disponibilidad === 'En stock' ? 'success' : 'danger'} className="ms-2">
                                                 {artesania.Disponibilidad}
                                             </Badge>
                                         </h5>
                                     </div>
-                                    
-                                    {artesania["Tiempo-estimado-llegada"] && (
-                                        <div className="d-flex align-items-center mb-3" style={{ color: '#0FA89C' }}>
-                                            <FaCalendarAlt className="me-2" size={20} />
-                                            <h5 style={{ margin: 0 }}>Tiempo estimado de llegada: {formatFecha(artesania["Tiempo-estimado-llegada"])}</h5>
-                                        </div>
-                                    )}
-                                    
+
                                     <div className="d-flex align-items-center" style={{ color: '#0FA89C' }}>
                                         <FaTags className="me-2" size={20} />
                                         <div>
@@ -230,106 +237,129 @@ const DetalleArtesania = () => {
                                 <FaMapMarkerAlt className="me-2" />
                                 <span>Elaborado en {artesania.Origen || 'origen no especificado'}</span>
                             </div>
-                            <div className="d-flex align-items-baseline mb-4">
+                            <div className="d-flex align-items-baseline mb-3">
                                 <h2 style={{ color: '#9A1E47', marginRight: '15px' }}>${artesania.Precio.toFixed(2)}</h2>
                             </div>
 
-                            <Form onSubmit={handleSubmit}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label style={{ color: '#9A1E47' }}>Cantidad</Form.Label>
-                                    <div className="d-flex align-items-center">
-                                        <Button variant="outline-secondary" onClick={() => setCantidad(Math.max(1, cantidad - 1))} style={{ borderColor: '#9A1E47', color: '#9A1E47' }}>
-                                            -
-                                        </Button>
-                                        <Form.Control
-                                            type="number"
-                                            min="1"
-                                            value={cantidad}
-                                            onChange={(e) => setCantidad(Math.max(1, parseInt(e.target.value) || 1))}
-                                            className="mx-2 text-center"
-                                            style={{ width: '60px', borderColor: '#9A1E47', color: '#9A1E47' }}
-                                        />
-                                        <Button variant="outline-secondary" onClick={() => setCantidad(cantidad + 1)} style={{ borderColor: '#9A1E47', color: '#9A1E47' }}>
-                                            +
-                                        </Button>
-                                    </div>
-                                </Form.Group>
+                            {/* 🔽 Contacto del Artesano (completo) */}
+                            <div style={{
+                                backgroundColor: '#FEF8ED',
+                                border: '1px solid #F28B27',
+                                borderRadius: '10px',
+                                padding: '15px',
+                                marginTop: '20px'
+                            }}>
+                                <h5 style={{ color: '#9A1E47', marginBottom: '15px' }}>Contacto del Artesano</h5>
 
-                                {artesania.Disponibilidad === 'En stock' && (
-                                    <div className="mb-3 p-3 rounded" style={{ backgroundColor: '#50C2C4', color: 'white' }}>
-                                        <div className="d-flex justify-content-between">
-                                            <span>Envío:</span>
-                                            <span>$50.00</span>
-                                        </div>
-                                        <small>Disponible para toda la república</small>
+                                {/* Imagen de perfil */}
+                                {artesano?.imagenPerfil && (
+                                    <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+                                        <img src={artesano.imagenPerfil} alt="Foto del artesano" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
                                     </div>
                                 )}
 
-                                <Form.Group className="mb-4">
-                                    <Form.Label style={{ color: '#9A1E47' }}>Método de pago</Form.Label>
-                                    <Form.Select
-                                        value={metodoPago}
-                                        onChange={(e) => setMetodoPago(e.target.value)}
-                                        style={{ borderColor: '#9A1E47', color: '#9A1E47' }}
-                                    >
-                                        <option value="mercadoPago">Mercado Pago</option>
-                                        <option value="paypal">PayPal</option>
-                                        <option value="tarjeta">Tarjeta de crédito/débito</option>
-                                        <option value="transferencia">Transferencia bancaria</option>
-                                    </Form.Select>
+                                <p><strong>Nombre:</strong> {artesano?.nombre || 'N/D'}</p>
+                                <p><strong>Especialidad:</strong> {artesano?.especialidad || 'N/D'}</p>
+                                <p><strong>Teléfono:</strong> {artesano?.telefono || 'N/D'}</p>
+                                <p><strong>Email:</strong> {artesano?.correo || 'N/D'}</p>
+                                <p><strong>Ubicación:</strong> {artesano?.ubicacion || 'N/D'}</p>
+
+                                <p><strong>Descripción:</strong><br />{artesano?.descripcion || 'N/D'}</p>
+
+                                {/* Redes sociales */}
+                                <div style={{ marginTop: '10px' }}>
+                                    <p><strong>Redes Sociales:</strong></p>
+                                    <ul style={{ paddingLeft: '1rem', marginBottom: 0 }}>
+                                        {artesano?.redesSociales?.facebook && (
+                                            <li>
+                                                <a href={artesano.redesSociales.facebook} target="_blank" rel="noopener noreferrer">
+                                                    Facebook
+                                                </a>
+                                            </li>
+                                        )}
+                                        {artesano?.redesSociales?.instagram && (
+                                            <li>
+                                                <a href={artesano.redesSociales.instagram} target="_blank" rel="noopener noreferrer">
+                                                    Instagram
+                                                </a>
+                                            </li>
+                                        )}
+                                        {artesano?.redesSociales?.whatsapp && (
+                                            <li>
+                                                <a href={artesano.redesSociales.whatsapp} target="_blank" rel="noopener noreferrer">
+                                                    WhatsApp
+                                                </a>
+                                            </li>
+                                        )}
+                                    </ul>
+                                </div>
+                            </div>
+
+
+                        </Card.Body>
+                    </Card>
+
+                </Col>
+            </Row>
+            <Row className="justify-content-center">
+                <Col md={15}>
+                    <Card className="sticky-top" style={{ top: '20px', borderColor: '#0FA89C', marginTop: '50px' }}>
+                        <Card.Body style={{ backgroundColor: '#FDF2E0' }}>
+                            <h4 style={{ color: '#9A1E47', marginBottom: '20px' }}>¿Tienes dudas o deseas contactar al artesano?</h4>
+
+                            {mensajeEnviado && (
+                                <Alert variant={mensajeEnviado.includes("Error") ? "danger" : "success"}>
+                                    {mensajeEnviado}
+                                </Alert>
+                            )}
+
+                            <Form onSubmit={handleEnviarComentario}>
+                                <Form.Group controlId="formNombre" className="mb-3">
+                                    <Form.Label>Nombre</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Tu nombre"
+                                        required
+                                        value={nombre}
+                                        onChange={(e) => setNombre(e.target.value)}
+                                    />
                                 </Form.Group>
 
-                                <div className="mb-4 p-3 rounded" style={{ backgroundColor: '#A0C070', color: 'white' }}>
-                                    <div className="d-flex justify-content-between mb-2">
-                                        <span>Subtotal:</span>
-                                        <span>${(artesania.Precio * cantidad).toFixed(2)}</span>
-                                    </div>
-                                    {artesania.Disponibilidad === 'En stock' && (
-                                        <div className="d-flex justify-content-between mb-2">
-                                            <span>Envío:</span>
-                                            <span>$50.00</span>
-                                        </div>
-                                    )}
-                                    <div className="d-flex justify-content-between fw-bold">
-                                        <span>Total:</span>
-                                        <span>${(artesania.Precio * cantidad + (artesania.Disponibilidad === 'En stock' ? 50 : 0)).toFixed(2)}</span>
-                                    </div>
-                                </div>
+                                <Form.Group controlId="formCorreo" className="mb-3">
+                                    <Form.Label>Correo electrónico</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="tu@email.com"
+                                        required
+                                        value={correo}
+                                        onChange={(e) => setCorreo(e.target.value)}
+                                    />
+                                </Form.Group>
 
-                                <Button 
-                                    type="submit" 
-                                    style={{ 
-                                        width: '100%', 
-                                        backgroundColor: '#9A1E47', 
-                                        borderColor: '#9A1E47', 
-                                        padding: '12px', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        gap: '10px' 
-                                    }}
-                                    disabled={artesania.Disponibilidad !== 'En stock'}
-                                >
-                                    <FaCreditCard /> 
-                                    {artesania.Disponibilidad === 'En stock' ? 'Comprar ahora' : 'Producto agotado'}
-                                </Button>
+                                <Form.Group controlId="formTelefono" className="mb-3">
+                                    <Form.Label>Teléfono</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Opcional"
+                                        value={telefono}
+                                        onChange={(e) => setTelefono(e.target.value)}
+                                    />
+                                </Form.Group>
 
-                                <Button
-                                    style={{ 
-                                        width: '100%', 
-                                        backgroundColor: '#9A1E47', 
-                                        border: 'none', 
-                                        marginTop: '20px', 
-                                        display: 'flex', 
-                                        alignItems: 'center', 
-                                        justifyContent: 'center', 
-                                        gap: '10px' 
-                                    }}
-                                    onClick={handleAgregarAlCarrito}
-                                    disabled={artesania.Disponibilidad !== 'En stock'}
-                                >
-                                    <FaShoppingCart className="me-2" />
-                                    {artesania.Disponibilidad === 'En stock' ? 'Añadir al Carrito' : 'No disponible'}
+                                <Form.Group controlId="formComentario" className="mb-3">
+                                    <Form.Label>Comentario</Form.Label>
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={4}
+                                        placeholder="Escribe tu mensaje..."
+                                        required
+                                        value={comentario}
+                                        onChange={(e) => setComentario(e.target.value)}
+                                    />
+                                </Form.Group>
+
+                                <Button type="submit" variant="primary" style={{ backgroundColor: '#9A1E47', borderColor: '#9A1E47' }}>
+                                    Enviar mensaje al artesano
                                 </Button>
                             </Form>
                         </Card.Body>
@@ -337,7 +367,10 @@ const DetalleArtesania = () => {
                 </Col>
             </Row>
         </Container>
+
+
     );
 };
 
 export default DetalleArtesania;
+

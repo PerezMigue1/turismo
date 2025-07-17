@@ -26,7 +26,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const sexoOptions = ['Masculino', 'Femenino', 'Otro'];
-    const userTypes = ['turista', 'miembro', 'admin'];
+    const userTypes = ['turista', 'artesano', 'admin'];
 
     // Cargar preguntas de seguridad al montar el componente
     useEffect(() => {

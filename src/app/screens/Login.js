@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Card, Alert, InputGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useAuth } from '../Navigation/AuthContext'; // Ajusta la ruta si es diferente
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
 
     const handleSubmit = async (e) => {
@@ -27,26 +29,23 @@ const Login = () => {
             });
 
             const data = await response.json();
+            console.log("🔍 Datos del login:", data);
 
-            if (!response.ok) throw new Error(data.message || "Error al iniciar sesión");
-
-            // ✅ Renombrar id a _id para mantener consistencia
-            const usuario = { ...data.usuario };
-            if (usuario.id) {
-                usuario._id = usuario.id;
-                delete usuario.id;
+            if (!response.ok || !data.token || !data.usuario) {
+                throw new Error(data.message || "Error al iniciar sesión");
             }
 
-            // ✅ Guardar token y usuario en localStorage
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(usuario));
+            const usuario = { ...data.usuario, token: data.token };
+            login(usuario); // ✅ Actualiza el contexto global
+            navigate("/home");
 
-            navigate("/home"); // o navigate(-1) si estás regresando
         } catch (err) {
+            console.error("❌ Error de login:", err);
             setError(err.message);
         } finally {
             setLoading(false);
         }
+
     };
 
 

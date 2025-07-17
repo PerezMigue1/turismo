@@ -5,6 +5,7 @@ import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt } from "react-ic
 import Sidebar from "./Sidebar";
 import logo from "../image/turismo.jpeg";
 import { CartContext } from '../Navigation/CartContext';
+import { useAuth } from '../Navigation/AuthContext';
 
 const Header = () => {
     // Dentro del componente Header
@@ -14,18 +15,11 @@ const Header = () => {
     const navigate = useNavigate();
 
     // Verificar sesión leyendo localStorage
-    const isLoggedIn = localStorage.getItem('token') !== null;
-    const userData = isLoggedIn ? JSON.parse(localStorage.getItem('user')) : null;
+    const { currentUser, logout } = useAuth();
+
 
     const handleLogout = () => {
-        // 1. Eliminar datos de sesión
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-
-        // 2. Recargar la página para actualizar el estado de la aplicación
-        window.location.reload();
-
-        // 3. No redirigir automáticamente (la app mostrará la vista de invitado)
+        logout();
     };
 
     return (
@@ -137,7 +131,7 @@ const Header = () => {
                             )}
                         </Link>
 
-                        {isLoggedIn ? (
+                        {currentUser ? (
                             <Dropdown>
                                 <Dropdown.Toggle variant="outline-light" style={{
                                     backgroundColor: "transparent",
@@ -160,7 +154,7 @@ const Header = () => {
                                     }}>
                                         <FaUser />
                                         <span style={{ fontSize: "0.9rem", fontWeight: "500" }}>
-                                            {userData?.nombre.split(' ')[0] || 'Perfil'}
+                                            {currentUser?.nombre.split(' ')[0]}
                                         </span>
                                     </div>
                                 </Dropdown.Toggle>
@@ -198,6 +192,24 @@ const Header = () => {
                                     >
                                         Mis Reservas
                                     </Dropdown.Item>
+
+                                    {/* Dentro del menú desplegable del usuario*/}
+                                    {currentUser?.rol === 'admin' && (
+                                        <Dropdown.Item
+                                            as={Link}
+                                            to="/admin"
+                                            style={{
+                                                color: "#9A1E47",
+                                                padding: "10px 15px",
+                                                backgroundColor: "white",
+                                                transition: "all 0.2s ease"
+                                            }}
+                                            className="hover-effect"
+                                        >
+                                            Panel Administrativo
+                                        </Dropdown.Item>
+                                    )}
+
                                     <Dropdown.Divider style={{ margin: "5px 0" }} />
                                     <Dropdown.Item
                                         onClick={handleLogout}
