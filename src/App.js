@@ -1,6 +1,7 @@
 import React from 'react';
 import Navigation from './app/Navigation/Navigation';
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
 import { CartProvider } from './app/Navigation/CartContext'; // ⚠️ Ajusta la ruta si es distinta
 
 function App() {

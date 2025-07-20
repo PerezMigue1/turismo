@@ -109,7 +109,7 @@ const HotelesDetalle = ({ hotel, onBack, show, onHide }) => {
                                     src={hotel.Imagenes[currentImageIndex]}
                                     alt={`${hotel.Nombre} - Imagen principal`}
                                     style={{
-                                        width: '50%',
+                                        width: '80%',
                                         height: '500px',
                                         objectFit: 'cover',
                                         borderRadius: '12px',
@@ -282,7 +282,7 @@ const HotelesDetalle = ({ hotel, onBack, show, onHide }) => {
                                         </h5>
                                         <div style={{ 
                                             display: 'flex', 
-                                            flexWrap: 'wrap',
+                                            flexWrap: 'w rap',
                                             gap: '10px'
                                         }}>
                                             {renderServicios()}

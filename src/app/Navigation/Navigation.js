@@ -20,6 +20,7 @@ import PublicarProducto from '../screens/PublicarProducto';
 import { AuthProvider, useAuth } from '../Navigation/AuthContext';
 import Hoteles from '../screens/Hoteles'
 import DetallesHoteles from '../screens/HotelesDetalle'
+import Notificaciones from '../screens/Notificaciones'
 
 
 import AdminLayout from '../admin/AdminLayout';
@@ -144,6 +145,14 @@ const Navigation = () => {
                                 </>
                             } />
 
+                            <Route path="/Notificaciones" element={
+                                <>
+                                    <Header />
+                                    <Notificaciones />
+                                    <Footer />
+                                </>
+                            } />
+
 
                             {/* Rutas de autenticación SIN Header y Footer */}
                             <Route path="/login" element={<Login />} />
@@ -152,9 +161,7 @@ const Navigation = () => {
 
                             {/* Rutas de administración */}
                             <Route path="/admin/*" element={
-                                <ProtectedRoute requiredRole="admin">
                                     <AdminLayout />
-                                </ProtectedRoute>
                             } />
                         </Routes>
                     </div>

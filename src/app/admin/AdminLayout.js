@@ -8,6 +8,7 @@ import Users from '../admin/Users';
 import Products from '../admin/Products';
 import Settings from '../admin/Settings';
 import styled from 'styled-components';
+import ProductRequests from '../admin/ProductRequests'
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
@@ -48,6 +49,8 @@ const AdminLayout = () => {
                 return <Users />;
             case 'products':
                 return <Products />;
+            case 'requests': // Nuevo caso
+                return <ProductRequests />;
             case 'settings':
                 return <Settings />;
             default:

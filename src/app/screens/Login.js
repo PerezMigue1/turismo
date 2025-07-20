@@ -37,6 +37,7 @@ const Login = () => {
 
             const usuario = { ...data.usuario, token: data.token };
             login(usuario); // ✅ Actualiza el contexto global
+            localStorage.setItem('token', data.token);
             navigate("/home");
 
         } catch (err) {

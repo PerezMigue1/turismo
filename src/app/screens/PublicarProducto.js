@@ -72,12 +72,21 @@ const PublicarProducto = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        console.log("🚀 Iniciando envío del formulario...");
+        console.log("📋 Datos del formulario:", formData);
+        console.log("📝 Descripción:", formData.Descripción);
+        console.log("🎨 Técnica:", formData.Técnica);
+
         if (!token || !idUsuario || !idArtesano) {
             setMensaje('⚠️ Debes estar registrado como artesano para publicar un producto.');
             return;
         }
 
         const data = new FormData();
+        
+        // Log de los datos antes de enviar
+        console.log('📤 Datos del formulario antes de enviar:', formData);
+        
         for (const key in formData) {
             if (key === 'Imagen') {
                 for (let i = 0; i < formData.Imagen.length; i++) {
@@ -85,6 +94,17 @@ const PublicarProducto = () => {
                 }
             } else {
                 data.append(key, formData[key]);
+                console.log(`📝 Agregando campo: ${key} = ${formData[key]}`);
+                
+                // Agregar también versiones sin tildes para compatibilidad
+                if (key === 'Descripción') {
+                    data.append('Descripcion', formData[key]);
+                    console.log(`📝 Agregando campo alternativo: Descripcion = ${formData[key]}`);
+                }
+                if (key === 'Técnica') {
+                    data.append('Tecnica', formData[key]);
+                    console.log(`📝 Agregando campo alternativo: Tecnica = ${formData[key]}`);
+                }
             }
         }
 
@@ -94,14 +114,23 @@ const PublicarProducto = () => {
         data.append('estadoRevision', 'pendiente');
         data.append('fechaSolicitud', new Date().toISOString());
 
+        // Log del FormData completo
+        console.log('📦 FormData completo:');
+        for (let pair of data.entries()) {
+            console.log(`${pair[0]}: ${pair[1]}`);
+        }
+
         try {
             
-            await axios.post('https://backend-iota-seven-19.vercel.app/api/publicaciones', data, {
+            const response = await axios.post('https://backend-iota-seven-19.vercel.app/api/publicaciones', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${token}`
                 }
             });
+
+            console.log('✅ Respuesta del backend:', response.data);
+            console.log('📋 Producto creado con datos:', response.data);
 
             setMensaje('✅ Producto enviado para revisión');
             setFormData({
