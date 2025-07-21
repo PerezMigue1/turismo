@@ -193,7 +193,7 @@ console.log("🎨 idArtesano recuperado del backend:", idArtesano);
 console.log("📋 Datos completos del artesano:", datosArtesano);
 
     return (
-        <Container fluid className="py-5" style={{ 
+        <Container fluid className="py-5" style={{
             background: 'linear-gradient(135deg, #FDF2E0 0%, #F8E8D0 100%)',
             minHeight: '100vh'
         }}>
