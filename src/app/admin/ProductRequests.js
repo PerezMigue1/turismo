@@ -472,7 +472,7 @@ const ProductoRevision = () => {
                                             Descripción
                                         </Card.Header>
                                         <Card.Body>
-                                            <p>{productoSeleccionado.Descripcion || 'No disponible'}</p>
+                                            <p>{productoSeleccionado.Descripcion || productoSeleccionado.Descripción || 'No disponible'}</p>
                                         </Card.Body>
                                     </Card>
                                     <Row>

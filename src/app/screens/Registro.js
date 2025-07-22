@@ -26,7 +26,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     const sexoOptions = ['Masculino', 'Femenino', 'Otro'];
-    const userTypes = ['turista', 'artesano', 'admin'];
+    const userTypes = ['turista'];
 
     // Cargar preguntas de seguridad al montar el componente
     useEffect(() => {
@@ -98,7 +98,7 @@ const Register = () => {
                         pregunta: formData.securityQuestion, // Aquí se envía el ObjectId
                         respuesta: formData.securityAnswer
                     },
-                    rol: formData.userType
+                    rol: [formData.userType]
                 })
             });
 

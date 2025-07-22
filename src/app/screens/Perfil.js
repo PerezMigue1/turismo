@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Container, Card, Button, Form, Row, Col, Alert } from "react-bootstrap";
-import { FaUser, FaPhone, FaEnvelope, FaVenusMars, FaBirthdayCake, FaEdit, FaSave, FaTools, FaMapMarkerAlt } from "react-icons/fa";
+import { Container, Card, Button, Form, Row, Col, Alert, Badge } from "react-bootstrap";
+import { FaUser, FaPhone, FaEnvelope, FaVenusMars, FaBirthdayCake, FaEdit, FaSave, FaTools, FaMapMarkerAlt, FaHotel } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,6 +10,7 @@ const Perfil = () => {
     const [formData, setFormData] = useState({});
     const [alert, setAlert] = useState({ show: false, message: "", variant: "success" });
     const [artesano, setArtesano] = useState(null);
+    const [hospedero, setHospedero] = useState(null);
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -45,14 +46,24 @@ const Perfil = () => {
         const fetchArtesano = async () => {
             try {
                 const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/artesano/por-usuario/${id}`);
-                setArtesano(res.data); // Puede contener: nombre, especialidad, ubicacion, etc.
+                setArtesano(res.data);
             } catch (err) {
-                setArtesano(null); // No está registrado como artesano
+                setArtesano(null);
+            }
+        };
+
+        const fetchHospedero = async () => {
+            try {
+                const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/contactoHospedero/por-usuario/${id}`);
+                setHospedero(res.data);
+            } catch (err) {
+                setHospedero(null);
             }
         };
 
         fetchUserData();
         fetchArtesano();
+        fetchHospedero();
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -177,21 +188,20 @@ const Perfil = () => {
                                     </Col>
                                 </Row>
 
-                                {/*Dentro del JSX, actualiza la sección de rol: */}
+                                {/* Mostrar todos los roles como badges */}
                                 <Form.Group className="mb-4">
-                                    <Form.Label style={{ color: "#9A1E47", fontWeight: "500" }}>Rol</Form.Label>
-                                    <div className="p-2 rounded text-white" style={{
-                                        backgroundColor:
-                                            user.rol === "turista" ? "#50C2C4" :
-                                                user.rol === "artesano" ? "#F28B27" :
-                                                    user.rol === "admin" ? "#9A1E47" : "#1E8546"
-                                    }}>
-                                        {user.rol}
+                                    <Form.Label style={{ color: "#9A1E47", fontWeight: "500" }}>Roles</Form.Label>
+                                    <div className="p-2 rounded">
+                                        {(Array.isArray(user.rol) ? user.rol : [user.rol]).map((rol, idx) => (
+                                            <Badge key={rol + idx} bg={rol === "turista" ? "info" : rol === "artesano" ? "warning" : rol === "admin" ? "danger" : "success"} className="me-2 text-capitalize">
+                                                {rol}
+                                            </Badge>
+                                        ))}
                                     </div>
                                 </Form.Group>
                             </Form>
 
-                            {/* ✅ DATOS DE ARTESANO (si está registrado) */}
+                            {/* DATOS DE ARTESANO (si está registrado) */}
                             {artesano && (
                                 <>
                                     <hr />
@@ -199,6 +209,33 @@ const Perfil = () => {
                                     <p><strong>Especialidad:</strong> {artesano.especialidad}</p>
                                     <p><strong>Ubicación:</strong> <FaMapMarkerAlt className="me-1" /> {artesano.ubicacion}</p>
                                     <p><strong>Descripción:</strong> {artesano.descripcion}</p>
+                                    <p><strong>Redes sociales:</strong></p>
+                                    <ul>
+                                        {artesano.redesSociales?.facebook && <li>Facebook: {artesano.redesSociales.facebook}</li>}
+                                        {artesano.redesSociales?.instagram && <li>Instagram: {artesano.redesSociales.instagram}</li>}
+                                        {artesano.redesSociales?.whatsapp && <li>WhatsApp: {artesano.redesSociales.whatsapp}</li>}
+                                    </ul>
+                                    <p><strong>Teléfono:</strong> {artesano.telefono}</p>
+                                    <p><strong>Correo:</strong> {artesano.correo}</p>
+                                </>
+                            )}
+
+                            {/* DATOS DE HOSPEDERO (si está registrado) */}
+                            {hospedero && (
+                                <>
+                                    <hr />
+                                    <h5 style={{ color: "#9A1E47" }}><FaHotel className="me-2" />Datos como hospedero</h5>
+                                    <p><strong>Especialidad:</strong> {hospedero.especialidad}</p>
+                                    <p><strong>Ubicación:</strong> <FaMapMarkerAlt className="me-1" /> {hospedero.ubicacion}</p>
+                                    <p><strong>Descripción:</strong> {hospedero.descripcion}</p>
+                                    <p><strong>Redes sociales:</strong></p>
+                                    <ul>
+                                        {hospedero.redesSociales?.facebook && <li>Facebook: {hospedero.redesSociales.facebook}</li>}
+                                        {hospedero.redesSociales?.instagram && <li>Instagram: {hospedero.redesSociales.instagram}</li>}
+                                        {hospedero.redesSociales?.whatsapp && <li>WhatsApp: {hospedero.redesSociales.whatsapp}</li>}
+                                    </ul>
+                                    <p><strong>Teléfono:</strong> {hospedero.telefono}</p>
+                                    <p><strong>Correo:</strong> {hospedero.correo}</p>
                                 </>
                             )}
 

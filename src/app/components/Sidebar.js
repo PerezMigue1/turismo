@@ -103,6 +103,30 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaShoppingBasket style={{ marginRight: "10px" }} /> Marketplace
                 </Nav.Link>
 
+                <Nav.Link as={Link} to="/RegistroArtesano" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Registro Artesano
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicarProducto" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones
+                </Nav.Link>
+
+
+
                 <Nav.Link as={Link} to="/guias" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
@@ -135,7 +159,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaHiking style={{ marginRight: "10px" }} /> Ecoturismo
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/gastronomia" onClick={onClose} style={{
+                <Nav.Link as={Link} to="/Gastronomia" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
                     marginBottom: "5px",
@@ -146,7 +170,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaUtensils style={{ marginRight: "10px" }} /> Gastronomía
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/Hoteles" onClick={onClose} style={{
+                <Nav.Link as={Link} to="/hospedajes" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
                     marginBottom: "5px",
@@ -154,8 +178,32 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Hoteles
+                    <FaBed style={{ marginRight: "10px" }} /> Hospedajes
                 </Nav.Link>
+
+                <Nav.Link as={Link} to="/RegistroHospedaje" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Registro Hospedero
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicarHospedaje" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones Hospedajes
+                </Nav.Link>
+
+
 
 
                 <Nav.Link as={Link} to="/Notificaciones" onClick={onClose} style={{
@@ -171,27 +219,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
 
 
-                <Nav.Link as={Link} to="/RegistroArtesano" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Registro Artesano
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/PublicarProducto" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones
-                </Nav.Link>
+                
             </Nav>
         </div>
     );

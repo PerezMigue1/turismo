@@ -18,9 +18,11 @@ import CambiarContrasena from '../screens/CambiarContrasena';
 import RegistroArtesano from '../screens/RegistroArtesano';
 import PublicarProducto from '../screens/PublicarProducto';
 import { AuthProvider, useAuth } from '../Navigation/AuthContext';
-import Hoteles from '../screens/Hoteles'
-import DetallesHoteles from '../screens/HotelesDetalle'
+import Hospedaje from '../screens/Hospedajes'
+import DetalleHospedaje from '../screens/DetalleHospedaje'
 import Notificaciones from '../screens/Notificaciones'
+import RegistroHospedaje from '../screens/RegistroHospedero';
+import PublicarHospedaje from '../screens/PublicarHospedaje';
 
 
 import AdminLayout from '../admin/AdminLayout';
@@ -129,18 +131,34 @@ const Navigation = () => {
                                 </>
                             } />
 
-                            <Route path="/Hoteles" element={
+                            <Route path="/hospedajes" element={
                                 <>
                                     <Header />
-                                    <Hoteles />
+                                    <Hospedaje />
                                     <Footer />
                                 </>
                             } />
 
-                            <Route path="/DetallesHoteles" element={
+                            <Route path="/hospedajes/:id" element={
                                 <>
                                     <Header />
-                                    <DetallesHoteles />
+                                    <DetalleHospedaje />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/RegistroHospedaje" element={
+                                <>
+                                    <Header />
+                                    <RegistroHospedaje />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/PublicarHospedaje" element={
+                                <>
+                                    <Header />
+                                    <PublicarHospedaje />
                                     <Footer />
                                 </>
                             } />
@@ -153,6 +171,7 @@ const Navigation = () => {
                                 </>
                             } />
 
+                            
 
                             {/* Rutas de autenticación SIN Header y Footer */}
                             <Route path="/login" element={<Login />} />
