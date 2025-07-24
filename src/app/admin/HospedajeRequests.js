@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-    Container, Table, Button, Modal, Badge, Alert, Form, Toast, Spinner, Row, Col, Card, ButtonGroup, ProgressBar
+    Container, Table, Button, Modal, Badge, Alert, Form, Toast, Row, Col, Card, ButtonGroup, ProgressBar
 } from "react-bootstrap";
-import { FaCheck, FaTimes, FaEye, FaSpinner, FaFilter, FaChartBar, FaSync, FaInfoCircle, FaImage } from "react-icons/fa";
+import { FaCheck, FaTimes, FaEye, FaSpinner, FaFilter, FaChartBar, FaSync, FaImage } from "react-icons/fa";
 
 const HospedajeRequests = () => {
     const [hospedajes, setHospedajes] = useState([]);

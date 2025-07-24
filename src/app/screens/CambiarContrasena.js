@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Card, Button, Form, Alert, InputGroup } from "react-bootstrap";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Eye, EyeSlash } from "react-bootstrap-icons"; // Asegúrate de tener react-bootstrap-icons instalado
 
 const CambiarContrasena = () => {

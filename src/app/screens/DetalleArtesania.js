@@ -1,12 +1,11 @@
 
 // src/screens/DetalleArtesania.js
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Alert, Badge, ListGroup, Form, Spinner, Tab, Tabs, Carousel } from 'react-bootstrap';
-import { FaShoppingCart, FaArrowLeft, FaCreditCard, FaMapMarkerAlt, FaStar, FaTruck, FaCalendarAlt, FaTags } from 'react-icons/fa';
+import { FaArrowLeft, FaMapMarkerAlt, FaStar, FaTruck, FaTags } from 'react-icons/fa';
 import axios from 'axios';
-import { CartContext } from '../Navigation/CartContext';
 
 const DetalleArtesania = () => {
     const { id } = useParams();

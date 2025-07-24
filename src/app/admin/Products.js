@@ -4,8 +4,8 @@ import {
     Row, Col, Card, Spinner, Alert, Toast, Modal
 } from 'react-bootstrap';
 import {
-    FaCheck, FaTimes, FaEye, FaInfoCircle, FaImage,
-    FaExclamationTriangle, FaSearch, FaEdit, FaTrash, FaPlus
+    FaEye, FaInfoCircle, FaImage,
+    FaSearch, FaEdit, FaTrash, FaPlus
 } from 'react-icons/fa';
 import axios from 'axios';
 import { useAuth } from '../Navigation/AuthContext';

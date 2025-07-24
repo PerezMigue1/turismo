@@ -32,7 +32,7 @@ const PublicarHospedaje = () => {
         const obtenerHospedero = async () => {
             if (!idUsuario) return;
             try {
-                const res = await axios.get(`http://localhost:5000/api/contactoHospedero/por-usuario/${idUsuario}`);
+                const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/contactoHospedero/por-usuario/${idUsuario}`);
                 if (Array.isArray(res.data) && res.data.length > 0) {
                     setIdHospedero(res.data[0].idHospedero);
                     setDatosHospedero(res.data[0]);

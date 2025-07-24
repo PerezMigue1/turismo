@@ -1,18 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Container, Navbar, Nav, Button, Form, FormControl, Dropdown } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaShoppingCart, FaBars, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaSearch, FaBars, FaUser, FaSignOutAlt } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import logo from "../image/turismo.jpeg";
-import { CartContext } from '../Navigation/CartContext';
 import { useAuth } from '../Navigation/AuthContext';
 
 const Header = () => {
-    // Dentro del componente Header
-    const { carrito } = useContext(CartContext);
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const navigate = useNavigate();
 
     // Verificar sesión leyendo localStorage
     const { currentUser, logout } = useAuth();
@@ -105,32 +101,6 @@ const Header = () => {
 
                     {/* Parte modificada del menú de usuario */}
                     <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-                        <Link to="/carrito" style={{
-                            color: "#9A1E47",
-                            fontSize: "1.3rem",
-                            position: "relative"
-                        }}>
-                            <FaShoppingCart />
-                            {carrito.length > 0 && (
-                                <span style={{
-                                    position: "absolute",
-                                    top: "-8px",
-                                    right: "-8px",
-                                    backgroundColor: "#F28B27",
-                                    color: "white",
-                                    borderRadius: "50%",
-                                    width: "20px",
-                                    height: "20px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    fontSize: "0.7rem"
-                                }}>
-                                    {carrito.reduce((total, item) => total + item.cantidad, 0)}
-                                </span>
-                            )}
-                        </Link>
-
                         {currentUser ? (
                             <Dropdown>
                                 <Dropdown.Toggle variant="outline-light" style={{

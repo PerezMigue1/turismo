@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Star, Clock, Utensils, History, List, Calendar } from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, Utensils, History, List } from 'lucide-react';
 
 const GastronomiaDetalle = ({ gastronomia, onVolver }) => {
   const [activeTab, setActiveTab] = useState('descripcion');

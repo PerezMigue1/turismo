@@ -17,7 +17,7 @@ const Gastronomia = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const gastronomiaRes = await axios.get('http://localhost:5000/api/gastronomia');
+                const gastronomiaRes = await axios.get('https://backend-iota-seven-19.vercel.app/api/gastronomia');
                 setGastronomia(gastronomiaRes.data);
                 setLoading(false);
             } catch (err) {

@@ -1,6 +1,6 @@
 // src/components/CardGastronomia.js
 import React from 'react';
-import { Card, Button, Badge } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 
 const CardGastronomia = ({ gastronomia, onVerReceta }) => {
     return (
