@@ -63,6 +63,8 @@ const Sidebar = ({ activeSection, setActiveSection, collapsed }) => {
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> },
         { id: 'requests', label: 'Solicitudes', icon: <FaInbox /> },
+        { id: 'gastrorequests', label: 'Solicitudes Gastronomia', icon: <FaInbox /> },
+        { id: 'hospedajeequests', label: 'Solicitudes Hospedaje', icon: <FaInbox /> },
         { id: 'users', label: 'Usuarios', icon: <FaUsers /> },
         { id: 'products', label: 'Productos', icon: <FaBox /> },
         { id: 'orders', label: 'Pedidos', icon: <FaShoppingCart /> },

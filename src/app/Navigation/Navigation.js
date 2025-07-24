@@ -5,9 +5,6 @@ import Header from '../components/Header';
 import Home from '../components/Home';
 import Artesanias from '../screens/Artesanias';
 import DetalleArtesania from '../screens/DetalleArtesania';
-import Carrito from '../screens/Carrito';
-import Checkout from '../screens/Checkout';
-import ConfirmacionCompra from '../screens/ConfirmacionCompra';
 import Footer from '../components/Footer';
 import { CartProvider } from './CartContext';
 import Login from '../screens/Login';
@@ -23,6 +20,11 @@ import DetalleHospedaje from '../screens/DetalleHospedaje'
 import Notificaciones from '../screens/Notificaciones'
 import RegistroHospedaje from '../screens/RegistroHospedero';
 import PublicarHospedaje from '../screens/PublicarHospedaje';
+
+import Gastronomia from '../screens/Gastronomia'
+import GastronomiaDetalle from '../screens/GastronomiaDetalle'
+import RegistroChef from '../screens/RegistroChef';
+import PublicaChef from '../screens/PublicarGastronomia';
 
 
 import AdminLayout from '../admin/AdminLayout';
@@ -74,27 +76,6 @@ const Navigation = () => {
                                 <>
                                     <Header />
                                     <DetalleArtesania />
-                                    <Footer />
-                                </>
-                            } />
-                            <Route path="/carrito" element={
-                                <>
-                                    <Header />
-                                    <Carrito />
-                                    <Footer />
-                                </>
-                            } />
-                            <Route path="/checkout" element={
-                                <>
-                                    <Header />
-                                    <Checkout />
-                                    <Footer />
-                                </>
-                            } />
-                            <Route path="/confirmacion" element={
-                                <>
-                                    <Header />
-                                    <ConfirmacionCompra />
                                     <Footer />
                                 </>
                             } />
@@ -159,6 +140,40 @@ const Navigation = () => {
                                 <>
                                     <Header />
                                     <PublicarHospedaje />
+                                    <Footer />
+                                </>
+                            } />
+
+
+
+                            <Route path="/gastronomia" element={
+                                <>
+                                    <Header />
+                                    <Gastronomia />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/gastronomia/:id" element={
+                                <>
+                                    <Header />
+                                    <GastronomiaDetalle />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/RegistroChef" element={
+                                <>
+                                    <Header />
+                                    <RegistroChef />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/PublicaChef" element={
+                                <>
+                                    <Header />
+                                    <PublicaChef />
                                     <Footer />
                                 </>
                             } />

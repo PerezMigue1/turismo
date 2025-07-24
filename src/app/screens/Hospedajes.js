@@ -24,7 +24,7 @@ const Hoteles = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const hotelesRes = await axios.get('https://backend-iota-seven-19.vercel.app/api/hospedaje');
+                const hotelesRes = await axios.get('http://localhost:5000/api/hospedaje');
                 setHoteles(hotelesRes.data);
                 
                 const categoriasUnicas = [...new Set(hotelesRes.data.map(hotel => hotel.Categoria))];

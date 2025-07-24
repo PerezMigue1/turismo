@@ -159,7 +159,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaHiking style={{ marginRight: "10px" }} /> Ecoturismo
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/Gastronomia" onClick={onClose} style={{
+                <Nav.Link as={Link} to="/gastronomia" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
                     marginBottom: "5px",
@@ -169,6 +169,30 @@ const Sidebar = ({ isOpen, onClose }) => {
                 }}>
                     <FaUtensils style={{ marginRight: "10px" }} /> Gastronomía
                 </Nav.Link>
+
+                <Nav.Link as={Link} to="/RegistroChef" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Registro Gastronomia
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicaChef" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones Gastronomia
+                </Nav.Link>
+
+
 
                 <Nav.Link as={Link} to="/hospedajes" onClick={onClose} style={{
                     color: "#9A1E47",
@@ -202,7 +226,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                 }}>
                     <FaBed style={{ marginRight: "10px" }} /> Publicaciones Hospedajes
                 </Nav.Link>
-
 
 
 
