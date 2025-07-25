@@ -11,6 +11,7 @@ import styled from 'styled-components';
 import ProductRequests from '../admin/ProductRequests'
 import GastroRequests from '../admin/GastronomiaRequests'
 import HospedajeRequests from '../admin/HospedajeRequests';
+import RestauranteRequests from '../admin/RestauranteRequests';
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
@@ -57,6 +58,8 @@ const AdminLayout = () => {
                 return <GastroRequests />;
             case 'hospedajeequests': // Nuevo caso
                 return <HospedajeRequests />;
+            case 'restauranterequests': // Nuevo caso
+                return <RestauranteRequests />;
             case 'settings':
                 return <Settings />;
             default:

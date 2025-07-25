@@ -228,6 +228,38 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </Nav.Link>
 
 
+                <Nav.Link as={Link} to="/restaurantes" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Restaurante
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/RegistroRestaurante" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Registro Restaurante
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicarRestaurante" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBed style={{ marginRight: "10px" }} /> Publicacion de Restaurante
+                </Nav.Link>
 
                 <Nav.Link as={Link} to="/Notificaciones" onClick={onClose} style={{
                     color: "#9A1E47",

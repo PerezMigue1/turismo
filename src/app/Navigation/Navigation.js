@@ -25,7 +25,10 @@ import Gastronomia from '../screens/Gastronomia'
 import GastronomiaDetalle from '../screens/GastronomiaDetalle'
 import RegistroChef from '../screens/RegistroChef';
 import PublicaChef from '../screens/PublicarGastronomia';
-
+import RegistroRestaurante from '../screens/RegistroRestaurante';
+import PublicarRestaurante from '../screens/PublicarRestaurante';
+import Restaurante from '../screens/Restaurantes';
+import RestauranteDetalle from '../screens/DetalleRestaurante'
 
 import AdminLayout from '../admin/AdminLayout';
 
@@ -177,6 +180,40 @@ const Navigation = () => {
                                     <Footer />
                                 </>
                             } />
+
+
+                            <Route path="/restaurantes" element={
+                                <>
+                                    <Header />
+                                    <Restaurante />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/restaurantes/:id" element={
+                                <>
+                                    <Header />
+                                    <RestauranteDetalle />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/RegistroRestaurante" element={
+                                <>
+                                    <Header />
+                                    <RegistroRestaurante />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/PublicarRestaurante" element={
+                                <>
+                                    <Header />
+                                    <PublicarRestaurante />
+                                    <Footer />
+                                </>
+                            } />
+
 
                             <Route path="/Notificaciones" element={
                                 <>
