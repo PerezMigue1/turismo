@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Badge, ListGroup, Form, Spinner, Tab, Tabs, Carousel } from 'react-bootstrap';
-import { FaArrowLeft, FaMapMarkerAlt, FaStar, FaBed, FaPhone, FaClock, FaInfoCircle } from 'react-icons/fa';
+import { FaArrowLeft, FaMapMarkerAlt, FaStar, FaCalendar, FaInfoCircle, FaUsers } from 'react-icons/fa';
 
-const DetalleHospedaje = ({ hotel, onVolver }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const DetalleFestividades = ({ festividad, onVolver }) => {
     const [nombre, setNombre] = useState('');
     const [correo, setCorreo] = useState('');
     const [telefono, setTelefono] = useState('');
     const [comentario, setComentario] = useState('');
     const [mensajeEnviado, setMensajeEnviado] = useState(null);
 
-    if (!hotel) {
+    if (!festividad) {
         return (
             <Container style={{ backgroundColor: '#FDF2E0', padding: '30px 0', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Alert variant="warning">
-                    No se encontró el hotel
+                    No se encontró la festividad
                     <Button variant="link" onClick={onVolver}>Volver</Button>
                 </Alert>
             </Container>
@@ -36,15 +35,7 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
         }
     };
 
-    const renderServicios = () => {
-        if (!hotel.Servicios) return null;
-        const servicios = hotel.Servicios.split(',').map((servicio, index) => (
-            <ListGroup.Item key={index} style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                {servicio.trim()}
-            </ListGroup.Item>
-        ));
-        return <ListGroup variant="flush">{servicios}</ListGroup>;
-    };
+    const imagenes = festividad.Imagen || [];
 
     return (
         <Container style={{ backgroundColor: '#FDF2E0', padding: '30px 0', minHeight: '100vh' }}>
@@ -59,16 +50,16 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
             <Row>
                 <Col md={7}>
                     <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
-                        {hotel.Imagenes && hotel.Imagenes.length > 1 ? (
-                            <Carousel activeIndex={currentImageIndex} onSelect={setCurrentImageIndex} interval={3000}>
-                                {hotel.Imagenes.map((img, idx) => (
-                                    <Carousel.Item key={idx}>
+                        {Array.isArray(imagenes) && imagenes.length > 1 ? (
+                            <Carousel interval={3000} pause={false} indicators controls>
+                                {imagenes.map((img, i) => (
+                                    <Carousel.Item key={i}>
                                         <img
                                             src={img}
-                                            alt={`Imagen ${idx + 1}`}
+                                            alt={`Imagen ${i + 1}`}
                                             className="d-block w-100"
                                             style={{ objectFit: 'cover', height: '500px' }}
-                                            onError={(e) => e.target.src = '/placeholder-hotel.jpg'}
+                                            onError={(e) => e.target.src = '/festividad-default.jpg'}
                                         />
                                     </Carousel.Item>
                                 ))}
@@ -76,25 +67,24 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
                         ) : (
                             <Card.Img
                                 variant="top"
-                                src={hotel.Imagenes?.[0] || '/placeholder-hotel.jpg'}
-                                alt="Imagen del hotel"
+                                src={imagenes[0] || "/festividad-default.jpg"}
+                                alt={festividad.nombre}
                                 style={{ maxHeight: '500px', objectFit: 'cover', borderBottom: '3px solid #F28B27' }}
-                                onError={(e) => e.target.src = '/placeholder-hotel.jpg'}
+                                onError={(e) => e.target.src = '/festividad-default.jpg'}
                             />
                         )}
                     </Card>
 
-                    {hotel.Imagenes && hotel.Imagenes.length > 1 && (
+                    {imagenes.length > 1 && (
                         <div className="d-flex gap-2 mb-4 flex-wrap">
-                            {hotel.Imagenes.map((img, idx) => (
+                            {imagenes.map((img, idx) => (
                                 <img
                                     key={idx}
                                     src={img}
                                     alt={`Miniatura ${idx + 1}`}
-                                    className={`img-thumbnail ${currentImageIndex === idx ? 'border border-danger' : ''}`}
+                                    className="img-thumbnail"
                                     style={{ width: 75, height: 75, objectFit: 'cover', cursor: 'pointer' }}
-                                    onClick={() => setCurrentImageIndex(idx)}
-                                    onError={(e) => e.target.src = '/placeholder-hotel.jpg'}
+                                    onError={(e) => e.target.src = '/festividad-default.jpg'}
                                 />
                             ))}
                         </div>
@@ -102,32 +92,62 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
 
                     <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
                         <Card.Body style={{ backgroundColor: '#FDF2E0' }}>
-                            <Tabs defaultActiveKey="descripcion" id="hotel-tabs" className="mb-3">
+                            <Tabs defaultActiveKey="descripcion" id="festividad-tabs" className="mb-3">
                                 <Tab eventKey="descripcion" title="Descripción">
-                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Descripción del hotel</h4>
-                                    <p style={{ color: '#555' }}>{hotel.Descripcion || 'No hay descripción disponible'}</p>
+                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Descripción de la festividad</h4>
+                                    <p style={{ color: '#555' }}>{festividad.descripcion}</p>
                                 </Tab>
 
-                                <Tab eventKey="servicios" title="Servicios">
-                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Servicios incluidos</h4>
-                                    {renderServicios()}
-                                </Tab>
-
-                                <Tab eventKey="info" title="Información adicional">
-                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Detalles del hotel</h4>
+                                <Tab eventKey="actividades" title="Actividades">
+                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Actividades principales</h4>
                                     <ListGroup variant="flush">
-                                        <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                                            <strong>Categoría:</strong> {hotel.Categoria || 'N/D'}
-                                        </ListGroup.Item>
-                                        <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                                            <strong>Capacidad:</strong> {hotel.Huespedes || 'N/D'}
-                                        </ListGroup.Item>
-                                        <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                                            <strong>Teléfono:</strong> {hotel.Telefono || 'N/D'}
-                                        </ListGroup.Item>
-                                        <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
-                                            <strong>Horario:</strong> {hotel.Horario || 'N/D'}
-                                        </ListGroup.Item>
+                                        {festividad.actividades?.length > 0 ? (
+                                            festividad.actividades.map((actividad, i) => (
+                                                <ListGroup.Item key={i} style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                                    {actividad}
+                                                </ListGroup.Item>
+                                            ))
+                                        ) : (
+                                            <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                                No se especifican actividades
+                                            </ListGroup.Item>
+                                        )}
+                                    </ListGroup>
+                                </Tab>
+
+                                <Tab eventKey="elementos" title="Elementos culturales">
+                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Elementos culturales</h4>
+                                    <ListGroup variant="flush">
+                                        {festividad.elementosCulturales?.length > 0 ? (
+                                            festividad.elementosCulturales.map((elemento, i) => (
+                                                <ListGroup.Item key={i} style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                                    {elemento}
+                                                </ListGroup.Item>
+                                            ))
+                                        ) : (
+                                            <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                                No se especifican elementos culturales
+                                            </ListGroup.Item>
+                                        )}
+                                    </ListGroup>
+                                </Tab>
+
+                                <Tab eventKey="fuentes" title="Fuentes">
+                                    <h4 style={{ color: '#9A1E47', marginTop: '15px' }}>Fuentes de información</h4>
+                                    <ListGroup variant="flush">
+                                        {festividad.fuentes?.length > 0 ? (
+                                            festividad.fuentes.map((fuente, i) => (
+                                                <ListGroup.Item key={i} style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                                    <a href={fuente.url} target="_blank" rel="noopener noreferrer" style={{ color: '#0FA89C' }}>
+                                                        {fuente.titulo}
+                                                    </a>
+                                                </ListGroup.Item>
+                                            ))
+                                        ) : (
+                                            <ListGroup.Item style={{ backgroundColor: 'transparent', color: '#555', borderColor: '#50C2C4' }}>
+                                                No se especifican fuentes
+                                            </ListGroup.Item>
+                                        )}
                                     </ListGroup>
                                 </Tab>
                             </Tabs>
@@ -138,9 +158,9 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
                 <Col md={5}>
                     <Card className="sticky-top" style={{ top: '20px', borderColor: '#0FA89C' }}>
                         <Card.Body style={{ backgroundColor: '#FDF2E0' }}>
-                            <h3 style={{ color: '#9A1E47' }}>{hotel.Nombre || 'Hotel sin nombre'}</h3>
+                            <h3 style={{ color: '#9A1E47' }}>{festividad.nombre}</h3>
                             <div className="d-flex align-items-center mb-3">
-                                <Badge style={{ backgroundColor: '#1E8546', marginRight: '10px' }}>{hotel.Categoria}</Badge>
+                                <Badge style={{ backgroundColor: '#1E8546', marginRight: '10px' }}>{festividad.tipo}</Badge>
                                 <div style={{ color: '#F28B27' }}>
                                     {[...Array(5)].map((_, i) => (
                                         <FaStar key={i} color={i < 4 ? '#F28B27' : '#ddd'} />
@@ -150,14 +170,26 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
                             </div>
                             <div className="d-flex align-items-center mb-3" style={{ color: '#0FA89C' }}>
                                 <FaMapMarkerAlt className="me-2" />
-                                <span>{hotel.Ubicacion || 'Ubicación no disponible'}</span>
-                            </div>
-                            <div className="d-flex align-items-baseline mb-3">
-                                <h2 style={{ color: '#9A1E47', marginRight: '15px' }}>${hotel.Precio || 0}</h2>
-                                <small style={{ color: '#666' }}>MXN por noche</small>
+                                <span>{festividad.municipios?.join(", ") || 'Ubicación no disponible'}</span>
                             </div>
 
-                            {/* Información de contacto */}
+                            {/* Información de fechas */}
+                            {festividad.fecha && (
+                                <div className="mb-3">
+                                    <h6 style={{ color: '#9A1E47', marginBottom: '10px' }}>
+                                        <FaCalendar className="me-2" />
+                                        Fechas de celebración
+                                    </h6>
+                                    <p style={{ color: '#555', margin: 0 }}>
+                                        <strong>Inicio:</strong> {festividad.fecha.inicio}
+                                    </p>
+                                    <p style={{ color: '#555', margin: 0 }}>
+                                        <strong>Fin:</strong> {festividad.fecha.fin}
+                                    </p>
+                                </div>
+                            )}
+
+                            {/* Información adicional */}
                             <div style={{
                                 backgroundColor: '#FEF8ED',
                                 border: '1px solid #F28B27',
@@ -165,10 +197,10 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
                                 padding: '15px',
                                 marginTop: '20px'
                             }}>
-                                <h5 style={{ color: '#9A1E47', marginBottom: '15px' }}>Información de contacto</h5>
-                                <p><strong>Teléfono:</strong> {hotel.Telefono || 'N/D'}</p>
-                                <p><strong>Horario:</strong> {hotel.Horario || 'N/D'}</p>
-                                <p><strong>Capacidad:</strong> {hotel.Huespedes || 'N/D'} huéspedes</p>
+                                <h5 style={{ color: '#9A1E47', marginBottom: '15px' }}>Información adicional</h5>
+                                <p><strong>Origen:</strong> {festividad.origen || 'N/D'}</p>
+                                <p><strong>Importancia:</strong> {festividad.importancia || 'N/D'}</p>
+                                <p><strong>Municipios:</strong> {festividad.municipios?.join(", ") || 'N/D'}</p>
                             </div>
                         </Card.Body>
                     </Card>
@@ -179,7 +211,7 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
                 <Col md={15}>
                     <Card className="sticky-top" style={{ top: '20px', borderColor: '#0FA89C', marginTop: '50px' }}>
                         <Card.Body style={{ backgroundColor: '#FDF2E0' }}>
-                            <h4 style={{ color: '#9A1E47', marginBottom: '20px' }}>¿Tienes dudas o deseas hacer una reserva?</h4>
+                            <h4 style={{ color: '#9A1E47', marginBottom: '20px' }}>¿Tienes dudas sobre esta festividad?</h4>
 
                             {mensajeEnviado && (
                                 <Alert variant={mensajeEnviado.includes("Error") ? "danger" : "success"}>
@@ -233,7 +265,7 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
                                 </Form.Group>
 
                                 <Button type="submit" variant="primary" style={{ backgroundColor: '#9A1E47', borderColor: '#9A1E47' }}>
-                                    Enviar mensaje
+                                    Enviar comentario
                                 </Button>
                             </Form>
                         </Card.Body>
@@ -244,4 +276,4 @@ const DetalleHospedaje = ({ hotel, onVolver }) => {
     );
 };
 
-export default DetalleHospedaje;
+export default DetalleFestividades;

@@ -1,281 +1,376 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Container, Card, Button, Badge, ListGroup, Alert, Row, Col } from "react-bootstrap";
+import { FaBell, FaTimes, FaCheck, FaTrash, FaEnvelope, FaCalendar, FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaCheckCircle, FaTimesCircle, FaInfoCircle, FaCalendarAlt, FaUser, FaBox, FaEye, FaEyeSlash, FaTrash } from "react-icons/fa";
-import { Container, Card, Badge, Alert, Spinner, Button, Row, Col } from "react-bootstrap";
 
-const Notificaciones = ({ idUsuario }) => {
-    const [notificaciones, setNotificaciones] = useState([]);
+const Notificaciones = () => {
+    const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [noLeidas, setNoLeidas] = useState(0);
+    const [alert, setAlert] = useState({ show: false, message: "", variant: "success" });
+    const navigate = useNavigate();
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const id = storedUser?._id || storedUser?.id || storedUser?.idUsuario;
 
     useEffect(() => {
-        obtenerNotificaciones();
-    }, [idUsuario]);
+        if (!id) {
+            setAlert({
+                show: true,
+                message: "No se pudo cargar las notificaciones. Por favor, inicia sesión nuevamente.",
+                variant: "danger"
+            });
+            return;
+        }
 
-    const obtenerNotificaciones = async () => {
+        fetchNotifications();
+    }, [id]);
+
+    const fetchNotifications = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(
-                `https://backend-iota-seven-19.vercel.app/api/notificaciones/usuario/${idUsuario}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-            setNotificaciones(response.data);
-            
-            // Contar notificaciones no leídas
-            const noLeidasCount = response.data.filter(noti => noti.estado !== 'leido').length;
-            setNoLeidas(noLeidasCount);
+            const response = await axios.get(`https://backend-iota-seven-19.vercel.app/api/notificaciones/usuario/${id}`);
+            setNotifications(response.data);
         } catch (error) {
-            console.error("Error al obtener notificaciones:", error);
+            console.error("Error al cargar notificaciones:", error);
+            setAlert({
+                show: true,
+                message: "Error al cargar las notificaciones",
+                variant: "danger"
+            });
         } finally {
             setLoading(false);
         }
     };
 
-    const marcarComoLeida = async (notificacionId) => {
+    const markNotificationAsRead = async (notificationId) => {
         try {
-            await axios.put(
-                `https://backend-iota-seven-19.vercel.app/api/notificaciones/${notificacionId}/leer`,
-                {},
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-            
-            // Actualizar el estado local
-            setNotificaciones(prev => 
-                prev.map(noti => 
-                    noti._id === notificacionId 
-                        ? { ...noti, estado: 'leido' }
-                        : noti
+            await axios.put(`https://backend-iota-seven-19.vercel.app/api/notificaciones/${notificationId}/leer`);
+            setNotifications(prev => 
+                prev.map(notif => 
+                    notif._id === notificationId 
+                        ? { ...notif, leida: true }
+                        : notif
                 )
             );
-            
-            // Actualizar contador de no leídas
-            setNoLeidas(prev => Math.max(0, prev - 1));
         } catch (error) {
             console.error("Error al marcar como leída:", error);
+            setAlert({
+                show: true,
+                message: "Error al marcar la notificación como leída",
+                variant: "danger"
+            });
         }
     };
 
-    const eliminarNotificacion = async (notificacionId) => {
+    const markAllAsRead = async () => {
         try {
-            await axios.delete(
-                `https://backend-iota-seven-19.vercel.app/api/notificaciones/${notificacionId}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
+            await axios.put(`https://backend-iota-seven-19.vercel.app/api/notificaciones/usuario/${id}/leer-todas`);
+            setNotifications(prev => 
+                prev.map(notif => ({ ...notif, leida: true }))
             );
-            
-            // Remover de la lista local
-            setNotificaciones(prev => prev.filter(noti => noti._id !== notificacionId));
-            
-            // Actualizar contador si era no leída
-            const notificacionEliminada = notificaciones.find(noti => noti._id === notificacionId);
-            if (notificacionEliminada && notificacionEliminada.estado !== 'leido') {
-                setNoLeidas(prev => Math.max(0, prev - 1));
-            }
+            setAlert({
+                show: true,
+                message: "Todas las notificaciones marcadas como leídas",
+                variant: "success"
+            });
+        } catch (error) {
+            console.error("Error al marcar todas como leídas:", error);
+            setAlert({
+                show: true,
+                message: "Error al marcar todas las notificaciones como leídas",
+                variant: "danger"
+            });
+        }
+    };
+
+    const deleteNotification = async (notificationId) => {
+        try {
+            await axios.delete(`https://backend-iota-seven-19.vercel.app/api/notificaciones/${notificationId}`);
+            setNotifications(prev => prev.filter(notif => notif._id !== notificationId));
+            setAlert({
+                show: true,
+                message: "Notificación eliminada correctamente",
+                variant: "success"
+            });
         } catch (error) {
             console.error("Error al eliminar notificación:", error);
+            setAlert({
+                show: true,
+                message: "Error al eliminar la notificación",
+                variant: "danger"
+            });
         }
     };
 
-    const getEstadoColor = (estado) => {
-        switch (estado) {
-            case "aprobado":
-                return "success";
-            case "rechazado":
-                return "danger";
-            case "pendiente":
-                return "warning";
-            case "leido":
-                return "secondary";
+    const deleteAllRead = async () => {
+        try {
+            await axios.delete(`https://backend-iota-seven-19.vercel.app/api/notificaciones/usuario/${id}/eliminar-leidas`);
+            setNotifications(prev => prev.filter(notif => !notif.leida));
+            setAlert({
+                show: true,
+                message: "Notificaciones leídas eliminadas correctamente",
+                variant: "success"
+            });
+        } catch (error) {
+            console.error("Error al eliminar notificaciones leídas:", error);
+            setAlert({
+                show: true,
+                message: "Error al eliminar las notificaciones leídas",
+                variant: "danger"
+            });
+        }
+    };
+
+    const getNotificationIcon = (type) => {
+        switch (type) {
+            case 'reservation':
+            case 'reserva':
+                return <FaCalendar style={{ color: '#1E8546' }} />;
+            case 'promotion':
+            case 'promocion':
+                return <FaStar style={{ color: '#FFD700' }} />;
+            case 'event':
+            case 'evento':
+                return <FaBell style={{ color: '#9A1E47' }} />;
+            case 'restaurant':
+            case 'restaurante':
+                return <FaEnvelope style={{ color: '#D24D1C' }} />;
+            case 'payment':
+            case 'pago':
+                return <FaEnvelope style={{ color: '#FF6B6B' }} />;
+            case 'publicacion':
+                return <FaStar style={{ color: '#1E8546' }} />;
             default:
-                return "info";
+                return <FaBell style={{ color: '#6C757D' }} />;
         }
     };
 
-    const getTipoIcon = (tipo, estado) => {
-        if (tipo === "publicacion") {
-            return estado === "aprobado" ? <FaCheckCircle className="text-success" /> : <FaTimesCircle className="text-danger" />;
+    const getPriorityColor = (priority) => {
+        switch (priority) {
+            case 'high':
+            case 'alta':
+                return '#FF6B6B';
+            case 'medium':
+            case 'media':
+                return '#FFD700';
+            case 'low':
+            case 'baja':
+                return '#6C757D';
+            default:
+                return '#6C757D';
         }
-        return <FaInfoCircle className="text-info" />;
     };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        return date.toLocaleString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+            return 'Hoy';
+        } else if (diffDays === 2) {
+            return 'Ayer';
+        } else if (diffDays <= 7) {
+            return `Hace ${diffDays - 1} días`;
+        } else {
+            return date.toLocaleDateString('es-ES', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
     };
+
+    const unreadCount = notifications.filter(n => !n.leida).length;
 
     if (loading) {
         return (
-            <Container fluid className="py-5" style={{ 
-                background: 'linear-gradient(135deg, #FDF2E0 0%, #F8E8D0 100%)',
-                minHeight: '100vh'
+            <div style={{
+                display: "flex", 
+                justifyContent: "center", 
+                alignItems: "center", 
+                height: "100vh", 
+                color: "#9A1E47"
             }}>
-                <Container>
-                    <div className="text-center">
-                        <Spinner animation="border" variant="primary" />
-                        <p className="mt-2">Cargando notificaciones...</p>
-                    </div>
-                </Container>
-            </Container>
+                Cargando notificaciones...
+            </div>
         );
     }
 
     return (
-        <Container fluid className="py-5" style={{ 
-            background: 'linear-gradient(135deg, #FDF2E0 0%, #F8E8D0 100%)',
-            minHeight: '100vh'
-        }}>
-            <Container>
-                <div className="text-center mb-5">
-                    <h1 className="display-4 fw-bold" style={{ color: '#9A1E47' }}>
-                        🔔 Mis Notificaciones
-                    </h1>
-                    <p className="lead text-muted">
-                        Mantente al día con el estado de tus publicaciones
-                    </p>
-                    {noLeidas > 0 && (
-                        <Badge bg="danger" className="fs-6 px-3 py-2">
-                            {noLeidas} {noLeidas === 1 ? 'notificación nueva' : 'notificaciones nuevas'}
-                        </Badge>
-                    )}
-                </div>
-                
-                {notificaciones.length === 0 ? (
-                    <Card className="border-0 shadow-lg text-center" style={{ borderRadius: '20px' }}>
-                        <Card.Body className="p-5">
-                            <FaInfoCircle size={48} className="text-muted mb-3" />
-                            <h4 className="text-muted">No tienes notificaciones</h4>
-                            <p className="text-muted">Cuando tus productos sean revisados, aparecerán aquí las notificaciones.</p>
-                        </Card.Body>
-                    </Card>
-                ) : (
-                    <div className="space-y-3">
-                        {notificaciones.map((noti) => (
-                            <Card 
-                                key={noti._id} 
-                                className={`mb-3 shadow-sm border-0 ${noti.estado !== 'leido' ? 'border-start border-4 border-primary' : ''}`}
-                                style={{ borderRadius: '15px' }}
-                            >
-                                <Card.Body className="p-4">
-                                    <div className="d-flex justify-content-between align-items-start mb-3">
-                                        <div className="d-flex align-items-center">
-                                            {getTipoIcon(noti.tipo, noti.estado)}
-                                            <h6 className="mb-0 ms-2 fw-bold">
-                                                {noti.tipo === "publicacion" ? "Publicación" : noti.tipo}
-                                            </h6>
-                                        </div>
-                                        <div className="d-flex align-items-center gap-2">
-                                            <Badge bg={getEstadoColor(noti.estado)} className="px-3 py-2">
-                                                {noti.estado === 'leido' ? 'Leída' : noti.estado}
-                                            </Badge>
-                                            {noti.estado !== 'leido' && (
-                                                <Button
-                                                    variant="outline-primary"
-                                                    size="sm"
-                                                    onClick={() => marcarComoLeida(noti._id)}
-                                                    title="Marcar como leída"
-                                                >
-                                                    <FaEye />
-                                                </Button>
-                                            )}
+        <Container className="py-5">
+            <Row className="justify-content-center">
+                <Col md={10} lg={8}>
+                    <Card style={{ 
+                        border: "none", 
+                        borderRadius: "15px", 
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)", 
+                        backgroundColor: "#FDF2E0" 
+                    }}>
+                        <Card.Header style={{ 
+                            backgroundColor: "#9A1E47", 
+                            color: "white", 
+                            borderTopLeftRadius: "15px", 
+                            borderTopRightRadius: "15px", 
+                            padding: "1.5rem" 
+                        }}>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="d-flex align-items-center">
+                                    <FaBell className="me-3" style={{ fontSize: "1.5rem" }} />
+                                    <h3 className="mb-0">Notificaciones</h3>
+                                    {unreadCount > 0 && (
+                                        <Badge 
+                                            bg="danger" 
+                                            className="ms-3"
+                                            style={{ fontSize: "0.9rem" }}
+                                        >
+                                            {unreadCount} nueva{unreadCount !== 1 ? 's' : ''}
+                                        </Badge>
+                                    )}
+                                </div>
+                                <div className="d-flex gap-2">
+                                    {unreadCount > 0 && (
+                                        <Button
+                                            variant="outline-light"
+                                            size="sm"
+                                            onClick={markAllAsRead}
+                                            style={{ borderRadius: "20px" }}
+                                        >
+                                            <FaCheck className="me-1" />
+                                            Marcar todas como leídas
+                                        </Button>
+                                    )}
+                                    <Button
+                                        variant="outline-light"
+                                        size="sm"
+                                        onClick={() => navigate('/perfil')}
+                                        style={{ borderRadius: "20px" }}
+                                    >
+                                        Volver al perfil
+                                    </Button>
+                                </div>
+                            </div>
+                        </Card.Header>
+
+                        <Card.Body style={{ padding: "2rem" }}>
+                            {alert.show && (
+                                <Alert variant={alert.variant} onClose={() => setAlert({ ...alert, show: false })} dismissible>
+                                    {alert.message}
+                                </Alert>
+                            )}
+
+                            {notifications.length === 0 ? (
+                                <div className="text-center py-5">
+                                    <FaBell style={{ fontSize: "4rem", color: "#6C757D", marginBottom: "1rem" }} />
+                                    <h4 style={{ color: "#6C757D" }}>No tienes notificaciones</h4>
+                                    <p style={{ color: "#6C757D" }}>Cuando tengas nuevas notificaciones, aparecerán aquí.</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 style={{ color: "#9A1E47", margin: 0 }}>
+                                            Total: {notifications.length} notificación{notifications.length !== 1 ? 'es' : ''}
+                                        </h5>
+                                        {notifications.some(n => n.leida) && (
                                             <Button
                                                 variant="outline-danger"
                                                 size="sm"
-                                                onClick={() => eliminarNotificacion(noti._id)}
-                                                title="Eliminar notificación"
+                                                onClick={deleteAllRead}
+                                                style={{ borderRadius: "20px" }}
                                             >
-                                                <FaTrash />
+                                                <FaTrash className="me-1" />
+                                                Eliminar leídas
                                             </Button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="mb-3">
-                                        <p className="mb-2 fw-bold">Mensaje:</p>
-                                        <p className="text-muted mb-0">{noti.mensaje}</p>
-                                    </div>
-
-                                    {noti.producto && (
-                                        <div className="mb-3">
-                                            <p className="mb-1 fw-bold">
-                                                <FaBox className="me-2" />
-                                                Producto:
-                                            </p>
-                                            <p className="text-muted mb-0">{noti.producto}</p>
-                                        </div>
-                                    )}
-
-                                    {noti.Motivo && noti.Motivo.trim() !== "" && (
-                                        <div className="mb-3">
-                                            <p className="mb-1 fw-bold text-danger">Motivo del rechazo:</p>
-                                            <p className="text-danger mb-0">{noti.Motivo}</p>
-                                        </div>
-                                    )}
-
-                                    <div className="d-flex justify-content-between align-items-center text-muted small">
-                                        <div>
-                                            <FaCalendarAlt className="me-1" />
-                                            {formatDate(noti.fecha || noti.createdAt)}
-                                        </div>
-                                        {noti.idUsuario && (
-                                            <div>
-                                                <FaUser className="me-1" />
-                                                ID: {noti.idUsuario}
-                                            </div>
                                         )}
                                     </div>
-                                </Card.Body>
-                            </Card>
-                        ))}
-                    </div>
-                )}
-            </Container>
+
+                                    <ListGroup>
+                                        {notifications.map((notification) => (
+                                            <ListGroup.Item 
+                                                key={notification._id}
+                                                style={{
+                                                    backgroundColor: notification.leida ? "white" : "#f8f9fa",
+                                                    border: "1px solid #dee2e6",
+                                                    borderRadius: "10px",
+                                                    marginBottom: "10px",
+                                                    borderLeft: notification.leida ? "4px solid #dee2e6" : `4px solid ${getPriorityColor(notification.prioridad || 'media')}`,
+                                                    transition: "all 0.3s ease"
+                                                }}
+                                                className="hover-effect"
+                                            >
+                                                <div className="d-flex justify-content-between align-items-start">
+                                                    <div className="d-flex align-items-start" style={{ flex: 1 }}>
+                                                        <div className="me-3 mt-1">
+                                                            {getNotificationIcon(notification.tipo)}
+                                                        </div>
+                                                        <div style={{ flex: 1 }}>
+                                                            <div className="d-flex align-items-center mb-1">
+                                                                <h6 className="mb-0 me-2" style={{ 
+                                                                    color: "#9A1E47",
+                                                                    fontWeight: notification.leida ? "normal" : "bold"
+                                                                }}>
+                                                                    {notification.titulo || notification.mensaje?.split('.')[0] || 'Notificación'}
+                                                                </h6>
+                                                                {!notification.leida && (
+                                                                    <Badge 
+                                                                        bg="danger" 
+                                                                        style={{ fontSize: "0.6rem" }}
+                                                                    >
+                                                                        Nueva
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                            <p className="mb-1" style={{ 
+                                                                fontSize: "0.9rem",
+                                                                color: "#6C757D"
+                                                            }}>
+                                                                {notification.mensaje}
+                                                            </p>
+                                                            <small className="text-muted">
+                                                                {formatDate(notification.fecha || notification.createdAt)}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                    <div className="d-flex gap-1">
+                                                        {!notification.leida && (
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline-primary"
+                                                                onClick={() => markNotificationAsRead(notification._id)}
+                                                                style={{ 
+                                                                    fontSize: "0.7rem",
+                                                                    borderRadius: "15px"
+                                                                }}
+                                                            >
+                                                                <FaCheck />
+                                                            </Button>
+                                                        )}
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline-danger"
+                                                            onClick={() => deleteNotification(notification._id)}
+                                                            style={{ 
+                                                                fontSize: "0.7rem",
+                                                                borderRadius: "15px"
+                                                            }}
+                                                        >
+                                                            <FaTimes />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </ListGroup.Item>
+                                        ))}
+                                    </ListGroup>
+                                </>
+                            )}
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
         </Container>
     );
-};
-
-// Hook personalizado para obtener contador de notificaciones no leídas
-export const useNotificacionesCount = (idUsuario) => {
-    const [count, setCount] = useState(0);
-
-    useEffect(() => {
-        const obtenerCount = async () => {
-            try {
-                const response = await axios.get(
-                    `https://backend-iota-seven-19.vercel.app/api/notificaciones/usuario/${idUsuario}/no-leidas`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("token")}`,
-                        },
-                    }
-                );
-                setCount(response.data.length);
-            } catch (error) {
-                console.error("Error al obtener contador de notificaciones:", error);
-            }
-        };
-
-        if (idUsuario) {
-            obtenerCount();
-        }
-    }, [idUsuario]);
-
-    return count;
 };
 
 export default Notificaciones;

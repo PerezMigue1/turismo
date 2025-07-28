@@ -12,6 +12,7 @@ import ProductRequests from '../admin/ProductRequests'
 import GastroRequests from '../admin/GastronomiaRequests'
 import HospedajeRequests from '../admin/HospedajeRequests';
 import RestauranteRequests from '../admin/RestauranteRequests';
+import FestividadesAdmin from './FestividadesAdmin';
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
@@ -60,6 +61,8 @@ const AdminLayout = () => {
                 return <HospedajeRequests />;
             case 'restauranterequests': // Nuevo caso
                 return <RestauranteRequests />;
+            case 'festividadesAdmin': // Nuevo caso
+                return <FestividadesAdmin />;
             case 'settings':
                 return <Settings />;
             default:

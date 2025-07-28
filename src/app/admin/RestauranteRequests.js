@@ -80,15 +80,20 @@ const RestauranteRequests = () => {
     const handleAccion = (publicacion, tipoAccion) => {
         setPublicacionSeleccionada(publicacion);
         setAccion(tipoAccion);
-        setMensaje("");
+        setMensaje(
+            tipoAccion === "aprobar"
+                ? `Tu restaurante "${publicacion.Nombre}" ha sido aprobado y publicado exitosamente.`
+                : `Tu restaurante "${publicacion.Nombre}" ha sido rechazado. Por favor revisa el motivo.`
+        );
         setMotivo("");
         setShowModal(true);
     };
 
-    const aprobarORechazarPublicacion = async () => {
+    // Lógica igual a ProductRequests.js
+    const enviarNotificacion = async () => {
         if (!publicacionSeleccionada) return;
-        setLoading(true);
         try {
+            setLoading(true);
             if (accion === "aprobar") {
                 await axios.put(
                     `https://backend-iota-seven-19.vercel.app/api/publicaRestaurantes/${publicacionSeleccionada._id}/aprobar`,
@@ -100,6 +105,7 @@ const RestauranteRequests = () => {
                     { revisadoPor: "admin", motivoRechazo: motivo || "No especificado" }
                 );
             }
+            // Notificación igual que productos
             const notificacion = {
                 idUsuario: publicacionSeleccionada.idUsuario,
                 tipo: "publicacion",
@@ -110,7 +116,7 @@ const RestauranteRequests = () => {
                 fecha: new Date()
             };
             await axios.post("https://backend-iota-seven-19.vercel.app/api/notificaciones", notificacion);
-            mostrarToast(`Publicación ${accion === "aprobar" ? "aprobada" : "rechazada"} y notificación enviada`, "success");
+            mostrarToast(`Restaurante ${accion === "aprobar" ? "aprobado" : "rechazado"} y notificación enviada`, "success");
             setShowModal(false);
             obtenerPublicaciones();
         } catch (error) {
@@ -381,7 +387,7 @@ const RestauranteRequests = () => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>Cancelar</Button>
-                    <Button variant={accion === "aprobar" ? "success" : "danger"} onClick={aprobarORechazarPublicacion} disabled={loading} style={accion === "aprobar" ? customStyles.success : customStyles.danger}>
+                    <Button variant={accion === "aprobar" ? "success" : "danger"} onClick={enviarNotificacion} disabled={loading} style={accion === "aprobar" ? customStyles.success : customStyles.danger}>
                         {loading ? (<><FaSpinner className="spin me-2" /> Procesando...</>) : (accion === "aprobar" ? "Aprobar y Notificar" : "Rechazar y Notificar")}
                     </Button>
                 </Modal.Footer>

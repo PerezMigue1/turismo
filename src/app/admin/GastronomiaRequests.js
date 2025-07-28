@@ -33,7 +33,7 @@ const GastronomiaRequests = () => {
 
     const obtenerPlatillos = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/publicacionGastronomia");
+            const response = await axios.get("https://backend-iota-seven-19.vercel.app/api/publicacionGastronomia");
             setPlatillos(response.data);
         } catch (error) {
             console.error("❌ Error al obtener platillos:", error);
@@ -42,7 +42,7 @@ const GastronomiaRequests = () => {
 
     const obtenerEstadisticas = async () => {
         try {
-            const response = await axios.get("http://localhost:5000/api/publicacionGastronomia/estadisticas/totales");
+            const response = await axios.get("https://backend-iota-seven-19.vercel.app/api/publicacionGastronomia/estadisticas/totales");
             setEstadisticas(response.data.estadisticas || {
                 total: platillos.length,
                 pendientes: platillos.filter(p => p.estadoRevision === "pendiente").length,
@@ -92,9 +92,9 @@ const GastronomiaRequests = () => {
         try {
             setLoading(true);
             if (accion === "aprobar") {
-                await axios.put(`http://localhost:5000/api/publicacionGastronomia/${platilloSeleccionado._id}/aprobar`, { revisadoPor: "admin" });
+                await axios.put(`https://backend-iota-seven-19.vercel.app/api/publicacionGastronomia/${platilloSeleccionado._id}/aprobar`, { revisadoPor: "admin" });
             } else {
-                await axios.put(`http://localhost:5000/api/publicacionGastronomia/${platilloSeleccionado._id}/rechazar`, {
+                await axios.put(`https://backend-iota-seven-19.vercel.app/api/publicacionGastronomia/${platilloSeleccionado._id}/rechazar`, {
                     revisadoPor: "admin",
                     motivoRechazo: motivo || "No especificado"
                 });

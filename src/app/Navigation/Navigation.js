@@ -30,7 +30,9 @@ import PublicarRestaurante from '../screens/PublicarRestaurante';
 import Restaurante from '../screens/Restaurantes';
 import RestauranteDetalle from '../screens/DetalleRestaurante'
 
+
 import AdminLayout from '../admin/AdminLayout';
+import Festividades from '../screens/Festividades';
 
 
 // Componente para proteger rutas
@@ -223,6 +225,15 @@ const Navigation = () => {
                                 </>
                             } />
 
+
+
+                            <Route path="/festividades" element={
+                                <>
+                                    <Header />
+                                    <Festividades />
+                                    <Footer />
+                                </>
+                            } />
                             
 
                             {/* Rutas de autenticación SIN Header y Footer */}

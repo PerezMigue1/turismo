@@ -1,7 +1,7 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FaTimes, FaHome, FaMapMarkedAlt, FaRoute, FaStore, FaBook, FaHiking,FaUtensils,FaShoppingBasket,FaBed } from "react-icons/fa";
+import { FaTimes, FaHome, FaMapMarkedAlt, FaRoute, FaStore, FaBook, FaHiking, FaUtensils, FaShoppingBasket, FaBed, FaUserPlus, FaPlus } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
     return (
@@ -92,41 +92,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaStore style={{ marginRight: "10px" }} /> Directorio de servicios
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/artesanias" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaShoppingBasket style={{ marginRight: "10px" }} /> Marketplace
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/RegistroArtesano" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Registro Artesano
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/PublicarProducto" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones
-                </Nav.Link>
-
-
-
                 <Nav.Link as={Link} to="/guias" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
@@ -170,30 +135,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaUtensils style={{ marginRight: "10px" }} /> Gastronomía
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/RegistroChef" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Registro Gastronomia
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/PublicaChef" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones Gastronomia
-                </Nav.Link>
-
-
-
                 <Nav.Link as={Link} to="/hospedajes" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
@@ -205,29 +146,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaBed style={{ marginRight: "10px" }} /> Hospedajes
                 </Nav.Link>
 
-                <Nav.Link as={Link} to="/RegistroHospedaje" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Registro Hospedero
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/PublicarHospedaje" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Publicaciones Hospedajes
-                </Nav.Link>
-
-
                 <Nav.Link as={Link} to="/restaurantes" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
@@ -236,7 +154,83 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Restaurante
+                    <FaUtensils style={{ marginRight: "10px" }} /> Restaurantes
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/artesanias" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaShoppingBasket style={{ marginRight: "10px" }} /> Marketplace
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/festividades" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaBook style={{ marginRight: "10px" }} /> Festividades
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/negocios" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaStore style={{ marginRight: "10px" }} /> Negocios
+                </Nav.Link>
+
+                <div style={{ 
+                    color: "#0FA89C", // Turquesa Agua
+                    fontWeight: "bold",
+                    margin: "20px 0 10px 15px",
+                    fontSize: "0.9rem",
+                    textTransform: "uppercase"
+                }}>
+                    Registros
+                </div>
+
+                <Nav.Link as={Link} to="/RegistroArtesano" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaUserPlus style={{ marginRight: "10px" }} /> Registro Artesano
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/RegistroChef" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaUserPlus style={{ marginRight: "10px" }} /> Registro Chef
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/RegistroHospedaje" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaUserPlus style={{ marginRight: "10px" }} /> Registro Hospedero
                 </Nav.Link>
 
                 <Nav.Link as={Link} to="/RegistroRestaurante" onClick={onClose} style={{
@@ -247,7 +241,50 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Registro Restaurante
+                    <FaUserPlus style={{ marginRight: "10px" }} /> Registro Restaurante
+                </Nav.Link>
+
+                <div style={{ 
+                    color: "#0FA89C", // Turquesa Agua
+                    fontWeight: "bold",
+                    margin: "20px 0 10px 15px",
+                    fontSize: "0.9rem",
+                    textTransform: "uppercase"
+                }}>
+                    Publicaciones
+                </div>
+
+                <Nav.Link as={Link} to="/PublicarProducto" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaPlus style={{ marginRight: "10px" }} /> Publicar Producto
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicaChef" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaPlus style={{ marginRight: "10px" }} /> Publicar Gastronomía
+                </Nav.Link>
+
+                <Nav.Link as={Link} to="/PublicarHospedaje" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaPlus style={{ marginRight: "10px" }} /> Publicar Hospedaje
                 </Nav.Link>
 
                 <Nav.Link as={Link} to="/PublicarRestaurante" onClick={onClose} style={{
@@ -258,23 +295,8 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Publicacion de Restaurante
+                    <FaPlus style={{ marginRight: "10px" }} /> Publicar Restaurante
                 </Nav.Link>
-
-                <Nav.Link as={Link} to="/Notificaciones" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBed style={{ marginRight: "10px" }} /> Notificaciones
-                </Nav.Link>
-
-
-
-                
             </Nav>
         </div>
     );

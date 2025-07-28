@@ -1,55 +1,88 @@
 // src/components/CardGastronomia.js
 import React from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Card, Button, Badge, OverlayTrigger, Tooltip, Carousel } from 'react-bootstrap';
+import { FaUtensils, FaHeart, FaStar, FaInfoCircle } from 'react-icons/fa';
 
 const CardGastronomia = ({ gastronomia, onVerReceta }) => {
+    const renderTooltip = (props) => (
+        <Tooltip id="info-tooltip" {...props}>
+            <div style={{ textAlign: 'left' }}>
+                <p><strong>Tipo:</strong> {gastronomia.tipoPlatillo}</p>
+                <p><strong>Origen:</strong> {gastronomia.regionOrigen}</p>
+                <p><strong>Ocasiones:</strong> {Array.isArray(gastronomia.ocasion) ? gastronomia.ocasion.join(', ') : gastronomia.ocasion}</p>
+            </div>
+        </Tooltip>
+    );
+
     return (
-        <Card 
-            className="h-100" 
-            style={{
-                border: '2px solid #0FA89C',
-                borderRadius: '12px',
-                overflow: 'hidden',
-                boxShadow: '0 6px 20px rgba(154, 30, 71, 0.12)',
-                transition: 'all 0.3s ease',
-                backgroundColor: 'white',
-                position: 'relative',
-                maxWidth: '350px',
-                minHeight: '500px', // Altura mínima
-                width: '100%',
-                margin: '0 auto'
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
-            }}
-        >
-            {/* Imagen principal */}
+        <Card className="h-100" style={{
+            border: '2px solid #0FA89C',
+            borderRadius: '10px',
+            overflow: 'hidden',
+            boxShadow: '0 4px 12px rgba(154, 30, 71, 0.15)',
+            transition: 'transform 0.3s, box-shadow 0.3s',
+            backgroundColor: 'white',
+        }}>
+            <div style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                zIndex: 1
+            }}>
+                <OverlayTrigger placement="left" overlay={renderTooltip}>
+                    <Button variant="light" size="sm" style={{
+                        padding: '5px',
+                        backgroundColor: 'rgba(255,255,255,0.8)',
+                        border: '1px solid #9A1E47'
+                    }}>
+                        <FaInfoCircle style={{ color: '#9A1E47' }} />
+                    </Button>
+                </OverlayTrigger>
+            </div>
+
             <div style={{ position: 'relative', height: '200px', backgroundColor: '#f0f0f0' }}>
-                <img
-                    src={gastronomia.imagen?.url || gastronomia.imagen}
-                    alt={gastronomia.nombre}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        borderBottom: '2px solid #F28B27'
-                    }}
-                    onError={(e) => {
-                        e.target.style.display = 'none';
-                    }}
-                />
+                {Array.isArray(gastronomia.imagen) && gastronomia.imagen.length > 1 ? (
+                    <Carousel interval={3000} controls={false} indicators={false} pause={false}>
+                        {gastronomia.imagen.map((img, idx) => (
+                            <Carousel.Item key={idx}>
+                                <img
+                                    src={img}
+                                    alt={`Imagen ${idx + 1}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        borderBottom: '3px solid #F28B27'
+                                    }}
+                                    onError={(e) => {
+                                        e.target.src = '/placeholder-food.jpg';
+                                    }}
+                                />
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
+                ) : (
+                    <img
+                        src={gastronomia.imagen?.url || gastronomia.imagen}
+                        alt={gastronomia.nombre}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            borderBottom: '3px solid #F28B27'
+                        }}
+                        onError={(e) => {
+                            e.target.src = '/placeholder-food.jpg';
+                        }}
+                    />
+                )}
                 
                 {/* Badge de tipo de platillo */}
                 {gastronomia.tipoPlatillo && (
                     <div style={{
                         position: 'absolute',
                         top: '12px',
-                        right: '12px',
+                        left: '12px',
                         backgroundColor: '#0FA89C',
                         color: 'white',
                         padding: '6px 12px',
@@ -63,36 +96,21 @@ const CardGastronomia = ({ gastronomia, onVerReceta }) => {
                 )}
             </div>
 
-            <Card.Body style={{ padding: '20px', backgroundColor: '#FDF2E0'}}>
-                {/* Nombre del platillo */}
-                <Card.Title 
-                    style={{ 
-                        color: '#9A1E47', 
-                        fontSize: '1.5rem',
-                        fontWeight: '700',
-                        marginBottom: '12px',
-                        lineHeight: '1.3'
-                    }}
-                >
+            <Card.Body className="d-flex flex-column" style={{ backgroundColor: '#FEF8ED' }}>
+                <div className="mb-2">
+                    <Badge bg="success" style={{ backgroundColor: '#1E8546' }} className="me-2">
+                        {gastronomia.tipoPlatillo}
+                    </Badge>
+                    <Badge bg="info" style={{ backgroundColor: '#50C2C4' }}>
+                        {gastronomia.regionOrigen}
+                    </Badge>
+                </div>
+                <Card.Title style={{ color: '#9A1E47', minHeight: '48px' }}>
                     {gastronomia.nombre}
                 </Card.Title>
-
-                {/* Descripción */}
-                {gastronomia.descripcion && (
-                    <p style={{ 
-                        color: '#666', 
-                        fontSize: '0.9rem',
-                        marginBottom: '16px',
-                        lineHeight: '1',
-                        height: '4.5rem',
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical'
-                    }}>
-                        {gastronomia.descripcion}
-                    </p>
-                )}
+                <Card.Text className="flex-grow-1" style={{ color: '#555', minHeight: '60px' }}>
+                    {gastronomia.descripcion?.substring(0, 100)}...
+                </Card.Text>
 
                 {/* Sección de ocasiones */}
                 {gastronomia.ocasion && (
@@ -115,71 +133,67 @@ const CardGastronomia = ({ gastronomia, onVerReceta }) => {
                             Ocasiones especiales
                         </div>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                        {Array.isArray(gastronomia.ocasion) 
-                            ? gastronomia.ocasion.slice(0, 2).map((ocasion, index) => (
-                                <span 
-                                    key={index}
-                                    style={{ 
-                                        backgroundColor: '#50C2C4',
-                                        color: '#f0f0f0',
-                                        fontSize: '0.75rem',
-                                        padding: '4px 10px',
-                                        borderRadius: '12px',
-                                        fontWeight: '500',
-                                        border: '1px solid #50C2C4'
-                                    }}
-                                >
-                                    {ocasion}
-                                </span>
-                            ))
-                            : (
-                                <span 
-                                    style={{ 
-                                        backgroundColor: '#50C2C4',
-                                        color: '#f0f0f0',
-                                        fontSize: '0.75rem',
-                                        padding: '4px 10px',
-                                        borderRadius: '12px',
-                                        fontWeight: '500',
-                                        border: '1px solid #50C2C4'
-                                    }}
-                                >
-                                    {gastronomia.ocasion}
-                                </span>
-                            )
-                        }
-                    </div>
-
+                            {Array.isArray(gastronomia.ocasion) 
+                                ? gastronomia.ocasion.slice(0, 2).map((ocasion, index) => (
+                                    <span 
+                                        key={index}
+                                        style={{ 
+                                            backgroundColor: '#50C2C4',
+                                            color: '#f0f0f0',
+                                            fontSize: '0.75rem',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontWeight: '500',
+                                            border: '1px solid #50C2C4'
+                                        }}
+                                    >
+                                        {ocasion}
+                                    </span>
+                                ))
+                                : (
+                                    <span 
+                                        style={{ 
+                                            backgroundColor: '#50C2C4',
+                                            color: '#f0f0f0',
+                                            fontSize: '0.75rem',
+                                            padding: '4px 10px',
+                                            borderRadius: '12px',
+                                            fontWeight: '500',
+                                            border: '1px solid #50C2C4'
+                                        }}
+                                    >
+                                        {gastronomia.ocasion}
+                                    </span>
+                                )
+                            }
+                        </div>
                     </div>
                 )}
-                <br></br>
-                <br></br>
-                {/* Botón de ver receta */}
-                <Button
-                    onClick={() => onVerReceta(gastronomia)}
-                    style={{
-                        backgroundColor: '#9A1E47',
-                        borderColor: '#9A1E47',
-                        color: 'white',
-                        borderRadius: '12px',
-                        padding: '12px 24px',
-                        fontWeight: '600',
-                        fontSize: '0.9rem',
-                        transition: 'all 0.3s ease',
-                        width: '100%',
-                        border: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = 'rgba(154, 30, 71, 0.3)';
-                        e.target.style.transform = 'translateY(-1px)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = 'rgba(154, 30, 71, 0.3)';
-                        e.target.style.transform = 'translateY(0)';
-                    }}
-                >
-                    Ver Receta Completa
-                </Button>
+
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div style={{ color: '#F28B27' }}>
+                        {[...Array(5)].map((_, i) => (
+                            <FaStar key={i} color={i < 4 ? '#F28B27' : '#ddd'} />
+                        ))}
+                    </div>
+                    <div>
+                        <h5 style={{ color: '#9A1E47', margin: 0 }}>
+                            {gastronomia.receta?.tiempoPreparacionMinutos ? `${gastronomia.receta.tiempoPreparacionMinutos} min` : 'N/D'}
+                        </h5>
+                    </div>
+                </div>
+                <div className="d-grid gap-2">
+                    <Button
+                        variant="outline"
+                        style={{
+                            color: '#9A1E47',
+                            borderColor: '#9A1E47'
+                        }}
+                        onClick={() => onVerReceta(gastronomia)}
+                    >
+                        <FaUtensils /> Ver Receta
+                    </Button>
+                </div>
             </Card.Body>
         </Card>
     );

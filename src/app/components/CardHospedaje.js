@@ -47,7 +47,7 @@ const CardHotel = ({ hotel, onVerHotel }) => {
             transition: 'transform 0.3s, box-shadow 0.3s',
             backgroundColor: 'white',
             position: 'relative',
-            maxWidth: '350px',
+            maxWidth: '450px',
             minHeight: '500px',
             width: '100%',
             margin: '0 auto'
