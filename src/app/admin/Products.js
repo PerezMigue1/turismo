@@ -7,22 +7,20 @@ import {
     FaEye, FaInfoCircle, FaImage,
     FaSearch, FaEdit, FaTrash, FaPlus
 } from 'react-icons/fa';
-import axios from 'axios';
-import { useAuth } from '../Navigation/AuthContext';
 
 const Products = () => {
-    // Estilos personalizados idénticos a ProductoRevision
+    // Estilos personalizados
     const customStyles = {
-        primary: { backgroundColor: '#9A1E47', borderColor: '#9A1E47' }, // Rojo Guinda
-        secondary: { backgroundColor: '#0FA89C', borderColor: '#0FA89C' }, // Turquesa Agua
-        success: { backgroundColor: '#1E8546', borderColor: '#1E8546' }, // Verde Bosque
-        warning: { backgroundColor: '#F28B27', borderColor: '#F28B27' }, // Naranja Sol
-        danger: { backgroundColor: '#D24D1C', borderColor: '#D24D1C' }, // Rojo Naranja Tierra
-        info: { backgroundColor: '#50C2C4', borderColor: '#50C2C4' }, // Aqua Claro
-        light: { backgroundColor: '#FDF2E0', borderColor: '#FDF2E0' } // Beige Claro
+        primary: { backgroundColor: '#9A1E47', borderColor: '#9A1E47' },
+        secondary: { backgroundColor: '#0FA89C', borderColor: '#0FA89C' },
+        success: { backgroundColor: '#1E8546', borderColor: '#1E8546' },
+        warning: { backgroundColor: '#F28B27', borderColor: '#F28B27' },
+        danger: { backgroundColor: '#D24D1C', borderColor: '#D24D1C' },
+        info: { backgroundColor: '#50C2C4', borderColor: '#50C2C4' },
+        light: { backgroundColor: '#FDF2E0', borderColor: '#FDF2E0' }
     };
 
-    // Estados (igual que antes)
+    // Estados
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -35,9 +33,7 @@ const Products = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [productDetailLoading, setProductDetailLoading] = useState(false);
 
-    const { currentUser } = useAuth();
-
-    // Función para mostrar notificaciones (idéntica a ProductoRevision)
+    // Función de notificación
     const mostrarToast = (message, variant = "success") => {
         setToastMessage(message);
         setToastVariant(variant);
@@ -45,36 +41,36 @@ const Products = () => {
         setTimeout(() => setShowToast(false), 3000);
     };
 
-    // Función para cargar detalles del producto
-    const handleShowDetail = async (productId) => {
-        try {
-            setProductDetailLoading(true);
-            const token = currentUser?.token;
-            const response = await axios.get(`https://backend-iota-seven-19.vercel.app/api/productos/${productId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setSelectedProduct(response.data);
-            setShowDetailModal(true);
-        } catch (error) {
-            mostrarToast('Error al cargar detalles del producto', 'danger');
-        } finally {
-            setProductDetailLoading(false);
-        }
-    };
-
-        useEffect(() => {
+    // Cargar productos
+    useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const token = currentUser?.token;
-                const response = await axios.get('https://backend-iota-seven-19.vercel.app/api/productos', {
+                setLoading(true);
+                setError(null);
+
+                const response = await fetch('https://backend-iota-seven-19.vercel.app/api/productos', {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     }
                 });
-                const validProducts = response.data.filter(p => p.Nombre && p.Descripción);
-                setProducts(validProducts);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // La API devuelve directamente el array de productos
+                if (Array.isArray(data)) {
+                    const validProducts = data.filter(p => p.Nombre && p.Descripción);
+                    setProducts(validProducts);
+                } else {
+                    setError('Formato de respuesta inválido');
+                    mostrarToast('Error al cargar productos', 'danger');
+                }
             } catch (error) {
-                setError('Error al cargar productos');
+                console.error('Error fetching products:', error);
+                setError('Error de conexión: ' + error.message);
                 mostrarToast('Error al cargar productos', 'danger');
             } finally {
                 setLoading(false);
@@ -82,8 +78,40 @@ const Products = () => {
         };
 
         fetchProducts();
-    }, [currentUser]);
+    }, []);
 
+    // Función para cargar detalles del producto
+    const handleShowDetail = async (productId) => {
+        try {
+            setProductDetailLoading(true);
+
+            const response = await fetch(`https://backend-iota-seven-19.vercel.app/api/productos/${productId}`, {
+                headers: { 
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data) {
+                setSelectedProduct(data);
+                setShowDetailModal(true);
+            } else {
+                mostrarToast('Error al cargar detalles del producto', 'danger');
+            }
+        } catch (error) {
+            console.error('Error fetching product details:', error);
+            mostrarToast('Error al cargar detalles del producto', 'danger');
+        } finally {
+            setProductDetailLoading(false);
+        }
+    };
+
+    // Filtrar productos
     const filteredProducts = products.filter(product => {
         const nombre = product.Nombre || '';
         const descripcion = product.Descripción || '';
@@ -109,14 +137,23 @@ const Products = () => {
     if (error) {
         return (
             <Container className="mt-4">
-                <Alert variant="danger">{error}</Alert>
+                <Alert variant="danger">
+                    <h5>Error</h5>
+                    <p>{error}</p>
+                    <Button 
+                        variant="outline-danger" 
+                        onClick={() => window.location.reload()}
+                    >
+                        Reintentar
+                    </Button>
+                </Alert>
             </Container>
         );
     }
 
     return (
         <Container fluid className="py-4" style={customStyles.light}>
-            {/* Toast Notification (idéntico a ProductoRevision) */}
+            {/* Toast Notification */}
             <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
                 <Toast
                     show={showToast}
@@ -132,7 +169,7 @@ const Products = () => {
                 </Toast>
             </div>
 
-            {/* Header (estilo idéntico) */}
+            {/* Header */}
             <Row className="mb-4">
                 <Col>
                     <h1 style={{ color: customStyles.primary.backgroundColor }}>
@@ -210,12 +247,12 @@ const Products = () => {
                         <tbody>
                             {filteredProducts.length > 0 ? (
                                 filteredProducts.map((product) => (
-                                    <tr key={product.idProducto}>
-                                        <td>{product.idProducto}</td>
-                                        <td>{product.Nombre}</td>
-                                        <td>{product.Descripción?.substring(0, 50)}...</td>
+                                    <tr key={product.idProducto || product._id}>
+                                        <td>{product.idProducto || product._id || 'N/A'}</td>
+                                        <td>{product.Nombre || 'Sin nombre'}</td>
+                                        <td>{(product.Descripción || '').substring(0, 50)}...</td>
                                         <td className="text-center" style={{ color: customStyles.success.backgroundColor, fontWeight: 'bold' }}>
-                                            ${product.Precio}
+                                            ${product.Precio || 0}
                                         </td>
                                         <td className="text-center">
                                             <Badge pill style={
@@ -223,7 +260,7 @@ const Products = () => {
                                                     product.estado === 'pendiente' ? customStyles.warning :
                                                         customStyles.danger
                                             }>
-                                                {product.estado}
+                                                {product.estado || 'pendiente'}
                                             </Badge>
                                         </td>
                                         <td className="text-center">
@@ -232,7 +269,7 @@ const Products = () => {
                                                 size="sm"
                                                 className="me-2"
                                                 style={{ borderColor: customStyles.info.backgroundColor, color: customStyles.info.backgroundColor }}
-                                                onClick={() => handleShowDetail(product.idProducto)}
+                                                onClick={() => handleShowDetail(product.idProducto || product._id)}
                                             >
                                                 <FaEye />
                                             </Button>
@@ -268,7 +305,7 @@ const Products = () => {
                 </Card.Body>
             </Card>
 
-            {/* Modal de Detalles (estilo idéntico a ProductoRevision) */}
+            {/* Modal de Detalles */}
             <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} size="lg" centered>
                 <Modal.Header closeButton style={customStyles.secondary}>
                     <Modal.Title className="text-white">Detalles del Producto</Modal.Title>
@@ -286,7 +323,7 @@ const Products = () => {
                                         <FaImage className="me-2" /> Imágenes
                                     </Card.Header>
                                     <Card.Body>
-                                        {selectedProduct.Imagen?.length > 0 ? (
+                                        {selectedProduct.Imagen && selectedProduct.Imagen.length > 0 ? (
                                             <Row>
                                                 {selectedProduct.Imagen.map((img, index) => (
                                                     <Col xs={6} key={index} className="mb-3">
@@ -319,14 +356,14 @@ const Products = () => {
                                             <Col sm={6}>
                                                 <div className="mb-3">
                                                     <h6 className="text-muted">Nombre</h6>
-                                                    <p>{selectedProduct.Nombre}</p>
+                                                    <p>{selectedProduct.Nombre || 'N/A'}</p>
                                                 </div>
                                             </Col>
                                             <Col sm={6}>
                                                 <div className="mb-3">
                                                     <h6 className="text-muted">Precio</h6>
                                                     <p style={{ color: customStyles.success.backgroundColor, fontWeight: 'bold' }}>
-                                                        ${selectedProduct.Precio}
+                                                        ${selectedProduct.Precio || 0}
                                                     </p>
                                                 </div>
                                             </Col>
@@ -338,14 +375,14 @@ const Products = () => {
                                                             selectedProduct.estado === 'pendiente' ? customStyles.warning :
                                                                 customStyles.danger
                                                     }>
-                                                        {selectedProduct.estado}
+                                                        {selectedProduct.estado || 'pendiente'}
                                                     </Badge>
                                                 </div>
                                             </Col>
                                             <Col sm={6}>
                                                 <div className="mb-3">
                                                     <h6 className="text-muted">Creado el</h6>
-                                                    <p>{new Date(selectedProduct.createdAt).toLocaleDateString()}</p>
+                                                    <p>{selectedProduct.createdAt ? new Date(selectedProduct.createdAt).toLocaleDateString() : 'N/A'}</p>
                                                 </div>
                                             </Col>
                                         </Row>

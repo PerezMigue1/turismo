@@ -7,11 +7,9 @@ import {
     FaEye, FaInfoCircle,
     FaSearch, FaEdit, FaTrash, FaPlus, FaUser
 } from 'react-icons/fa';
-import axios from 'axios';
-import { useAuth } from '../Navigation/AuthContext';
 
 const Users = () => {
-    // Estilos idénticos a ProductoRevision
+    // Estilos personalizados
     const customStyles = {
         primary: { backgroundColor: '#9A1E47', borderColor: '#9A1E47' },
         secondary: { backgroundColor: '#0FA89C', borderColor: '#0FA89C' },
@@ -34,9 +32,7 @@ const Users = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [userDetailLoading, setUserDetailLoading] = useState(false);
 
-    const { currentUser } = useAuth();
-
-    // Función de notificación idéntica
+    // Función de notificación
     const mostrarToast = (message, variant = "success") => {
         setToastMessage(message);
         setToastVariant(variant);
@@ -44,35 +40,35 @@ const Users = () => {
         setTimeout(() => setShowToast(false), 3000);
     };
 
-    // Cargar detalles del usuario
-    const handleShowDetail = async (userId) => {
-        try {
-            setUserDetailLoading(true);
-            const token = currentUser?.token;
-            const response = await axios.get(`https://backend-iota-seven-19.vercel.app/api/usuarios/${userId}/detalles`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setSelectedUser(response.data);
-            setShowDetailModal(true);
-        } catch (error) {
-            mostrarToast('Error al cargar detalles del usuario', 'danger');
-        } finally {
-            setUserDetailLoading(false);
-        }
-    };
-
-        useEffect(() => {
+    // Cargar usuarios
+    useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const token = currentUser?.token;
-                const response = await axios.get('https://backend-iota-seven-19.vercel.app/api/usuarios', {
+                setLoading(true);
+                setError(null);
+
+                const response = await fetch('https://backend-iota-seven-19.vercel.app/api/usuarios', {
                     headers: {
-                        Authorization: `Bearer ${token}`
+                        'Content-Type': 'application/json'
                     }
                 });
-                setUsers(response.data);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // La API devuelve directamente el array de usuarios
+                if (Array.isArray(data)) {
+                    setUsers(data);
+                } else {
+                    setError('Formato de respuesta inválido');
+                    mostrarToast('Error al cargar usuarios', 'danger');
+                }
             } catch (error) {
-                setError('Error al cargar usuarios');
+                console.error('Error fetching users:', error);
+                setError('Error de conexión: ' + error.message);
                 mostrarToast('Error al cargar usuarios', 'danger');
             } finally {
                 setLoading(false);
@@ -80,11 +76,43 @@ const Users = () => {
         };
 
         fetchUsers();
-    }, [currentUser]);
+    }, []);
 
+    // Cargar detalles del usuario
+    const handleShowDetail = async (userId) => {
+        try {
+            setUserDetailLoading(true);
+
+            const response = await fetch(`https://backend-iota-seven-19.vercel.app/api/usuarios/${userId}`, {
+                headers: { 
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data) {
+                setSelectedUser(data);
+                setShowDetailModal(true);
+            } else {
+                mostrarToast('Error al cargar detalles del usuario', 'danger');
+            }
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+            mostrarToast('Error al cargar detalles del usuario', 'danger');
+        } finally {
+            setUserDetailLoading(false);
+        }
+    };
+
+    // Filtrar usuarios
     const filteredUsers = users.filter(user =>
-        user.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+        (user.nombre && user.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (user.email && user.email.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     if (loading) {
@@ -98,14 +126,23 @@ const Users = () => {
     if (error) {
         return (
             <Container className="mt-4">
-                <Alert variant="danger">{error}</Alert>
+                <Alert variant="danger">
+                    <h5>Error</h5>
+                    <p>{error}</p>
+                    <Button 
+                        variant="outline-danger" 
+                        onClick={() => window.location.reload()}
+                    >
+                        Reintentar
+                    </Button>
+                </Alert>
             </Container>
         );
     }
 
     return (
         <Container fluid className="py-4" style={customStyles.light}>
-            {/* Toast Notification (idéntico) */}
+            {/* Toast Notification */}
             <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 9999 }}>
                 <Toast
                     show={showToast}
@@ -121,7 +158,7 @@ const Users = () => {
                 </Toast>
             </div>
 
-            {/* Header (estilo idéntico) */}
+            {/* Header */}
             <Row className="mb-4">
                 <Col>
                     <h1 style={{ color: customStyles.primary.backgroundColor }}>
@@ -175,7 +212,7 @@ const Users = () => {
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((user) => (
                                     <tr key={user._id}>
-                                        <td>{user._id.substring(0, 8)}...</td>
+                                        <td>{user._id ? user._id.substring(0, 8) + '...' : 'N/A'}</td>
                                         <td>
                                             <div className="d-flex align-items-center">
                                                 <div
@@ -189,18 +226,18 @@ const Users = () => {
                                                 >
                                                     <FaUser />
                                                 </div>
-                                                {user.nombre}
+                                                {user.nombre || 'Sin nombre'}
                                             </div>
                                         </td>
-                                        <td>{user.email}</td>
+                                        <td>{user.email || 'N/A'}</td>
                                         <td className="text-center">
                                             <Badge pill style={customStyles.warning}>
-                                                {user.rol}
+                                                {user.rol || 'usuario'}
                                             </Badge>
                                         </td>
                                         <td className="text-center">
                                             <Badge pill style={user.estado === 'activo' ? customStyles.success : { backgroundColor: '#6c757d' }}>
-                                                {user.estado}
+                                                {user.estado || 'activo'}
                                             </Badge>
                                         </td>
                                         <td className="text-center">
@@ -245,7 +282,7 @@ const Users = () => {
                 </Card.Body>
             </Card>
 
-            {/* Modal de Detalles (estilo idéntico) */}
+            {/* Modal de Detalles */}
             <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} size="lg" centered>
                 <Modal.Header closeButton style={customStyles.secondary}>
                     <Modal.Title className="text-white">Detalles del Usuario</Modal.Title>
@@ -275,15 +312,15 @@ const Users = () => {
                                         >
                                             <FaUser />
                                         </div>
-                                        <h4>{selectedUser.nombre}</h4>
+                                        <h4>{selectedUser.nombre || 'Sin nombre'}</h4>
                                         <Badge
                                             pill
                                             style={selectedUser.estado === 'activo' ? customStyles.success : { backgroundColor: '#6c757d' }}
                                             className="mb-2"
                                         >
-                                            {selectedUser.estado}
+                                            {selectedUser.estado || 'activo'}
                                         </Badge>
-                                        <p className="text-muted">{selectedUser.rol}</p>
+                                        <p className="text-muted">{selectedUser.rol || 'usuario'}</p>
                                     </Card.Body>
                                 </Card>
 
@@ -292,7 +329,7 @@ const Users = () => {
                                         <FaInfoCircle className="me-2" /> Contacto
                                     </Card.Header>
                                     <Card.Body>
-                                        <p><strong>Email:</strong> {selectedUser.email}</p>
+                                        <p><strong>Email:</strong> {selectedUser.email || 'N/A'}</p>
                                         <p><strong>Teléfono:</strong> {selectedUser.telefono || 'N/A'}</p>
                                         <p><strong>Dirección:</strong> {selectedUser.direccion || 'N/A'}</p>
                                     </Card.Body>
@@ -309,11 +346,11 @@ const Users = () => {
                                             <Col md={6}>
                                                 <div className="mb-3">
                                                     <h6 className="text-muted">ID</h6>
-                                                    <p>{selectedUser._id}</p>
+                                                    <p>{selectedUser._id || 'N/A'}</p>
                                                 </div>
                                                 <div className="mb-3">
                                                     <h6 className="text-muted">Registrado el</h6>
-                                                    <p>{new Date(selectedUser.createdAt).toLocaleDateString()}</p>
+                                                    <p>{selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : 'N/A'}</p>
                                                 </div>
                                             </Col>
                                             <Col md={6}>
@@ -342,7 +379,7 @@ const Users = () => {
                                             </div>
                                             <div className="mb-3">
                                                 <h6 className="text-muted">Técnicas</h6>
-                                                <p>{selectedUser.tecnicas?.join(', ') || 'N/A'}</p>
+                                                <p>{selectedUser.tecnicas ? selectedUser.tecnicas.join(', ') : 'N/A'}</p>
                                             </div>
                                             <div>
                                                 <h6 className="text-muted">Experiencia</h6>
@@ -375,7 +412,7 @@ const Users = () => {
                                                 </div>
                                                 <div>
                                                     <h6 className="text-muted">Miembro desde</h6>
-                                                    <p>{new Date(selectedUser.createdAt).toLocaleDateString()}</p>
+                                                    <p>{selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : 'N/A'}</p>
                                                 </div>
                                             </Col>
                                         </Row>

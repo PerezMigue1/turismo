@@ -13,6 +13,9 @@ import GastroRequests from '../admin/GastronomiaRequests'
 import HospedajeRequests from '../admin/HospedajeRequests';
 import RestauranteRequests from '../admin/RestauranteRequests';
 import FestividadesAdmin from './FestividadesAdmin';
+import MisionVisionAdmin from './MisionVisionAdmin';
+import PoliticasAdmin from './PoliticasAdmin';
+import FAQAdmin from './FAQAdmin';
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
@@ -63,6 +66,12 @@ const AdminLayout = () => {
                 return <RestauranteRequests />;
             case 'festividadesAdmin': // Nuevo caso
                 return <FestividadesAdmin />;
+            case 'misionVision': // Nuevo caso
+                return <MisionVisionAdmin />;
+            case 'politicas': // Nuevo caso
+                return <PoliticasAdmin />;
+            case 'faq': // Nuevo caso
+                return <FAQAdmin />;
             case 'settings':
                 return <Settings />;
             default:

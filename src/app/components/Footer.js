@@ -61,6 +61,9 @@ const Footer = () => {
                                 { path: '/gastronomia', label: 'Gastronomía' },
                                 { path: '/artesanias', label: 'Artesanías' },
                                 { path: '/alojamiento', label: 'Alojamiento' },
+                                { path: '/mision-vision', label: 'Misión y Visión' },
+                                { path: '/politicas', label: 'Políticas' },
+                                { path: '/faq', label: 'FAQ' },
                                 { path: '/nosotros', label: 'Sobre nosotros' }
                             ].map((link, index) => (
                                 <li key={index} style={{ marginBottom: '10px' }}>

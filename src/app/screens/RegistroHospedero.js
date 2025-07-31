@@ -240,6 +240,7 @@ const RegistroHospedero = () => {
                                                 name="especialidad" 
                                                 value={formData.especialidad} 
                                                 onChange={handleChange}
+                                                readOnly
                                                 placeholder="Ej: Hotel, Hostal, Cabaña"
                                                 className="border-0 shadow-sm"
                                                 style={{ borderRadius: '10px', padding: '12px' }}

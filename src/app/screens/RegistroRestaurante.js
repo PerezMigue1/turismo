@@ -249,6 +249,7 @@ const RegistroRestaurante = () => {
                                                 name="especialidad" 
                                                 value={formData.especialidad} 
                                                 onChange={handleChange}
+                                                readOnly
                                                 placeholder="Ej: Comida mexicana, Pizzas, Mariscos"
                                                 className="border-0 shadow-sm"
                                                 style={{ borderRadius: '10px', padding: '12px' }}

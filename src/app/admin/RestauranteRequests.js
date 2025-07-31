@@ -4,8 +4,10 @@ import {
     Container, Table, Button, Modal, Badge, Alert, Form, Toast, Row, Col, Card, ButtonGroup, ProgressBar
 } from "react-bootstrap";
 import { FaCheck, FaTimes, FaEye, FaSpinner, FaFilter, FaChartBar, FaSync, FaImage, FaUtensils } from "react-icons/fa";
+import { useAuth } from '../Navigation/AuthContext';
 
 const RestauranteRequests = () => {
+    const { currentUser } = useAuth();
     const [publicaciones, setPublicaciones] = useState([]);
     const [publicacionSeleccionada, setPublicacionSeleccionada] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -22,6 +24,8 @@ const RestauranteRequests = () => {
     const [showPlatillosModal, setShowPlatillosModal] = useState(false);
     const [platilloAccion, setPlatilloAccion] = useState({});
     const [loadingPlatillo, setLoadingPlatillo] = useState(false);
+    const [showDetallePlatilloModal, setShowDetallePlatilloModal] = useState(false);
+    const [platilloSeleccionado, setPlatilloSeleccionado] = useState(null);
 
     const customStyles = {
         primary: { backgroundColor: '#9A1E47', borderColor: '#9A1E47' },
@@ -130,9 +134,34 @@ const RestauranteRequests = () => {
         setPublicacionSeleccionada(publicacion);
         setShowPlatillosModal(true);
         try {
-            const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/comidaRestaurante/por-restaurante/${publicacion.idRestaurante}`);
-            setPlatillos(res.data);
+            console.log('🔍 Abriendo modal para restaurante:', publicacion.Nombre);
+            console.log('🔍 ID del restaurante:', publicacion.idRestaurante);
+            
+            // Filtrar platillos por el nombre del restaurante específico
+            const res = await axios.get('https://backend-iota-seven-19.vercel.app/api/comidaRestaurante');
+            console.log('🔍 Todos los platillos obtenidos:', res.data.length);
+            
+            // Filtrar solo los platillos de este restaurante específico
+            const platillosDelRestaurante = res.data.filter(platillo => 
+                platillo.Restaurante && 
+                platillo.Restaurante.Nombre === publicacion.Nombre
+            );
+            
+            console.log('🔍 Platillos filtrados para restaurante:', publicacion.Nombre, platillosDelRestaurante.length);
+            
+            // Mostrar detalles de cada platillo filtrado
+            platillosDelRestaurante.forEach((platillo, index) => {
+                console.log(`🔍 Platillo ${index + 1}:`, {
+                    nombre: platillo.Nombre,
+                    restaurante: platillo.Restaurante?.Nombre,
+                    estado: platillo.estadoRevision,
+                    idRestaurante: platillo.idRestaurante
+                });
+            });
+            
+            setPlatillos(platillosDelRestaurante);
         } catch (error) {
+            console.error('Error al obtener platillos:', error);
             setPlatillos([]);
         }
     };
@@ -140,19 +169,62 @@ const RestauranteRequests = () => {
     const aprobarORechazarPlatillo = async (platillo, tipo) => {
         setPlatilloAccion({ id: platillo._id, loading: true });
         try {
+            const token = currentUser?.token;
+            
+            console.log('🔍 Admin - CurrentUser:', currentUser);
+            console.log('🔍 Admin - Token disponible:', !!token);
+            
+            if (!token) {
+                mostrarToast("❌ No hay token de autorización", "danger");
+                return;
+            }
+            
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+            
             if (tipo === "aprobar") {
-                await axios.post(`https://backend-iota-seven-19.vercel.app/api/publicaRestaurantes/platillo/${platillo._id}/aprobar`);
+                await axios.put(`https://backend-iota-seven-19.vercel.app/api/comidaRestaurante/${platillo._id}`, {
+                    estadoRevision: 'aprobado'
+                }, { headers });
             } else {
-                await axios.post(`https://backend-iota-seven-19.vercel.app/api/publicaRestaurantes/platillo/${platillo._id}/rechazar`);
+                await axios.put(`https://backend-iota-seven-19.vercel.app/api/comidaRestaurante/${platillo._id}`, {
+                    estadoRevision: 'rechazado'
+                }, { headers });
             }
             mostrarToast(`Platillo ${tipo === "aprobar" ? "aprobado" : "rechazado"}`);
-            const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/publicaRestaurantes/${publicacionSeleccionada._id}/detalle-con-platillos`);
-            setPlatillos(res.data.platillos);
+            
+            // Recargar la lista de platillos desde el servidor
+            if (publicacionSeleccionada) {
+                const res = await axios.get('https://backend-iota-seven-19.vercel.app/api/comidaRestaurante');
+                console.log('🔍 Todos los platillos obtenidos para actualizar:', res.data.length);
+                
+                // Filtrar solo los platillos de este restaurante específico
+                const platillosDelRestaurante = res.data.filter(platillo => 
+                    platillo.Restaurante && 
+                    platillo.Restaurante.Nombre === publicacionSeleccionada.Nombre
+                );
+                
+                console.log('🔍 Platillos actualizados para restaurante:', publicacionSeleccionada.Nombre, platillosDelRestaurante.length);
+                setPlatillos(platillosDelRestaurante);
+            }
         } catch (error) {
+            console.error('Error al procesar platillo:', error);
             mostrarToast("Error al procesar el platillo", "danger");
         } finally {
             setPlatilloAccion({});
         }
+    };
+
+    const verDetallePlatillo = (platillo) => {
+        setPlatilloSeleccionado(platillo);
+        setShowDetallePlatilloModal(true);
+    };
+
+    const cerrarDetallePlatillo = () => {
+        setShowDetallePlatilloModal(false);
+        setPlatilloSeleccionado(null);
     };
 
     return (
@@ -327,11 +399,15 @@ const RestauranteRequests = () => {
             {/* Modal de Platillos */}
             <Modal show={showPlatillosModal} onHide={() => setShowPlatillosModal(false)} size="lg" centered>
                 <Modal.Header closeButton style={customStyles.info}>
-                    <Modal.Title className="text-white">Platillos del Restaurante</Modal.Title>
+                    <Modal.Title className="text-white">
+                        Platillos de: {publicacionSeleccionada?.Nombre || 'Restaurante'}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {platillos.length === 0 ? (
-                        <Alert variant="info">No hay platillos registrados para este restaurante.</Alert>
+                        <Alert variant="info">
+                            No hay platillos registrados para el restaurante "{publicacionSeleccionada?.Nombre}".
+                        </Alert>
                     ) : (
                         <Row>
                             {platillos.map((platillo) => (
@@ -346,14 +422,21 @@ const RestauranteRequests = () => {
                                             <div className="mb-2">💲 <strong>{platillo.Precio}</strong></div>
                                             <div style={{ fontSize: 13 }}>{platillo.Descripcion}</div>
                                             <div className="mt-3">
-                                                {platillo.estadoRevision === "aprobado" && <Badge bg="success">Aprobado</Badge>}
-                                                {platillo.estadoRevision === "rechazado" && <Badge bg="danger">Rechazado</Badge>}
-                                                {(!platillo.estadoRevision || platillo.estadoRevision === "pendiente") && (
-                                                    <>
-                                                        <Button size="sm" variant="success" className="me-2" disabled={loadingPlatillo && platilloAccion.id === platillo._id} onClick={() => aprobarORechazarPlatillo(platillo, "aprobar")}>{loadingPlatillo && platilloAccion.id === platillo._id ? <FaSpinner className="spin" /> : <FaCheck />} Aprobar</Button>
-                                                        <Button size="sm" variant="danger" disabled={loadingPlatillo && platilloAccion.id === platillo._id} onClick={() => aprobarORechazarPlatillo(platillo, "rechazar")}>{loadingPlatillo && platilloAccion.id === platillo._id ? <FaSpinner className="spin" /> : <FaTimes />} Rechazar</Button>
-                                                    </>
-                                                )}
+                                                {platillo.estadoRevision === "aprobado" && <Badge bg="success" className="mb-2">Aprobado</Badge>}
+                                                {platillo.estadoRevision === "rechazado" && <Badge bg="danger" className="mb-2">Rechazado</Badge>}
+                                                <div className="mb-2">
+                                                    <Button size="sm" variant="info" className="me-2" onClick={() => verDetallePlatillo(platillo)}>
+                                                        <FaEye /> Ver Detalles
+                                                    </Button>
+                                                </div>
+                                                <div>
+                                                    <Button size="sm" variant="success" className="me-2" disabled={loadingPlatillo && platilloAccion.id === platillo._id} onClick={() => aprobarORechazarPlatillo(platillo, "aprobar")}>
+                                                        {loadingPlatillo && platilloAccion.id === platillo._id ? <FaSpinner className="spin" /> : <FaCheck />} Aprobar
+                                                    </Button>
+                                                    <Button size="sm" variant="danger" disabled={loadingPlatillo && platilloAccion.id === platillo._id} onClick={() => aprobarORechazarPlatillo(platillo, "rechazar")}>
+                                                        {loadingPlatillo && platilloAccion.id === platillo._id ? <FaSpinner className="spin" /> : <FaTimes />} Rechazar
+                                                    </Button>
+                                                </div>
                                             </div>
                                         </Card.Body>
                                     </Card>
@@ -390,6 +473,121 @@ const RestauranteRequests = () => {
                     <Button variant={accion === "aprobar" ? "success" : "danger"} onClick={enviarNotificacion} disabled={loading} style={accion === "aprobar" ? customStyles.success : customStyles.danger}>
                         {loading ? (<><FaSpinner className="spin me-2" /> Procesando...</>) : (accion === "aprobar" ? "Aprobar y Notificar" : "Rechazar y Notificar")}
                     </Button>
+                </Modal.Footer>
+            </Modal>
+            {/* Modal de Detalles del Platillo */}
+            <Modal show={showDetallePlatilloModal} onHide={cerrarDetallePlatillo} size="lg" centered>
+                <Modal.Header closeButton style={customStyles.secondary}>
+                    <Modal.Title className="text-white">
+                        Detalles del Platillo: {platilloSeleccionado?.Nombre}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {platilloSeleccionado ? (
+                        <div>
+                            {/* Imagen del platillo */}
+                            {platilloSeleccionado.Imagenes && platilloSeleccionado.Imagenes.length > 0 && (
+                                <div className="text-center mb-4">
+                                    <img
+                                        src={platilloSeleccionado.Imagenes[0]}
+                                        alt={platilloSeleccionado.Nombre}
+                                        style={{ 
+                                            width: '100%', 
+                                            maxHeight: 300, 
+                                            objectFit: 'cover', 
+                                            borderRadius: 10,
+                                            border: '3px solid #0FA89C'
+                                        }}
+                                    />
+                                </div>
+                            )}
+                            
+                            {/* Información básica */}
+                            <Row className="mb-4">
+                                <Col md={6}>
+                                    <h5 style={{ color: customStyles.primary.backgroundColor }}>Información Básica</h5>
+                                    <p><strong>Nombre:</strong> {platilloSeleccionado.Nombre}</p>
+                                    <p><strong>Categoría:</strong> {platilloSeleccionado.Categoria}</p>
+                                    <p><strong>Precio:</strong> ${platilloSeleccionado.Precio?.toFixed(2)}</p>
+                                    <p><strong>Estado:</strong> 
+                                        <Badge bg={platilloSeleccionado.estadoRevision === "aprobado" ? "success" : 
+                                                  platilloSeleccionado.estadoRevision === "rechazado" ? "danger" : "warning"} 
+                                               className="ms-2">
+                                            {platilloSeleccionado.estadoRevision || "pendiente"}
+                                        </Badge>
+                                    </p>
+                                </Col>
+                                <Col md={6}>
+                                    <h5 style={{ color: customStyles.primary.backgroundColor }}>Restaurante</h5>
+                                    <p><strong>Nombre:</strong> {platilloSeleccionado.Restaurante?.Nombre}</p>
+                                    <p><strong>Municipio:</strong> {platilloSeleccionado.Restaurante?.Ubicacion?.Municipio}</p>
+                                    <p><strong>Estado:</strong> {platilloSeleccionado.Restaurante?.Ubicacion?.Estado}</p>
+                                </Col>
+                            </Row>
+                            
+                            {/* Descripción */}
+                            <div className="mb-4">
+                                <h5 style={{ color: customStyles.primary.backgroundColor }}>Descripción</h5>
+                                <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>{platilloSeleccionado.Descripcion}</p>
+                            </div>
+                            
+                            {/* Ingredientes */}
+                            {platilloSeleccionado.Ingredientes && platilloSeleccionado.Ingredientes.length > 0 && (
+                                <div className="mb-4">
+                                    <h5 style={{ color: customStyles.primary.backgroundColor }}>Ingredientes</h5>
+                                    <ul style={{ fontSize: '1.05rem' }}>
+                                        {platilloSeleccionado.Ingredientes.map((ingrediente, index) => (
+                                            <li key={index}>{ingrediente}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            
+                            {/* Pasos de preparación */}
+                            {platilloSeleccionado.PasosPreparacion && platilloSeleccionado.PasosPreparacion.length > 0 && (
+                                <div className="mb-4">
+                                    <h5 style={{ color: customStyles.primary.backgroundColor }}>Pasos de Preparación</h5>
+                                    <ol style={{ fontSize: '1.05rem' }}>
+                                        {platilloSeleccionado.PasosPreparacion.map((paso, index) => (
+                                            <li key={index}>{paso}</li>
+                                        ))}
+                                    </ol>
+                                </div>
+                            )}
+                            
+                            {/* Galería de imágenes */}
+                            {platilloSeleccionado.Imagenes && platilloSeleccionado.Imagenes.length > 1 && (
+                                <div className="mb-4">
+                                    <h5 style={{ color: customStyles.primary.backgroundColor }}>Galería de Imágenes</h5>
+                                    <Row>
+                                        {platilloSeleccionado.Imagenes.slice(1).map((imagen, index) => (
+                                            <Col xs={6} md={4} key={index} className="mb-3">
+                                                <img
+                                                    src={imagen}
+                                                    alt={`${platilloSeleccionado.Nombre} - Imagen ${index + 2}`}
+                                                    style={{ 
+                                                        width: '100%', 
+                                                        height: 120, 
+                                                        objectFit: 'cover', 
+                                                        borderRadius: 8,
+                                                        border: '2px solid #0FA89C'
+                                                    }}
+                                                />
+                                            </Col>
+                                        ))}
+                                    </Row>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="text-center">
+                            <FaSpinner className="spin" size={48} style={{ color: customStyles.info.backgroundColor }} />
+                            <p className="mt-3">Cargando detalles del platillo...</p>
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button onClick={cerrarDetallePlatillo} style={customStyles.primary}>Cerrar</Button>
                 </Modal.Footer>
             </Modal>
             {/* Toast de Mensaje */}

@@ -2,14 +2,16 @@
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 import {
-    FaTachometerAlt,
-    FaUsers,
-    FaBox,
-    FaCog,
-    FaChartBar,
-    FaShoppingCart,
-    FaComments,
-    FaInbox
+  FaTachometerAlt,
+  FaUsers,
+  FaBox,
+  FaCog,
+  FaChartBar,
+  FaShoppingCart,
+  FaComments,
+  FaInbox,
+  FaBullseye,
+  FaShieldAlt
 } from 'react-icons/fa';
 import styled from 'styled-components';
 
@@ -60,42 +62,45 @@ const SidebarText = styled.span`
 `;
 
 const Sidebar = ({ activeSection, setActiveSection, collapsed }) => {
-    const menuItems = [
-        { id: 'dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> },
-        { id: 'requests', label: 'Solicitudes', icon: <FaInbox /> },
-        { id: 'gastrorequests', label: 'Solicitudes Gastronomia', icon: <FaInbox /> },
-        { id: 'hospedajeequests', label: 'Solicitudes Hospedaje', icon: <FaInbox /> },
-        { id: 'restauranterequests', label: 'Solicitudes Restaurante', icon: <FaInbox /> },
-        { id: 'festividadesAdmin', label: 'Festividades', icon: <FaInbox /> },
-        { id: 'users', label: 'Usuarios', icon: <FaUsers /> },
-        { id: 'products', label: 'Productos', icon: <FaBox /> },
-        { id: 'orders', label: 'Pedidos', icon: <FaShoppingCart /> },
-        { id: 'analytics', label: 'Analíticas', icon: <FaChartBar /> },
-        { id: 'messages', label: 'Mensajes', icon: <FaComments /> },
-        { id: 'settings', label: 'Configuración', icon: <FaCog /> },
-    ];
+  const menuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: <FaTachometerAlt /> },
+    { id: 'requests', label: 'Solicitudes', icon: <FaInbox /> },
+    { id: 'gastrorequests', label: 'Solicitudes Gastronomia', icon: <FaInbox /> },
+    { id: 'hospedajeequests', label: 'Solicitudes Hospedaje', icon: <FaInbox /> },
+    { id: 'restauranterequests', label: 'Solicitudes Restaurante', icon: <FaInbox /> },
+    { id: 'festividadesAdmin', label: 'Festividades', icon: <FaInbox /> },
+    { id: 'users', label: 'Usuarios', icon: <FaUsers /> },
+    { id: 'products', label: 'Productos', icon: <FaBox /> },
+    { id: 'orders', label: 'Pedidos', icon: <FaShoppingCart /> },
+    { id: 'analytics', label: 'Analíticas', icon: <FaChartBar /> },
+    { id: 'messages', label: 'Mensajes', icon: <FaComments /> },
+    { id: 'misionVision', label: 'Misión y Visión', icon: <FaBullseye /> },
+    { id: 'politicas', label: 'Políticas', icon: <FaShieldAlt /> },
+    { id: 'faq', label: 'FAQ', icon: <FaShieldAlt /> },
+    { id: 'settings', label: 'Configuración', icon: <FaCog /> },
+  ];
 
-    return (
-        <SidebarContainer collapsed={collapsed}>
-            <Nav className="flex-column">
-                {menuItems.map((item) => (
-                    <SidebarLink
-                        key={item.id}
-                        href="#"
-                        active={activeSection === item.id}
-                        collapsed={collapsed}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            setActiveSection(item.id);
-                        }}
-                    >
-                        <SidebarIcon collapsed={collapsed}>{item.icon}</SidebarIcon>
-                        <SidebarText collapsed={collapsed}>{item.label}</SidebarText>
-                    </SidebarLink>
-                ))}
-            </Nav>
-        </SidebarContainer>
-    );
+  return (
+    <SidebarContainer collapsed={collapsed}>
+      <Nav className="flex-column">
+        {menuItems.map((item) => (
+          <SidebarLink
+            key={item.id}
+            href="#"
+            active={activeSection === item.id}
+            collapsed={collapsed}
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveSection(item.id);
+            }}
+          >
+            <SidebarIcon collapsed={collapsed}>{item.icon}</SidebarIcon>
+            <SidebarText collapsed={collapsed}>{item.label}</SidebarText>
+          </SidebarLink>
+        ))}
+      </Nav>
+    </SidebarContainer>
+  );
 };
 
 export default Sidebar;

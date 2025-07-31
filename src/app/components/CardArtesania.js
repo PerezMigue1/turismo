@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Card, Button, Badge, OverlayTrigger, Tooltip, Carousel } from 'react-bootstrap';
-import { FaShoppingCart, FaHeart, FaStar, FaShippingFast, FaInfoCircle } from 'react-icons/fa';
+import { FaShoppingCart, FaStar, FaShippingFast, FaInfoCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../Navigation/CartContext';
 
@@ -140,15 +140,18 @@ const CardArtesania = ({ artesania }) => {
                     </div>
                 </div>
                 <div className="d-grid gap-2">
-                    <Button
-                        variant="outline"
-                        style={{
-                            color: '#9A1E47',
-                            borderColor: '#9A1E47'
-                        }}
-                    >
-                        <FaHeart />
-                    </Button>
+                    <Link to={`/artesanias/${artesania.idProducto}`}>
+                        <Button
+                            variant="outline"
+                            style={{
+                                color: '#9A1E47',
+                                borderColor: '#9A1E47',
+                                width: '100%'
+                            }}
+                        >
+                            Ver Artesanía
+                        </Button>
+                    </Link>
                 </div>
             </Card.Body>
         </Card>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Badge } from 'react-bootstrap';
+import { Card, Button, Badge, Carousel } from 'react-bootstrap';
 import { FaStar, FaMapMarkerAlt, FaUtensils } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -13,33 +13,41 @@ const CardRestaurante = ({ restaurante }) => {
             transition: 'transform 0.3s, box-shadow 0.3s',
             backgroundColor: 'white',
         }}>
-            <Link to={`/restaurantes/${restaurante._id}`}> 
-                {restaurante.Imagenes && restaurante.Imagenes.length > 0 ? (
-                    <Card.Img
-                        variant="top"
-                        src={restaurante.Imagenes[0]}
+                        <Link to={`/restaurantes/${restaurante._id}`}> 
+                {restaurante.Imagenes && restaurante.Imagenes.length > 1 ? (
+                    <Carousel interval={3000} controls={false} indicators={false} pause={false}>
+                        {restaurante.Imagenes.map((img, idx) => (
+                            <Carousel.Item key={idx}>
+                                <img
+                                    src={img}
+                                    alt={`Imagen ${idx + 1}`}
+                                    style={{
+                                        width: '100%',
+                                        height: '200px',
+                                        objectFit: 'cover',
+                                        borderBottom: '3px solid #F28B27'
+                                    }}
+                                    onError={(e) => {
+                                        e.target.src = '/placeholder-restaurant.jpg';
+                                    }}
+                                />
+                            </Carousel.Item>
+                        ))}
+                    </Carousel>
+                ) : (
+                    <img
+                        src={restaurante.Imagenes?.[0]}
+                        alt={restaurante.Nombre}
                         style={{
+                            width: '100%',
                             height: '200px',
                             objectFit: 'cover',
                             borderBottom: '3px solid #F28B27'
                         }}
-                        alt={restaurante.Nombre}
                         onError={(e) => {
                             e.target.src = '/placeholder-restaurant.jpg';
                         }}
                     />
-                ) : (
-                    <div style={{
-                        height: '200px',
-                        backgroundColor: '#ddd',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#666',
-                        borderBottom: '3px solid #F28B27'
-                    }}>
-                        Sin imagen
-                    </div>
                 )}
             </Link>
             <Card.Body className="d-flex flex-column" style={{ backgroundColor: '#FEF8ED' }}>

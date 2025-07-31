@@ -33,6 +33,13 @@ import RestauranteDetalle from '../screens/DetalleRestaurante'
 
 import AdminLayout from '../admin/AdminLayout';
 import Festividades from '../screens/Festividades';
+import Negocios from '../screens/Negocios';
+import DetalleNegocio from '../screens/DetalleNegocio';
+import Lugares from '../screens/Lugares';
+import DetalleLugar from '../screens/DetalleLugar';
+import MisionVision from '../screens/MisionVision';
+import Politicas from '../screens/Politicas';
+import FAQ from '../screens/FAQ';
 
 
 // Componente para proteger rutas
@@ -217,6 +224,41 @@ const Navigation = () => {
                             } />
 
 
+
+                            <Route path="/negocios" element={
+                                <>
+                                    <Header />
+                                    <Negocios />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/negocios/:id" element={
+                                <>
+                                    <Header />
+                                    <DetalleNegocio />
+                                    <Footer />
+                                </>
+                            } />
+
+
+                            <Route path="/lugares" element={
+                                <>
+                                    <Header />
+                                    <Lugares />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/lugares/:id" element={
+                                <>
+                                    <Header />
+                                    <DetalleLugar />
+                                    <Footer />
+                                </>
+                            } />
+
+
                             <Route path="/Notificaciones" element={
                                 <>
                                     <Header />
@@ -225,8 +267,6 @@ const Navigation = () => {
                                 </>
                             } />
 
-
-
                             <Route path="/festividades" element={
                                 <>
                                     <Header />
@@ -234,7 +274,50 @@ const Navigation = () => {
                                     <Footer />
                                 </>
                             } />
+
+
+
+
+                            <Route path="/mision-vision" element={
+                                <>
+                                    <Header />
+                                    <MisionVision />
+                                    <Footer />
+                                </>
+                            } />
+
+                                                        <Route path="/mision-vision" element={
+                                <>
+                                    <Header />
+                                    <MisionVision />
+                                    <Footer />
+                                </>
+                            } />
+
+
+                            <Route path="/mision-vision" element={
+                                <>
+                                    <Header />
+                                    <MisionVision />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/politicas" element={
+                                <>
+                                    <Header />
+                                    <Politicas />
+                                    <Footer />
+                                </>
+                            } />
                             
+                            <Route path="/faq" element={
+                                <>
+                                    <Header />
+                                    <FAQ />
+                                    <Footer />
+                                </>
+                            } />
 
                             {/* Rutas de autenticación SIN Header y Footer */}
                             <Route path="/login" element={<Login />} />

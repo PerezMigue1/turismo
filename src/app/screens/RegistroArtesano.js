@@ -8,7 +8,7 @@ const RegistroArtesano = () => {
         correo: '',
         telefono: '',
         ubicacion: '',
-        especialidad: '',
+        especialidad: 'artesano',
         descripcion: '',
         imagenPerfil: null,
         facebook: '',
@@ -256,6 +256,7 @@ const RegistroArtesano = () => {
                                                 name="especialidad" 
                                                 value={formData.especialidad} 
                                                 onChange={handleChange}
+                                                readOnly
                                                 placeholder="Ej: Alfarería, Tejido, Pintura"
                                                 className="border-0 shadow-sm"
                                                 style={{ borderRadius: '10px', padding: '12px' }}

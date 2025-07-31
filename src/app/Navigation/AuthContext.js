@@ -18,14 +18,20 @@ export function AuthProvider({ children }) {
             }
 
             setCurrentUser(parsedUser);
+            console.log('🔍 AuthContext - Usuario cargado desde localStorage:', parsedUser);
         }
     }, []);
 
     const login = (userData) => {
-        // Asegurar que el usuario tenga un rol
-        const userWithRole = { ...userData, rol: userData.rol || 'user' };
+        // Asegurar que el usuario tenga un rol y token
+        const userWithRole = { 
+            ...userData, 
+            rol: userData.rol || 'user',
+            token: userData.token // Asegurar que el token esté incluido
+        };
         setCurrentUser(userWithRole);
         localStorage.setItem('user', JSON.stringify(userWithRole));
+        console.log('🔍 AuthContext - Usuario guardado:', userWithRole);
     };
 
     const logout = () => {

@@ -190,6 +190,17 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <FaStore style={{ marginRight: "10px" }} /> Negocios
                 </Nav.Link>
 
+                <Nav.Link as={Link} to="/lugares" onClick={onClose} style={{
+                    color: "#9A1E47",
+                    padding: "10px 15px",
+                    marginBottom: "5px",
+                    borderRadius: "5px",
+                    display: "flex",
+                    alignItems: "center"
+                }}>
+                    <FaStore style={{ marginRight: "10px" }} /> Lugares
+                </Nav.Link>
+
                 <div style={{ 
                     color: "#0FA89C", // Turquesa Agua
                     fontWeight: "bold",
