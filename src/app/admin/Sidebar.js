@@ -12,7 +12,10 @@ import {
   FaInbox,
   FaBullseye,
   FaShieldAlt,
-  FaMountain
+  FaMountain,
+  FaClipboardList,
+  FaMapMarkedAlt,
+  FaStore
 } from 'react-icons/fa';
 import styled from 'styled-components';
 
@@ -69,6 +72,8 @@ const Sidebar = ({ activeSection, setActiveSection, collapsed }) => {
     { id: 'gastrorequests', label: 'Solicitudes Gastronomia', icon: <FaInbox /> },
     { id: 'hospedajeequests', label: 'Solicitudes Hospedaje', icon: <FaInbox /> },
     { id: 'restauranterequests', label: 'Solicitudes Restaurante', icon: <FaInbox /> },
+    { id: 'lugares', label: 'Lugares', icon: <FaMapMarkedAlt /> },
+    { id: 'negocios', label: 'Negocios', icon: <FaStore /> },
     { id: 'festividadesAdmin', label: 'Festividades', icon: <FaInbox /> },
     { id: 'users', label: 'Usuarios', icon: <FaUsers /> },
     { id: 'products', label: 'Productos', icon: <FaBox /> },
@@ -79,6 +84,7 @@ const Sidebar = ({ activeSection, setActiveSection, collapsed }) => {
     { id: 'misionVision', label: 'Misión y Visión', icon: <FaBullseye /> },
     { id: 'politicas', label: 'Políticas', icon: <FaShieldAlt /> },
     { id: 'faq', label: 'FAQ', icon: <FaShieldAlt /> },
+    { id: 'encuestas', label: 'Encuestas', icon: <FaClipboardList /> },
     { id: 'settings', label: 'Configuración', icon: <FaCog /> },
   ];
 

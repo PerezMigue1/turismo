@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Card, Badge, Button, Row, Col, Alert, Spinner, Form, Tabs, Tab } from 'react-bootstrap';
+import { Container, Card, Badge, Button, Row, Col, Alert, Spinner, Form, Tabs, Tab, Carousel } from 'react-bootstrap';
 import { FaMapMarkerAlt, FaClock, FaPhone, FaStar, FaArrowLeft, FaFacebook, FaInstagram, FaWhatsapp, FaUser, FaComments, FaStore } from 'react-icons/fa';
 
 const DetalleNegocio = () => {
@@ -77,7 +77,23 @@ const DetalleNegocio = () => {
     );
   }
 
-  const imagen = Array.isArray(negocio.Imagenes) ? negocio.Imagenes[0] : negocio.Imagenes;
+  // Manejo de imágenes para carrusel
+  let imagenes = [];
+  if (negocio.Imagenes && Array.isArray(negocio.Imagenes) && negocio.Imagenes.length > 0) {
+    imagenes = negocio.Imagenes;
+  } else if (negocio.Imagen && Array.isArray(negocio.Imagen) && negocio.Imagen.length > 0) {
+    imagenes = negocio.Imagen;
+  } else if (negocio.Imagenes && typeof negocio.Imagenes === 'string') {
+    imagenes = [negocio.Imagenes];
+  } else if (negocio.Imagen && typeof negocio.Imagen === 'string') {
+    imagenes = [negocio.Imagen];
+  }
+  
+  // Si no hay imágenes, usar una imagen por defecto
+  if (imagenes.length === 0) {
+    imagenes = ['/placeholder-product.jpg'];
+  }
+
   const municipio = negocio.Ubicacion?.Municipio || negocio.municipio || '';
   const categoria = negocio.Categoria || negocio.categoria || '';
   const redes = negocio.RedesSociales || negocio.redesSociales || {};
@@ -98,15 +114,42 @@ const DetalleNegocio = () => {
       <Row>
         <Col md={7}>
           <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
-            {imagen && (
-              <Card.Img
-                variant="top"
-                src={imagen}
-                alt={negocio.Nombre}
-                style={{ maxHeight: '500px', objectFit: 'cover', borderBottom: '3px solid #F28B27' }}
-                onError={(e) => e.target.src = '/placeholder-product.jpg'}
-              />
-            )}
+            <Carousel 
+              interval={5000} 
+              controls={imagenes.length > 1}
+              indicators={imagenes.length > 1}
+              style={{ 
+                borderBottom: '3px solid #F28B27',
+                backgroundColor: '#f8f9fa'
+              }}
+            >
+              {imagenes.map((imagen, index) => (
+                <Carousel.Item key={index}>
+                  <img
+                    className="d-block w-100"
+                    src={imagen}
+                    alt={`${negocio.Nombre || negocio.nombre} - Imagen ${index + 1}`}
+                    style={{ 
+                      height: '500px', 
+                      objectFit: 'cover',
+                      width: '100%'
+                    }}
+                    onError={(e) => e.target.src = '/placeholder-product.jpg'}
+                  />
+                  {imagenes.length > 1 && (
+                    <Carousel.Caption style={{ 
+                      background: 'rgba(0, 0, 0, 0.5)', 
+                      borderRadius: '8px',
+                      padding: '10px'
+                    }}>
+                      <p style={{ margin: 0, fontSize: '14px' }}>
+                        Imagen {index + 1} de {imagenes.length}
+                      </p>
+                    </Carousel.Caption>
+                  )}
+                </Carousel.Item>
+              ))}
+            </Carousel>
           </Card>
 
           <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>

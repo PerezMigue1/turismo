@@ -42,6 +42,8 @@ import Politicas from '../screens/Politicas';
 import FAQ from '../screens/FAQ';
 import Ecoturismo from '../screens/Ecoturismo';
 import DetalleEcoturismo from '../screens/DetalleEcoturismo';
+import Encuestas from '../screens/Encuestas';
+import ResponderEncuesta from '../screens/ResponderEncuesta';
 
 
 // Componente para proteger rutas
@@ -293,6 +295,21 @@ const Navigation = () => {
                                 </>
                             } />
 
+                            <Route path="/encuestas" element={
+                                <>
+                                    <Header />
+                                    <Encuestas />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/encuestas/:id" element={
+                                <>
+                                    <Header />
+                                    <ResponderEncuesta />
+                                    <Footer />
+                                </>
+                            } />
 
 
 

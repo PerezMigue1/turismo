@@ -1,11 +1,28 @@
 
 import React from 'react';
-import { Card, Badge, OverlayTrigger, Tooltip, Button } from 'react-bootstrap';
+import { Card, Badge, OverlayTrigger, Tooltip, Button, Carousel } from 'react-bootstrap';
 import { FaMapMarkerAlt, FaFacebook, FaInstagram, FaWhatsapp, FaInfoCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 const CardNegocio = ({ negocio }) => {
   const redes = negocio.RedesSociales || negocio.redesSociales || {};
+
+  // Manejo de imágenes para carrusel
+  let imagenes = [];
+  if (negocio.Imagenes && Array.isArray(negocio.Imagenes) && negocio.Imagenes.length > 0) {
+    imagenes = negocio.Imagenes;
+  } else if (negocio.Imagen && Array.isArray(negocio.Imagen) && negocio.Imagen.length > 0) {
+    imagenes = negocio.Imagen;
+  } else if (negocio.Imagenes && typeof negocio.Imagenes === 'string') {
+    imagenes = [negocio.Imagenes];
+  } else if (negocio.Imagen && typeof negocio.Imagen === 'string') {
+    imagenes = [negocio.Imagen];
+  }
+  
+  // Si no hay imágenes, usar una imagen por defecto
+  if (imagenes.length === 0) {
+    imagenes = ['/placeholder-product.jpg'];
+  }
 
   // Tooltip con info extra
   const renderTooltip = (props) => (
@@ -49,19 +66,44 @@ const CardNegocio = ({ negocio }) => {
         </OverlayTrigger>
       </div>
 
-      <Card.Img
-        variant="top"
-        src={negocio.Imagenes && negocio.Imagenes[0]}
-        alt={negocio.Nombre}
-        style={{
-          height: '200px',
-          objectFit: 'cover',
-          borderBottom: '3px solid #F28B27'
+      {/* Carrusel de imágenes */}
+      <Carousel 
+        interval={5000} 
+        controls={imagenes.length > 1}
+        indicators={imagenes.length > 1}
+        style={{ 
+          borderBottom: '3px solid #F28B27',
+          backgroundColor: '#f8f9fa'
         }}
-        onError={(e) => {
-          e.target.src = '/placeholder-product.jpg';
-        }}
-      />
+      >
+        {imagenes.map((imagen, index) => (
+          <Carousel.Item key={index}>
+            <img
+              className="d-block w-100"
+              src={imagen}
+              alt={`${negocio.Nombre || negocio.nombre} - Imagen ${index + 1}`}
+              style={{ 
+                height: '200px', 
+                objectFit: 'cover',
+                width: '100%'
+              }}
+              onError={(e) => e.target.src = '/placeholder-product.jpg'}
+            />
+            {imagenes.length > 1 && (
+              <Carousel.Caption style={{ 
+                background: 'rgba(0, 0, 0, 0.5)', 
+                borderRadius: '8px',
+                padding: '5px',
+                bottom: '10px'
+              }}>
+                <p style={{ margin: 0, fontSize: '12px' }}>
+                  {index + 1} / {imagenes.length}
+                </p>
+              </Carousel.Caption>
+            )}
+          </Carousel.Item>
+        ))}
+      </Carousel>
 
       <Card.Body className="d-flex flex-column" style={{ backgroundColor: '#FEF8ED', flex: 1 }}>
         <div className="mb-2">

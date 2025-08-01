@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Container, Card, Badge, Button, Row, Col, Alert, Spinner, Form, Tabs, Tab } from 'react-bootstrap';
-import { FaMapMarkerAlt, FaClock, FaPhone, FaStar, FaArrowLeft, FaHiking, FaDollarSign, FaLink, FaMapMarkedAlt } from 'react-icons/fa';
+import { Container, Card, Badge, Button, Row, Col, Alert, Spinner, Form, Tabs, Tab, Carousel } from 'react-bootstrap';
+import { FaMapMarkerAlt, FaClock, FaPhone, FaStar, FaArrowLeft, FaHiking, FaDollarSign, FaLink, FaMapMarkedAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const DetalleLugar = () => {
   const { id } = useParams();
@@ -77,16 +77,23 @@ const DetalleLugar = () => {
     );
   }
 
-  // Manejo mejorado de imágenes
-  let imagen = '';
+  // Manejo mejorado de imágenes para carrusel
+  let imagenes = [];
+  
+  // Buscar en todas las propiedades posibles de imágenes
   if (lugar.Imagenes && Array.isArray(lugar.Imagenes) && lugar.Imagenes.length > 0) {
-    imagen = lugar.Imagenes[0];
+    imagenes = lugar.Imagenes;
   } else if (lugar.Imagen && Array.isArray(lugar.Imagen) && lugar.Imagen.length > 0) {
-    imagen = lugar.Imagen[0];
+    imagenes = lugar.Imagen;
   } else if (lugar.Imagenes && typeof lugar.Imagenes === 'string') {
-    imagen = lugar.Imagenes;
+    imagenes = [lugar.Imagenes];
   } else if (lugar.Imagen && typeof lugar.Imagen === 'string') {
-    imagen = lugar.Imagen;
+    imagenes = [lugar.Imagen];
+  }
+  
+  // Si no hay imágenes, usar una imagen por defecto
+  if (imagenes.length === 0) {
+    imagenes = ['/placeholder-product.jpg'];
   }
 
   const municipio = lugar.Ubicacion?.Municipio || '';
@@ -142,15 +149,42 @@ const DetalleLugar = () => {
       <Row>
         <Col md={7}>
           <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
-            {imagen && (
-              <Card.Img
-                variant="top"
-                src={imagen}
-                alt={lugar.Nombre}
-                style={{ maxHeight: '500px', objectFit: 'cover', borderBottom: '3px solid #F28B27' }}
-                onError={(e) => e.target.src = '/placeholder-product.jpg'}
-              />
-            )}
+            <Carousel 
+              interval={5000} 
+              controls={imagenes.length > 1}
+              indicators={imagenes.length > 1}
+              style={{ 
+                borderBottom: '3px solid #F28B27',
+                backgroundColor: '#f8f9fa'
+              }}
+            >
+              {imagenes.map((imagen, index) => (
+                <Carousel.Item key={index}>
+                  <img
+                    className="d-block w-100"
+                    src={imagen}
+                    alt={`${lugar.Nombre} - Imagen ${index + 1}`}
+                    style={{ 
+                      height: '500px', 
+                      objectFit: 'cover',
+                      width: '100%'
+                    }}
+                    onError={(e) => e.target.src = '/placeholder-product.jpg'}
+                  />
+                  {imagenes.length > 1 && (
+                    <Carousel.Caption style={{ 
+                      background: 'rgba(0, 0, 0, 0.5)', 
+                      borderRadius: '8px',
+                      padding: '10px'
+                    }}>
+                      <p style={{ margin: 0, fontSize: '14px' }}>
+                        Imagen {index + 1} de {imagenes.length}
+                      </p>
+                    </Carousel.Caption>
+                  )}
+                </Carousel.Item>
+              ))}
+            </Carousel>
           </Card>
 
           <Card className="mb-4" style={{ borderColor: '#0FA89C' }}>
@@ -325,5 +359,52 @@ const DetalleLugar = () => {
     </Container>
   );
 };
+
+// Estilos CSS personalizados para el carrusel
+const carouselStyles = `
+  .carousel-control-prev,
+  .carousel-control-next {
+    background: rgba(154, 30, 71, 0.8);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0 10px;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .carousel-indicators {
+    bottom: 20px;
+  }
+  
+  .carousel-indicators button {
+    background-color: rgba(154, 30, 71, 0.6);
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    margin: 0 4px;
+  }
+  
+  .carousel-indicators button.active {
+    background-color: #9A1E47;
+  }
+  
+  .carousel-caption {
+    bottom: 20px;
+  }
+`;
+
+// Agregar estilos al head del documento
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = carouselStyles;
+document.head.appendChild(styleSheet);
 
 export default DetalleLugar;

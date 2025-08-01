@@ -58,9 +58,7 @@ const Footer = () => {
                             {[
                                 { path: '/ecoturismo', label: 'Ecoturismo' },
                                 { path: '/cultura', label: 'Turismo cultural' },
-                                { path: '/gastronomia', label: 'Gastronomía' },
-                                { path: '/artesanias', label: 'Artesanías' },
-                                { path: '/alojamiento', label: 'Alojamiento' },
+                                { path: '/encuestas', label: 'Encuestas' },
                                 { path: '/mision-vision', label: 'Misión y Visión' },
                                 { path: '/politicas', label: 'Políticas' },
                                 { path: '/faq', label: 'FAQ' },

@@ -17,6 +17,9 @@ import MisionVisionAdmin from './MisionVisionAdmin';
 import PoliticasAdmin from './PoliticasAdmin';
 import FAQAdmin from './FAQAdmin';
 import EcoturismoAdmin from './EcoturismoAdmin';
+import EncuestasAdmin from './EncuestasAdmin';
+import LugaresAdmin from './LugaresAdmin';
+import NegociosAdmin from './NegociosAdmin';
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
@@ -67,6 +70,10 @@ const AdminLayout = () => {
                 return <RestauranteRequests />;
             case 'festividadesAdmin': // Nuevo caso
                 return <FestividadesAdmin />;
+            case 'lugares': // Nuevo caso
+                return <LugaresAdmin />;
+            case 'negocios': // Nuevo caso
+                return <NegociosAdmin />;
             case 'ecoturismo': // Nuevo caso
                 return <EcoturismoAdmin />;
             case 'misionVision': // Nuevo caso
@@ -75,6 +82,8 @@ const AdminLayout = () => {
                 return <PoliticasAdmin />;
             case 'faq': // Nuevo caso
                 return <FAQAdmin />;
+            case 'encuestas': // Nuevo caso
+                return <EncuestasAdmin />;
             case 'settings':
                 return <Settings />;
             default:

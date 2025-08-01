@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Container, Row, Col, Card, Button, Modal, Form,
     Alert, Spinner, Table, Badge, InputGroup
 } from 'react-bootstrap';
-import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaMountain } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaEye, FaSearch, FaMountain, FaUpload, FaImage, FaTimes } from 'react-icons/fa';
 
 const EcoturismoAdmin = () => {
     const [ecoturismo, setEcoturismo] = useState([]);
@@ -12,6 +12,9 @@ const EcoturismoAdmin = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingItem, setEditingItem] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [uploadingImages, setUploadingImages] = useState(false);
+    const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
+    const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         nombre: '',
         descripcion: '',
@@ -125,11 +128,21 @@ const EcoturismoAdmin = () => {
         e.preventDefault();
         
         try {
+            setUploadingImages(true);
+            setError(null);
+            
             const token = getToken();
             if (!token) {
                 setError('No hay token de autenticación. Por favor, inicia sesión.');
                 return;
             }
+
+            // Obtener archivos seleccionados
+            const fileInput = fileInputRef.current;
+            const selectedFiles = fileInput ? Array.from(fileInput.files) : [];
+            
+            // Preparar FormData
+            const formDataToSend = prepareFormData(formData, selectedFiles);
 
             const url = editingItem 
                 ? `https://backend-iota-seven-19.vercel.app/api/ecoturismo/admin/${editingItem._id}`
@@ -140,10 +153,10 @@ const EcoturismoAdmin = () => {
             const response = await fetch(url, {
                 method,
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
+                    // No incluir Content-Type para FormData
                 },
-                body: JSON.stringify(formData)
+                body: formDataToSend
             });
 
             const data = await response.json();
@@ -152,6 +165,7 @@ const EcoturismoAdmin = () => {
                 setShowModal(false);
                 setEditingItem(null);
                 resetForm();
+                setImagePreviewUrls([]);
                 cargarEcoturismo();
             } else {
                 setError(data.message || 'Error al guardar');
@@ -159,6 +173,8 @@ const EcoturismoAdmin = () => {
         } catch (error) {
             console.error('Error:', error);
             setError('Error de conexión');
+        } finally {
+            setUploadingImages(false);
         }
     };
 
@@ -191,6 +207,8 @@ const EcoturismoAdmin = () => {
             calificacion: item.calificacion || 0,
             visitas: item.visitas || 0
         });
+        // Mostrar preview de imágenes existentes
+        setImagePreviewUrls(item.imagenes || []);
         setShowModal(true);
     };
 
@@ -266,6 +284,11 @@ const EcoturismoAdmin = () => {
         setShowModal(false);
         setEditingItem(null);
         resetForm();
+        setImagePreviewUrls([]);
+        // Limpiar input de archivos
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     };
 
     const getCategoriaLabel = (categoria) => {
@@ -318,6 +341,69 @@ const EcoturismoAdmin = () => {
     };
 
     const ecoturismoFiltrado = filtrarEcoturismo();
+
+    // Función para preparar FormData con imágenes
+    const prepareFormData = (data, files) => {
+        const formData = new FormData();
+        
+        // Agregar todos los campos del formulario EXCEPTO imagenes
+        Object.keys(data).forEach(key => {
+            if (key !== 'imagenes') {
+                if (key === 'coordenadas' || key === 'horarios' || key === 'contacto') {
+                    // Los objetos se envían como JSON string
+                    formData.append(key, JSON.stringify(data[key]));
+                } else if (key === 'equipamiento' || key === 'servicios_disponibles') {
+                    // Los arrays se envían como JSON string
+                    formData.append(key, JSON.stringify(data[key]));
+                } else {
+                    formData.append(key, data[key]);
+                }
+            }
+        });
+        
+        // Agregar imágenes existentes como JSON string
+        if (data.imagenes && data.imagenes.length > 0) {
+            formData.append('imagenesExistentes', JSON.stringify(data.imagenes));
+        }
+        
+        // Agregar archivos de imagen nuevos
+        if (files && files.length > 0) {
+            files.forEach(file => {
+                formData.append('imagenes', file);
+            });
+        }
+        
+        return formData;
+    };
+
+    // Función para manejar la selección de archivos
+    const handleFileSelect = (event) => {
+        const files = Array.from(event.target.files);
+        
+        // Crear URLs de preview
+        const previews = files.map(file => URL.createObjectURL(file));
+        setImagePreviewUrls(prev => [...prev, ...previews]);
+        
+        // Guardar archivos para subir después
+        setFormData(prev => ({
+            ...prev,
+            imagenes: [...prev.imagenes, ...files.map(file => file.name)] // Placeholder
+        }));
+    };
+
+    // Función para eliminar imagen de preview
+    const removeImagePreview = (index) => {
+        setImagePreviewUrls(prev => prev.filter((_, i) => i !== index));
+        setFormData(prev => ({
+            ...prev,
+            imagenes: prev.imagenes.filter((_, i) => i !== index)
+        }));
+    };
+
+    // Función para abrir selector de archivos
+    const openFileSelector = () => {
+        fileInputRef.current?.click();
+    };
 
     if (loading) {
         return (
@@ -845,20 +931,95 @@ const EcoturismoAdmin = () => {
                         </Row>
 
                         <Row>
-                            <Col md={6}>
+                            <Col md={12}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Imágenes (URLs separadas por comas)</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        value={formData.imagenes.join(', ')}
-                                        onChange={(e) => setFormData({
-                                            ...formData, 
-                                            imagenes: e.target.value.split(',').map(item => item.trim()).filter(item => item)
-                                        })}
-                                        placeholder="https://ejemplo.com/imagen1.jpg, https://ejemplo.com/imagen2.jpg"
-                                    />
+                                    <Form.Label>Imágenes</Form.Label>
+                                    <div style={{ 
+                                        border: '2px dashed #ccc', 
+                                        borderRadius: '8px', 
+                                        padding: '20px', 
+                                        textAlign: 'center',
+                                        backgroundColor: '#f8f9fa'
+                                    }}>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            multiple
+                                            accept="image/*"
+                                            onChange={handleFileSelect}
+                                            style={{ display: 'none' }}
+                                        />
+                                        <Button
+                                            variant="outline-primary"
+                                            onClick={openFileSelector}
+                                            style={{ marginBottom: '10px' }}
+                                        >
+                                            <FaUpload /> Seleccionar Imágenes
+                                        </Button>
+                                        <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>
+                                            Formatos permitidos: JPG, PNG, JPEG, WEBP, GIF (máx. 5MB por imagen)
+                                        </p>
+                                    </div>
                                 </Form.Group>
                             </Col>
+                        </Row>
+
+                        {/* Preview de imágenes */}
+                        {imagePreviewUrls.length > 0 && (
+                            <Row>
+                                <Col md={12}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Vista Previa de Imágenes</Form.Label>
+                                        <div style={{ 
+                                            display: 'flex', 
+                                            flexWrap: 'wrap', 
+                                            gap: '10px',
+                                            maxHeight: '200px',
+                                            overflowY: 'auto'
+                                        }}>
+                                            {imagePreviewUrls.map((url, index) => (
+                                                <div key={index} style={{ 
+                                                    position: 'relative',
+                                                    width: '120px',
+                                                    height: '120px',
+                                                    border: '1px solid #ddd',
+                                                    borderRadius: '8px',
+                                                    overflow: 'hidden'
+                                                }}>
+                                                    <img
+                                                        src={url}
+                                                        alt={`Preview ${index + 1}`}
+                                                        style={{
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            objectFit: 'cover'
+                                                        }}
+                                                    />
+                                                    <Button
+                                                        size="sm"
+                                                        variant="danger"
+                                                        style={{
+                                                            position: 'absolute',
+                                                            top: '5px',
+                                                            right: '5px',
+                                                            width: '24px',
+                                                            height: '24px',
+                                                            padding: '0',
+                                                            borderRadius: '50%'
+                                                        }}
+                                                        onClick={() => removeImagePreview(index)}
+                                                    >
+                                                        <FaTimes size={12} />
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        )}
+
+                        <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Check
@@ -873,17 +1034,25 @@ const EcoturismoAdmin = () => {
                         </Row>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={handleCloseModal}>
+                        <Button variant="secondary" onClick={handleCloseModal} disabled={uploadingImages}>
                             Cancelar
                         </Button>
                         <Button 
                             type="submit"
+                            disabled={uploadingImages}
                             style={{
                                 backgroundColor: '#1E8546',
                                 borderColor: '#1E8546'
                             }}
                         >
-                            {editingItem ? 'Actualizar' : 'Crear'}
+                            {uploadingImages ? (
+                                <>
+                                    <Spinner animation="border" size="sm" style={{ marginRight: '8px' }} />
+                                    {editingItem ? 'Actualizando...' : 'Creando...'}
+                                </>
+                            ) : (
+                                editingItem ? 'Actualizar' : 'Crear'
+                            )}
                         </Button>
                     </Modal.Footer>
                 </Form>
