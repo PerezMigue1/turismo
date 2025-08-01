@@ -16,6 +16,7 @@ import FestividadesAdmin from './FestividadesAdmin';
 import MisionVisionAdmin from './MisionVisionAdmin';
 import PoliticasAdmin from './PoliticasAdmin';
 import FAQAdmin from './FAQAdmin';
+import EcoturismoAdmin from './EcoturismoAdmin';
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
@@ -66,6 +67,8 @@ const AdminLayout = () => {
                 return <RestauranteRequests />;
             case 'festividadesAdmin': // Nuevo caso
                 return <FestividadesAdmin />;
+            case 'ecoturismo': // Nuevo caso
+                return <EcoturismoAdmin />;
             case 'misionVision': // Nuevo caso
                 return <MisionVisionAdmin />;
             case 'politicas': // Nuevo caso

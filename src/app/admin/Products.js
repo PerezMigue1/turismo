@@ -32,6 +32,14 @@ const Products = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [productDetailLoading, setProductDetailLoading] = useState(false);
+    
+    // Estados para editar/eliminar
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editingProduct, setEditingProduct] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingProduct, setDeletingProduct] = useState(null);
+    const [editLoading, setEditLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     // Función de notificación
     const mostrarToast = (message, variant = "success") => {
@@ -108,6 +116,89 @@ const Products = () => {
             mostrarToast('Error al cargar detalles del producto', 'danger');
         } finally {
             setProductDetailLoading(false);
+        }
+    };
+
+    // Función para abrir modal de edición
+    const handleEdit = (product) => {
+        setEditingProduct({ ...product });
+        setShowEditModal(true);
+    };
+
+    // Función para guardar cambios del producto
+    const handleSaveEdit = async () => {
+        try {
+            setEditLoading(true);
+            
+            const response = await fetch(`https://backend-iota-seven-19.vercel.app/api/productos/${editingProduct.idProducto}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(editingProduct)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.message) {
+                mostrarToast('Producto actualizado correctamente', 'success');
+                setShowEditModal(false);
+                setEditingProduct(null);
+                // Recargar productos
+                window.location.reload();
+            } else {
+                throw new Error('Error al actualizar producto');
+            }
+        } catch (error) {
+            console.error('Error updating product:', error);
+            mostrarToast('Error al actualizar producto: ' + error.message, 'danger');
+        } finally {
+            setEditLoading(false);
+        }
+    };
+
+    // Función para abrir modal de eliminación
+    const handleDelete = (product) => {
+        setDeletingProduct(product);
+        setShowDeleteModal(true);
+    };
+
+    // Función para confirmar eliminación
+    const handleConfirmDelete = async () => {
+        try {
+            setDeleteLoading(true);
+            
+            const response = await fetch(`https://backend-iota-seven-19.vercel.app/api/productos/${deletingProduct.idProducto}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.message) {
+                mostrarToast('Producto eliminado correctamente', 'success');
+                setShowDeleteModal(false);
+                setDeletingProduct(null);
+                // Recargar productos
+                window.location.reload();
+            } else {
+                throw new Error('Error al eliminar producto');
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            mostrarToast('Error al eliminar producto: ' + error.message, 'danger');
+        } finally {
+            setDeleteLoading(false);
         }
     };
 
@@ -278,6 +369,7 @@ const Products = () => {
                                                 size="sm"
                                                 className="me-2"
                                                 style={{ borderColor: customStyles.success.backgroundColor, color: customStyles.success.backgroundColor }}
+                                                onClick={() => handleEdit(product)}
                                             >
                                                 <FaEdit />
                                             </Button>
@@ -285,6 +377,7 @@ const Products = () => {
                                                 variant="outline-danger"
                                                 size="sm"
                                                 style={{ borderColor: customStyles.danger.backgroundColor, color: customStyles.danger.backgroundColor }}
+                                                onClick={() => handleDelete(product)}
                                             >
                                                 <FaTrash />
                                             </Button>
@@ -462,6 +555,158 @@ const Products = () => {
                         style={customStyles.primary}
                     >
                         Cerrar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Modal de Edición */}
+            <Modal show={showEditModal} onHide={() => setShowEditModal(false)} size="lg" centered>
+                <Modal.Header closeButton style={customStyles.primary} className="text-white">
+                    <Modal.Title><FaEdit className="me-2" /> Editar Producto</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {editingProduct && (
+                        <Form>
+                            <Row>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Nombre del Producto</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={editingProduct.Nombre || ''}
+                                            onChange={(e) => setEditingProduct({...editingProduct, Nombre: e.target.value})}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Precio</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            value={editingProduct.Precio || ''}
+                                            onChange={(e) => setEditingProduct({...editingProduct, Precio: parseFloat(e.target.value)})}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Descripción</Form.Label>
+                                <Form.Control
+                                    as="textarea"
+                                    rows={3}
+                                    value={editingProduct.Descripción || ''}
+                                    onChange={(e) => setEditingProduct({...editingProduct, Descripción: e.target.value})}
+                                />
+                            </Form.Group>
+                            <Row>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Materiales</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={editingProduct.Materiales || ''}
+                                            onChange={(e) => setEditingProduct({...editingProduct, Materiales: e.target.value})}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Técnica</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={editingProduct.Técnica || ''}
+                                            onChange={(e) => setEditingProduct({...editingProduct, Técnica: e.target.value})}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Dimensiones</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            value={editingProduct.Dimensiones || ''}
+                                            onChange={(e) => setEditingProduct({...editingProduct, Dimensiones: e.target.value})}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Disponibilidad</Form.Label>
+                                        <Form.Select
+                                            value={editingProduct.Disponibilidad || 'En stock'}
+                                            onChange={(e) => setEditingProduct({...editingProduct, Disponibilidad: e.target.value})}
+                                        >
+                                            <option value="En stock">En stock</option>
+                                            <option value="Agotado">Agotado</option>
+                                            <option value="Bajo pedido">Bajo pedido</option>
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Colores (separados por comas)</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={Array.isArray(editingProduct.Colores) ? editingProduct.Colores.join(', ') : editingProduct.Colores || ''}
+                                    onChange={(e) => setEditingProduct({...editingProduct, Colores: e.target.value.split(',').map(c => c.trim())})}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Etiquetas (separadas por comas)</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={Array.isArray(editingProduct.Etiquetas) ? editingProduct.Etiquetas.join(', ') : editingProduct.Etiquetas || ''}
+                                    onChange={(e) => setEditingProduct({...editingProduct, Etiquetas: e.target.value.split(',').map(t => t.trim())})}
+                                />
+                            </Form.Group>
+                        </Form>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+                        Cancelar
+                    </Button>
+                    <Button 
+                        onClick={handleSaveEdit} 
+                        style={customStyles.success}
+                        disabled={editLoading}
+                    >
+                        {editLoading ? <Spinner animation="border" size="sm" /> : 'Guardar Cambios'}
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Modal de Eliminación */}
+            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+                <Modal.Header closeButton style={customStyles.danger} className="text-white">
+                    <Modal.Title><FaTrash className="me-2" /> Confirmar Eliminación</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {deletingProduct && (
+                        <div className="text-center">
+                            <FaTrash size={48} style={{ color: customStyles.danger.backgroundColor }} className="mb-3" />
+                            <h5>¿Estás seguro de que quieres eliminar este producto?</h5>
+                            <p className="text-muted">
+                                <strong>{deletingProduct.Nombre}</strong>
+                            </p>
+                            <p className="text-danger">
+                                <small>Esta acción no se puede deshacer.</small>
+                            </p>
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        Cancelar
+                    </Button>
+                    <Button 
+                        variant="danger" 
+                        onClick={handleConfirmDelete}
+                        disabled={deleteLoading}
+                    >
+                        {deleteLoading ? <Spinner animation="border" size="sm" /> : 'Eliminar'}
                     </Button>
                 </Modal.Footer>
             </Modal>

@@ -12,8 +12,6 @@ const FAQ = () => {
     const categorias = [
         { id: 'todas', label: 'Todas', color: 'primary' },
         { id: 'general', label: 'General', color: 'info' },
-        { id: 'reservas', label: 'Reservas', color: 'success' },
-        { id: 'pagos', label: 'Pagos', color: 'warning' },
         { id: 'servicios', label: 'Servicios', color: 'secondary' },
         { id: 'tecnico', label: 'Técnico', color: 'danger' },
         { id: 'cuenta', label: 'Cuenta', color: 'dark' }

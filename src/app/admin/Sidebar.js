@@ -11,7 +11,8 @@ import {
   FaComments,
   FaInbox,
   FaBullseye,
-  FaShieldAlt
+  FaShieldAlt,
+  FaMountain
 } from 'react-icons/fa';
 import styled from 'styled-components';
 
@@ -74,6 +75,7 @@ const Sidebar = ({ activeSection, setActiveSection, collapsed }) => {
     { id: 'orders', label: 'Pedidos', icon: <FaShoppingCart /> },
     { id: 'analytics', label: 'Analíticas', icon: <FaChartBar /> },
     { id: 'messages', label: 'Mensajes', icon: <FaComments /> },
+    { id: 'ecoturismo', label: 'Ecoturismo', icon: <FaMountain /> },
     { id: 'misionVision', label: 'Misión y Visión', icon: <FaBullseye /> },
     { id: 'politicas', label: 'Políticas', icon: <FaShieldAlt /> },
     { id: 'faq', label: 'FAQ', icon: <FaShieldAlt /> },

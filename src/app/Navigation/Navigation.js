@@ -40,6 +40,8 @@ import DetalleLugar from '../screens/DetalleLugar';
 import MisionVision from '../screens/MisionVision';
 import Politicas from '../screens/Politicas';
 import FAQ from '../screens/FAQ';
+import Ecoturismo from '../screens/Ecoturismo';
+import DetalleEcoturismo from '../screens/DetalleEcoturismo';
 
 
 // Componente para proteger rutas
@@ -275,6 +277,22 @@ const Navigation = () => {
                                 </>
                             } />
 
+                            <Route path="/ecoturismo" element={
+                                <>
+                                    <Header />
+                                    <Ecoturismo />
+                                    <Footer />
+                                </>
+                            } />
+
+                            <Route path="/ecoturismo/:id" element={
+                                <>
+                                    <Header />
+                                    <DetalleEcoturismo />
+                                    <Footer />
+                                </>
+                            } />
+
 
 
 
@@ -286,7 +304,7 @@ const Navigation = () => {
                                 </>
                             } />
 
-                                                        <Route path="/mision-vision" element={
+                            <Route path="/mision-vision" element={
                                 <>
                                     <Header />
                                     <MisionVision />

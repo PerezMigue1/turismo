@@ -176,8 +176,6 @@ const FAQAdmin = () => {
     const getCategoriaLabel = (categoria) => {
         const categorias = {
             'general': 'General',
-            'reservas': 'Reservas',
-            'pagos': 'Pagos',
             'servicios': 'Servicios',
             'tecnico': 'Técnico',
             'cuenta': 'Cuenta'
@@ -188,8 +186,6 @@ const FAQAdmin = () => {
     const getCategoriaColor = (categoria) => {
         const colores = {
             'general': 'info',
-            'reservas': 'success',
-            'pagos': 'warning',
             'servicios': 'secondary',
             'tecnico': 'danger',
             'cuenta': 'dark'
@@ -347,8 +343,6 @@ const FAQAdmin = () => {
                                         required
                                     >
                                         <option value="general">General</option>
-                                        <option value="reservas">Reservas</option>
-                                        <option value="pagos">Pagos</option>
                                         <option value="servicios">Servicios</option>
                                         <option value="tecnico">Técnico</option>
                                         <option value="cuenta">Cuenta</option>
