@@ -1,6 +1,6 @@
 // src/app/admin/AdminLayout.jsx
-import React, { useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container } from 'react-bootstrap';
 import TopNavbar from '../admin/TopNavbar';
 import Sidebar from '../admin/Sidebar';
 import Dashboard from '../admin/Dashboard';
@@ -21,73 +21,176 @@ import EncuestasAdmin from './EncuestasAdmin';
 import LugaresAdmin from './LugaresAdmin';
 import NegociosAdmin from './NegociosAdmin';
 
+
 const AdminContainer = styled(Container)`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 0;
-`;
-
-const MainRow = styled(Row)`
+  width: 100vw;
+  max-width: 100vw;
   margin: 0;
 `;
 
-const SidebarCol = styled(Col)`
+
+
+const SidebarCol = styled.div`
   transition: all 0.3s ease;
   padding: 0;
   background-color: #FDF2E0; /* Beige Claro */
+  width: ${props => props.collapsed ? '70px' : '280px'};
+  min-width: ${props => props.collapsed ? '70px' : '280px'};
+  max-width: ${props => props.collapsed ? '70px' : '280px'};
+  flex-shrink: 0;
+  
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    height: calc(100vh - 56px);
+    z-index: 1000;
+    width: 250px;
+    min-width: 250px;
+    max-width: 250px;
+    box-shadow: ${props => props.isOpen ? '2px 0 10px rgba(0,0,0,0.1)' : 'none'};
+    transform: translateX(${props => props.isOpen ? '0' : '-100%'});
+  }
+  
+  @media (max-width: 576px) {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+  }
 `;
 
-const MainContentCol = styled(Col)`
-  padding: 2rem;
+const MainContentCol = styled.div`
+  padding: 1rem;
   background-color: #f8f9fa;
   min-height: calc(100vh - 56px);
+  transition: all 0.3s ease;
+  flex: 1;
+  overflow-x: hidden;
+  
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+    width: 100vw;
+    position: relative;
+    z-index: 1;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 0.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.25rem;
+  }
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: ${props => props.isOpen ? 'block' : 'none'};
+  opacity: ${props => props.isOpen ? '1' : '0'};
+  transition: opacity 0.3s ease;
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
+  
+  @media (max-width: 480px) {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
 `;
 
 const AdminLayout = () => {
     const [activeSection, setActiveSection] = useState('dashboard');
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    // Detectar si es móvil
+    useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.innerWidth <= 768);
+            if (window.innerWidth > 768) {
+                setSidebarOpen(false);
+            }
+        };
+
+        checkIsMobile();
+        window.addEventListener('resize', checkIsMobile);
+        return () => window.removeEventListener('resize', checkIsMobile);
+    }, []);
 
     const toggleSidebar = () => {
-        setSidebarCollapsed(!sidebarCollapsed);
+        if (isMobile) {
+            setSidebarOpen(!sidebarOpen);
+        } else {
+            setSidebarCollapsed(!sidebarCollapsed);
+        }
+    };
+
+    const closeSidebar = () => {
+        if (isMobile) {
+            setSidebarOpen(false);
+        }
+    };
+
+    // Función para navegar desde el Dashboard
+    const navigateToSection = (section) => {
+        setActiveSection(section);
+        closeSidebar();
     };
 
     const renderContent = () => {
         switch (activeSection) {
             case 'dashboard':
-                return <Dashboard />;
+                return <Dashboard onNavigate={navigateToSection} />;
             case 'users':
                 return <Users />;
             case 'products':
                 return <Products />;
-            case 'requests': // Nuevo caso
+            case 'requests':
                 return <ProductRequests />;
-            case 'gastrorequests': // Nuevo caso
+            case 'gastrorequests':
                 return <GastroRequests />;
-            case 'hospedajeequests': // Nuevo caso
+            case 'hospedajeequests':
                 return <HospedajeRequests />;
-            case 'restauranterequests': // Nuevo caso
+            case 'restauranterequests':
                 return <RestauranteRequests />;
-            case 'festividadesAdmin': // Nuevo caso
+            case 'festividadesAdmin':
                 return <FestividadesAdmin />;
-            case 'lugares': // Nuevo caso
+            case 'lugares':
                 return <LugaresAdmin />;
-            case 'negocios': // Nuevo caso
+            case 'negocios':
                 return <NegociosAdmin />;
-            case 'ecoturismo': // Nuevo caso
+            case 'ecoturismo':
                 return <EcoturismoAdmin />;
-            case 'misionVision': // Nuevo caso
+
+            case 'misionVision':
                 return <MisionVisionAdmin />;
-            case 'politicas': // Nuevo caso
+            case 'politicas':
                 return <PoliticasAdmin />;
-            case 'faq': // Nuevo caso
+            case 'faq':
                 return <FAQAdmin />;
-            case 'encuestas': // Nuevo caso
+            case 'encuestas':
                 return <EncuestasAdmin />;
             case 'settings':
                 return <Settings />;
             default:
-                return <Dashboard />;
+                return <Dashboard onNavigate={navigateToSection} />;
         }
     };
 
@@ -96,19 +199,28 @@ const AdminLayout = () => {
             <TopNavbar
                 toggleSidebar={toggleSidebar}
                 sidebarCollapsed={sidebarCollapsed}
+                isMobile={isMobile}
             />
-            <MainRow className="g-0">
-                <SidebarCol xs={sidebarCollapsed ? 1 : 2}>
+            <div style={{ display: 'flex', width: '100vw', height: 'calc(100vh - 56px)' }}>
+                <Overlay isOpen={sidebarOpen} onClick={closeSidebar} />
+                <SidebarCol 
+                    collapsed={sidebarCollapsed}
+                    isOpen={sidebarOpen}
+                >
                     <Sidebar
                         activeSection={activeSection}
-                        setActiveSection={setActiveSection}
+                        setActiveSection={(section) => {
+                            setActiveSection(section);
+                            closeSidebar();
+                        }}
                         collapsed={sidebarCollapsed}
+                        isMobile={isMobile}
                     />
                 </SidebarCol>
-                <MainContentCol xs={sidebarCollapsed ? 11 : 10}>
+                <MainContentCol sidebarCollapsed={sidebarCollapsed}>
                     {renderContent()}
                 </MainContentCol>
-            </MainRow>
+            </div>
         </AdminContainer>
     );
 };

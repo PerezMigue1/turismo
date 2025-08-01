@@ -1,7 +1,7 @@
 // src/components/TopNavbar.jsx
 import React from 'react';
-import { Navbar, Container, Nav, Button } from 'react-bootstrap';
-import { FaBars, FaBell, FaUserCircle, FaCog } from 'react-icons/fa';
+import { Navbar, Container, Nav, Button, Dropdown } from 'react-bootstrap';
+import { FaBars, FaBell, FaUserCircle, FaCog, FaHome, FaSignOutAlt } from 'react-icons/fa';
 import { useAuth } from '../Navigation/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -18,6 +18,15 @@ const StyledNavbar = styled(Navbar)`
 const BrandText = styled.span`
   font-weight: 600;
   color: white;
+  font-size: 1.1rem;
+  
+  @media (max-width: 576px) {
+    font-size: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 0.9rem;
+  }
 `;
 
 const NavLink = styled(Nav.Link)`
@@ -39,9 +48,94 @@ const NavIcon = styled(NavLink)`
   justify-content: center;
   width: 36px;
   height: 36px;
+  
+  @media (max-width: 576px) {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
 `;
 
-const TopNavbar = ({ toggleSidebar, sidebarCollapsed }) => {
+const ToggleButton = styled(Button)`
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  
+  &:hover, &:focus {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+  }
+  
+  @media (max-width: 576px) {
+    font-size: 1rem;
+    padding: 0.4rem;
+  }
+`;
+
+const UserDropdown = styled(Dropdown)`
+  .dropdown-toggle {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    
+    &:hover, &:focus {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: none;
+    }
+    
+    &::after {
+      display: none;
+    }
+  }
+  
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+  }
+  
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    
+    &:hover {
+      background-color: #f8f9fa;
+    }
+    
+    svg {
+      margin-right: 0.5rem;
+    }
+  }
+`;
+
+const LogoutButton = styled(Button)`
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  
+  &:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+  
+  @media (max-width: 576px) {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+`;
+
+const TopNavbar = ({ toggleSidebar, sidebarCollapsed, isMobile }) => {
     const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
 
@@ -50,39 +144,65 @@ const TopNavbar = ({ toggleSidebar, sidebarCollapsed }) => {
         navigate('/login');
     };
 
+    const handlePublicClick = () => {
+        navigate('/');
+    };
+
     return (
         <StyledNavbar expand="lg" variant="dark">
             <Container fluid>
-                <Button
-                    variant="link"
-                    className="sidebar-toggle text-white"
+                <ToggleButton
                     onClick={toggleSidebar}
+                    className="me-2"
                 >
                     <FaBars />
-                </Button>
-                <Navbar.Brand href="#" className="ms-3">
-                    <BrandText>Panel Administrativo</BrandText>
+                </ToggleButton>
+                
+                <Navbar.Brand href="#" className="me-auto">
+                    <BrandText>
+                        {isMobile ? 'Admin' : 'Panel Administrativo'}
+                    </BrandText>
                 </Navbar.Brand>
 
                 <Nav className="ms-auto">
-                    <NavIcon href="#">
+                    <NavIcon href="#" title="Notificaciones">
                         <FaBell />
                     </NavIcon>
-                    <NavIcon href="#">
-                        <FaCog />
-                    </NavIcon>
-                    <NavLink href="#">
-                        <FaUserCircle className="me-2" />
-                        <span>{currentUser?.nombre || 'Admin'}</span>
-                    </NavLink>
-                    <Button
-                        variant="outline-light"
-                        size="sm"
-                        className="ms-2"
-                        onClick={handleLogout}
-                    >
-                        Cerrar sesión
-                    </Button>
+                    
+                    <UserDropdown>
+                        <Dropdown.Toggle className="dropdown-toggle">
+                            <FaUserCircle className="me-2" />
+                            <span className="d-none d-md-inline">
+                                {currentUser?.nombre || 'Admin'}
+                            </span>
+                        </Dropdown.Toggle>
+                        
+                        <Dropdown.Menu>
+                            <Dropdown.Item onClick={handlePublicClick}>
+                                <FaHome />
+                                Ir al Sitio Público
+                            </Dropdown.Item>
+                            <Dropdown.Item href="#">
+                                <FaCog />
+                                Configuración
+                            </Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item onClick={handleLogout}>
+                                <FaSignOutAlt />
+                                Cerrar sesión
+                            </Dropdown.Item>
+                        </Dropdown.Menu>
+                    </UserDropdown>
+                    
+                    {!isMobile && (
+                        <LogoutButton
+                            size="sm"
+                            className="ms-2"
+                            onClick={handleLogout}
+                        >
+                            Salir
+                        </LogoutButton>
+                    )}
                 </Nav>
             </Container>
         </StyledNavbar>

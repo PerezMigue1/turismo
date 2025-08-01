@@ -14,6 +14,7 @@ const EcoturismoAdmin = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [uploadingImages, setUploadingImages] = useState(false);
     const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const fileInputRef = useRef(null);
     const [formData, setFormData] = useState({
         nombre: '',
@@ -137,11 +138,7 @@ const EcoturismoAdmin = () => {
                 return;
             }
 
-            // Obtener archivos seleccionados
-            const fileInput = fileInputRef.current;
-            const selectedFiles = fileInput ? Array.from(fileInput.files) : [];
-            
-            // Preparar FormData
+            // Preparar FormData usando los archivos seleccionados
             const formDataToSend = prepareFormData(formData, selectedFiles);
 
             const url = editingItem 
@@ -159,6 +156,11 @@ const EcoturismoAdmin = () => {
                 body: formDataToSend
             });
 
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+            }
+
             const data = await response.json();
 
             if (data.success) {
@@ -166,13 +168,14 @@ const EcoturismoAdmin = () => {
                 setEditingItem(null);
                 resetForm();
                 setImagePreviewUrls([]);
+                setSelectedFiles([]);
                 cargarEcoturismo();
             } else {
                 setError(data.message || 'Error al guardar');
             }
         } catch (error) {
             console.error('Error:', error);
-            setError('Error de conexión');
+            setError(error.message || 'Error de conexión');
         } finally {
             setUploadingImages(false);
         }
@@ -207,8 +210,9 @@ const EcoturismoAdmin = () => {
             calificacion: item.calificacion || 0,
             visitas: item.visitas || 0
         });
-        // Mostrar preview de imágenes existentes
+        // Mostrar preview de imágenes existentes y limpiar archivos seleccionados
         setImagePreviewUrls(item.imagenes || []);
+        setSelectedFiles([]);
         setShowModal(true);
     };
 
@@ -272,6 +276,8 @@ const EcoturismoAdmin = () => {
             calificacion: 0,
             visitas: 0
         });
+        setSelectedFiles([]);
+        setImagePreviewUrls([]);
     };
 
     const handleShowModal = () => {
@@ -284,7 +290,6 @@ const EcoturismoAdmin = () => {
         setShowModal(false);
         setEditingItem(null);
         resetForm();
-        setImagePreviewUrls([]);
         // Limpiar input de archivos
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -361,12 +366,12 @@ const EcoturismoAdmin = () => {
             }
         });
         
-        // Agregar imágenes existentes como JSON string
+        // Agregar imágenes existentes como JSON string separado (como en NegociosAdmin)
         if (data.imagenes && data.imagenes.length > 0) {
             formData.append('imagenesExistentes', JSON.stringify(data.imagenes));
         }
         
-        // Agregar archivos de imagen nuevos
+        // Agregar archivos de imagen nuevos bajo la clave 'imagenes'
         if (files && files.length > 0) {
             files.forEach(file => {
                 formData.append('imagenes', file);
@@ -385,19 +390,27 @@ const EcoturismoAdmin = () => {
         setImagePreviewUrls(prev => [...prev, ...previews]);
         
         // Guardar archivos para subir después
-        setFormData(prev => ({
-            ...prev,
-            imagenes: [...prev.imagenes, ...files.map(file => file.name)] // Placeholder
-        }));
+        setSelectedFiles(prev => [...prev, ...files]);
     };
 
     // Función para eliminar imagen de preview
     const removeImagePreview = (index) => {
         setImagePreviewUrls(prev => prev.filter((_, i) => i !== index));
-        setFormData(prev => ({
-            ...prev,
-            imagenes: prev.imagenes.filter((_, i) => i !== index)
-        }));
+        
+        // Determinar si es una imagen existente o nueva
+        const existingImagesCount = editingItem ? (editingItem.imagenes?.length || 0) : 0;
+        
+        if (index < existingImagesCount) {
+            // Es una imagen existente
+            setFormData(prev => ({
+                ...prev,
+                imagenes: prev.imagenes.filter((_, i) => i !== index)
+            }));
+        } else {
+            // Es una imagen nueva
+            const newIndex = index - existingImagesCount;
+            setSelectedFiles(prev => prev.filter((_, i) => i !== newIndex));
+        }
     };
 
     // Función para abrir selector de archivos
