@@ -347,7 +347,7 @@ const EcoturismoAdmin = () => {
 
     const ecoturismoFiltrado = filtrarEcoturismo();
 
-    // Función para preparar FormData con imágenes
+    // Función para preparar FormData con imágenes (siguiendo exactamente la lógica de NegociosAdmin)
     const prepareFormData = (data, files) => {
         const formData = new FormData();
         
@@ -366,12 +366,12 @@ const EcoturismoAdmin = () => {
             }
         });
         
-        // Agregar imágenes existentes como JSON string separado (como en NegociosAdmin)
+        // Agregar imágenes existentes como JSON string separado
         if (data.imagenes && data.imagenes.length > 0) {
             formData.append('imagenesExistentes', JSON.stringify(data.imagenes));
         }
         
-        // Agregar archivos de imagen nuevos bajo la clave 'imagenes'
+        // Agregar archivos de imagen nuevos bajo la clave 'imagenes' (como en NegociosAdmin)
         if (files && files.length > 0) {
             files.forEach(file => {
                 formData.append('imagenes', file);
