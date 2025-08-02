@@ -24,8 +24,8 @@ const NegociosAdmin = () => {
             Estado: '',
             Municipio: '',
             Coordenadas: {
-                lat: 0,
-                lng: 0
+                lat: '',
+                lng: ''
             },
             Direccion: ''
         },
@@ -180,7 +180,7 @@ const NegociosAdmin = () => {
             Ubicacion: item.Ubicacion || {
                 Estado: '',
                 Municipio: '',
-                Coordenadas: { lat: 0, lng: 0 },
+                Coordenadas: { lat: '', lng: '' },
                 Direccion: ''
             },
             RedesSociales: item.RedesSociales || {
@@ -241,7 +241,7 @@ const NegociosAdmin = () => {
             Ubicacion: {
                 Estado: '',
                 Municipio: '',
-                Coordenadas: { lat: 0, lng: 0 },
+                Coordenadas: { lat: '', lng: '' },
                 Direccion: ''
             },
             RedesSociales: {
@@ -608,10 +608,11 @@ const NegociosAdmin = () => {
                                             ...formData, 
                                             Ubicacion: {
                                                 ...formData.Ubicacion, 
-                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lat: parseFloat(e.target.value) || 0}
+                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lat: e.target.value}
                                             }
                                         })}
                                         step="any"
+                                        placeholder="Ej: 20.87766"
                                     />
                                 </Form.Group>
                             </Col>
@@ -625,10 +626,11 @@ const NegociosAdmin = () => {
                                             ...formData, 
                                             Ubicacion: {
                                                 ...formData.Ubicacion, 
-                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lng: parseFloat(e.target.value) || 0}
+                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lng: e.target.value}
                                             }
                                         })}
                                         step="any"
+                                        placeholder="Ej: -98.59296"
                                     />
                                 </Form.Group>
                             </Col>

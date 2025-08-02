@@ -22,13 +22,13 @@ const LugaresAdmin = () => {
         Costo: '',
         NivelDeDificultad: '',
         Categoria: '',
-        LinkEducativos: [],
+        LinkEducativos: '',
         Ubicacion: {
             Estado: '',
             Municipio: '',
             Coordenadas: {
-                lat: 0,
-                lng: 0
+                lat: '',
+                lng: ''
             }
         },
         Imagen: []
@@ -91,12 +91,18 @@ const LugaresAdmin = () => {
     const prepareFormData = (data, files) => {
         const formData = new FormData();
         
+        // Procesar LinkEducativos
+        const linkEducativosArray = data.LinkEducativos ? data.LinkEducativos.split(',').map(item => item.trim()).filter(item => item) : [];
+        
         // Agregar todos los campos del formulario EXCEPTO Imagen
         Object.keys(data).forEach(key => {
             if (key !== 'Imagen') {
-                if (key === 'Ubicacion' || key === 'LinkEducativos') {
-                    // Los objetos y arrays se envían como JSON string
+                if (key === 'Ubicacion') {
+                    // Los objetos se envían como JSON string
                     formData.append(key, JSON.stringify(data[key]));
+                } else if (key === 'LinkEducativos') {
+                    // Enviar como array procesado
+                    formData.append(key, JSON.stringify(linkEducativosArray));
                 } else {
                     formData.append(key, data[key]);
                 }
@@ -181,11 +187,11 @@ const LugaresAdmin = () => {
             Costo: item.Costo || '',
             NivelDeDificultad: item.NivelDeDificultad || '',
             Categoria: item.Categoria || '',
-            LinkEducativos: item.LinkEducativos || [],
+            LinkEducativos: Array.isArray(item.LinkEducativos) ? item.LinkEducativos.join(', ') : (item.LinkEducativos || ''),
             Ubicacion: item.Ubicacion || {
                 Estado: '',
                 Municipio: '',
-                Coordenadas: { lat: 0, lng: 0 }
+                Coordenadas: { lat: '', lng: '' }
             },
             Imagen: item.Imagen || []
         });
@@ -234,11 +240,11 @@ const LugaresAdmin = () => {
             Costo: '',
             NivelDeDificultad: '',
             Categoria: '',
-            LinkEducativos: [],
+            LinkEducativos: '',
             Ubicacion: {
                 Estado: '',
                 Municipio: '',
-                Coordenadas: { lat: 0, lng: 0 }
+                Coordenadas: { lat: '', lng: '' }
             },
             Imagen: []
         });
@@ -600,10 +606,11 @@ const LugaresAdmin = () => {
                                             ...formData, 
                                             Ubicacion: {
                                                 ...formData.Ubicacion, 
-                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lat: parseFloat(e.target.value) || 0}
+                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lat: e.target.value}
                                             }
                                         })}
                                         step="any"
+                                        placeholder="Ej: 20.87766"
                                     />
                                 </Form.Group>
                             </Col>
@@ -617,10 +624,11 @@ const LugaresAdmin = () => {
                                             ...formData, 
                                             Ubicacion: {
                                                 ...formData.Ubicacion, 
-                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lng: parseFloat(e.target.value) || 0}
+                                                Coordenadas: {...formData.Ubicacion.Coordenadas, lng: e.target.value}
                                             }
                                         })}
                                         step="any"
+                                        placeholder="Ej: -98.59296"
                                     />
                                 </Form.Group>
                             </Col>
@@ -721,10 +729,10 @@ const LugaresAdmin = () => {
                                     <Form.Label>Links Educativos (URLs separadas por comas)</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        value={formData.LinkEducativos.join(', ')}
+                                        value={formData.LinkEducativos}
                                         onChange={(e) => setFormData({
                                             ...formData, 
-                                            LinkEducativos: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                                            LinkEducativos: e.target.value
                                         })}
                                         placeholder="https://ejemplo1.com, https://ejemplo2.com"
                                     />

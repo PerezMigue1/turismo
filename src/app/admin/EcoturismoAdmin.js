@@ -21,8 +21,8 @@ const EcoturismoAdmin = () => {
         descripcion: '',
         ubicacion: '',
         coordenadas: {
-            latitud: 0,
-            longitud: 0
+            latitud: '',
+            longitud: ''
         },
         categoria: 'senderismo',
         dificultad: 'moderado',
@@ -31,12 +31,12 @@ const EcoturismoAdmin = () => {
         altitud: '',
         clima: '',
         mejor_epoca: '',
-        equipamiento: [],
-        servicios_disponibles: [],
+        equipamiento: '',
+        servicios_disponibles: '',
         flora: '',
         fauna: '',
         imagenes: [],
-        precio_entrada: 0,
+        precio_entrada: '',
         horarios: {
             apertura: '',
             cierre: ''
@@ -187,7 +187,7 @@ const EcoturismoAdmin = () => {
             nombre: item.nombre || '',
             descripcion: item.descripcion || '',
             ubicacion: item.ubicacion || '',
-            coordenadas: item.coordenadas || { latitud: 0, longitud: 0 },
+            coordenadas: item.coordenadas || { latitud: '', longitud: '' },
             categoria: item.categoria || 'senderismo',
             dificultad: item.dificultad || 'moderado',
             duracion: item.duracion || '',
@@ -195,12 +195,12 @@ const EcoturismoAdmin = () => {
             altitud: item.altitud || '',
             clima: item.clima || '',
             mejor_epoca: item.mejor_epoca || '',
-            equipamiento: item.equipamiento || [],
-            servicios_disponibles: item.servicios_disponibles || [],
+            equipamiento: Array.isArray(item.equipamiento) ? item.equipamiento.join(', ') : (item.equipamiento || ''),
+            servicios_disponibles: Array.isArray(item.servicios_disponibles) ? item.servicios_disponibles.join(', ') : (item.servicios_disponibles || ''),
             flora: item.flora || '',
             fauna: item.fauna || '',
             imagenes: item.imagenes || [],
-            precio_entrada: item.precio_entrada || 0,
+            precio_entrada: item.precio_entrada || '',
             horarios: item.horarios || { apertura: '', cierre: '' },
             contacto: item.contacto || { telefono: '', email: '', sitio_web: '' },
             restricciones: item.restricciones || '',
@@ -253,7 +253,7 @@ const EcoturismoAdmin = () => {
             nombre: '',
             descripcion: '',
             ubicacion: '',
-            coordenadas: { latitud: 0, longitud: 0 },
+            coordenadas: { latitud: '', longitud: '' },
             categoria: 'senderismo',
             dificultad: 'moderado',
             duracion: '',
@@ -261,12 +261,12 @@ const EcoturismoAdmin = () => {
             altitud: '',
             clima: '',
             mejor_epoca: '',
-            equipamiento: [],
-            servicios_disponibles: [],
+            equipamiento: '',
+            servicios_disponibles: '',
             flora: '',
             fauna: '',
             imagenes: [],
-            precio_entrada: 0,
+            precio_entrada: '',
             horarios: { apertura: '', cierre: '' },
             contacto: { telefono: '', email: '', sitio_web: '' },
             restricciones: '',
@@ -351,15 +351,25 @@ const EcoturismoAdmin = () => {
     const prepareFormData = (data, files) => {
         const formData = new FormData();
         
+        // Procesar equipamiento y servicios_disponibles
+        const equipamientoArray = data.equipamiento ? data.equipamiento.split(',').map(item => item.trim()).filter(item => item) : [];
+        const serviciosArray = data.servicios_disponibles ? data.servicios_disponibles.split(',').map(item => item.trim()).filter(item => item) : [];
+        
         // Agregar todos los campos del formulario EXCEPTO imagenes
         Object.keys(data).forEach(key => {
             if (key !== 'imagenes') {
                 if (key === 'coordenadas' || key === 'horarios' || key === 'contacto') {
                     // Los objetos se envían como JSON string
                     formData.append(key, JSON.stringify(data[key]));
-                } else if (key === 'equipamiento' || key === 'servicios_disponibles') {
-                    // Los arrays se envían como JSON string
-                    formData.append(key, JSON.stringify(data[key]));
+                } else if (key === 'equipamiento') {
+                    // Enviar como array procesado
+                    formData.append(key, JSON.stringify(equipamientoArray));
+                } else if (key === 'servicios_disponibles') {
+                    // Enviar como array procesado
+                    formData.append(key, JSON.stringify(serviciosArray));
+                } else if (key === 'precio_entrada') {
+                    // Enviar como número o string vacío
+                    formData.append(key, data[key] === '' ? 0 : parseFloat(data[key]) || 0);
                 } else {
                     formData.append(key, data[key]);
                 }
@@ -798,9 +808,10 @@ const EcoturismoAdmin = () => {
                                     <Form.Control
                                         type="number"
                                         value={formData.precio_entrada}
-                                        onChange={(e) => setFormData({...formData, precio_entrada: parseFloat(e.target.value) || 0})}
+                                        onChange={(e) => setFormData({...formData, precio_entrada: e.target.value})}
                                         min="0"
                                         step="0.01"
+                                        placeholder="0.00"
                                     />
                                 </Form.Group>
                             </Col>
@@ -890,9 +901,10 @@ const EcoturismoAdmin = () => {
                                         value={formData.coordenadas.latitud}
                                         onChange={(e) => setFormData({
                                             ...formData, 
-                                            coordenadas: {...formData.coordenadas, latitud: parseFloat(e.target.value) || 0}
+                                            coordenadas: {...formData.coordenadas, latitud: e.target.value}
                                         })}
                                         step="any"
+                                        placeholder="Ej: 20.87766"
                                     />
                                 </Form.Group>
                             </Col>
@@ -904,9 +916,10 @@ const EcoturismoAdmin = () => {
                                         value={formData.coordenadas.longitud}
                                         onChange={(e) => setFormData({
                                             ...formData, 
-                                            coordenadas: {...formData.coordenadas, longitud: parseFloat(e.target.value) || 0}
+                                            coordenadas: {...formData.coordenadas, longitud: e.target.value}
                                         })}
                                         step="any"
+                                        placeholder="Ej: -98.59296"
                                     />
                                 </Form.Group>
                             </Col>
@@ -918,10 +931,10 @@ const EcoturismoAdmin = () => {
                                     <Form.Label>Equipamiento (separado por comas)</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        value={formData.equipamiento.join(', ')}
+                                        value={formData.equipamiento}
                                         onChange={(e) => setFormData({
                                             ...formData, 
-                                            equipamiento: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                                            equipamiento: e.target.value
                                         })}
                                         placeholder="Ej: Botas, Mochila, Agua"
                                     />
@@ -932,10 +945,10 @@ const EcoturismoAdmin = () => {
                                     <Form.Label>Servicios Disponibles (separado por comas)</Form.Label>
                                     <Form.Control
                                         type="text"
-                                        value={formData.servicios_disponibles.join(', ')}
+                                        value={formData.servicios_disponibles}
                                         onChange={(e) => setFormData({
                                             ...formData, 
-                                            servicios_disponibles: e.target.value.split(',').map(item => item.trim()).filter(item => item)
+                                            servicios_disponibles: e.target.value
                                         })}
                                         placeholder="Ej: Guía, Transporte, Alimentación"
                                     />
