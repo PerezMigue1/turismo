@@ -335,6 +335,7 @@ const EcoturismoAdmin = () => {
 
     const getCategoriaColor = (categoria) => {
         const colores = {
+            // Categorías originales
             'senderismo': 'success',
             'cascadas': 'info',
             'observacion_aves': 'warning',
@@ -342,7 +343,40 @@ const EcoturismoAdmin = () => {
             'espeleologia': 'dark',
             'rafting': 'danger',
             'ciclismo': 'primary',
-            'fotografia': 'info'
+            'fotografia': 'info',
+            // Nuevas categorías
+            'balneario': 'primary',
+            'rios': 'info',
+            'parque': 'success',
+            'mirador': 'warning',
+            'cuevas': 'dark',
+            'montañas': 'secondary',
+            'lagos': 'info',
+            'playas': 'warning',
+            'bosques': 'success',
+            'selva': 'success',
+            'desierto': 'warning',
+            'volcanes': 'danger',
+            'termas': 'primary',
+            'observacion_fauna': 'warning',
+            'pesca': 'info',
+            'kayak': 'primary',
+            'escalada': 'danger',
+            'parapente': 'warning',
+            'buceo': 'info',
+            'snorkel': 'info',
+            'cabalgata': 'secondary',
+            'mountain_bike': 'primary',
+            'trekking': 'success',
+            'observacion_estrellas': 'dark',
+            'botanica': 'success',
+            'geologia': 'secondary',
+            'arqueologia': 'warning',
+            'cultura_indigena': 'warning',
+            'gastronomia_local': 'danger',
+            'artesanias': 'warning',
+            'medicina_tradicional': 'success',
+            'otros': 'secondary'
         };
         return colores[categoria] || 'secondary';
     };

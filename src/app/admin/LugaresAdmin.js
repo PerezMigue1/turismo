@@ -356,6 +356,72 @@ const LugaresAdmin = () => {
         return colores[nivel] || 'secondary';
     };
 
+    const getCategoriaColor = (categoria) => {
+        const colores = {
+            // Categorías originales
+            'Cascadas': 'info',
+            'Ríos': 'info',
+            'Montañas': 'secondary',
+            'Cuevas': 'dark',
+            'Sitios Históricos': 'warning',
+            'Miradores': 'warning',
+            'Parques': 'success',
+            'Museos': 'info',
+            // Nuevas categorías
+            'Iglesias': 'secondary',
+            'Plazas': 'success',
+            'Monumentos': 'warning',
+            'Ruinas': 'dark',
+            'Lagos': 'info',
+            'Playas': 'warning',
+            'Bosques': 'success',
+            'Selva': 'success',
+            'Desierto': 'warning',
+            'Volcanes': 'danger',
+            'Termas': 'primary',
+            'Balnearios': 'primary',
+            'Jardines': 'success',
+            'Zoológicos': 'warning',
+            'Acuarios': 'info',
+            'Planetarios': 'dark',
+            'Observatorios': 'dark',
+            'Teatros': 'warning',
+            'Auditorios': 'warning',
+            'Centros Culturales': 'warning',
+            'Bibliotecas': 'info',
+            'Archivos': 'dark',
+            'Fortalezas': 'dark',
+            'Castillos': 'dark',
+            'Haciendas': 'secondary',
+            'Pueblos Mágicos': 'warning',
+            'Barrios Históricos': 'warning',
+            'Calles Peatonales': 'success',
+            'Mercados': 'warning',
+            'Templos': 'secondary',
+            'Santuario': 'secondary',
+            'Capillas': 'secondary',
+            'Conventos': 'secondary',
+            'Cementerios': 'dark',
+            'Puentes': 'info',
+            'Acueductos': 'info',
+            'Torres': 'dark',
+            'Faro': 'warning',
+            'Puertos': 'info',
+            'Estaciones': 'info',
+            'Aeropuertos': 'info',
+            'Terminales': 'info',
+            'Centros Comerciales': 'warning',
+            'Galerías': 'warning',
+            'Talleres': 'info',
+            'Fábricas': 'secondary',
+            'Mineras': 'dark',
+            'Plantaciones': 'success',
+            'Viñedos': 'success',
+            'Otros': 'secondary'
+        };
+        return colores[categoria] || 'secondary';
+    };
+
     const filtrarLugares = () => {
         if (!searchTerm.trim()) return lugares;
         
@@ -470,7 +536,7 @@ const LugaresAdmin = () => {
                                                 </div>
                                             </td>
                                             <td>
-                                                <Badge bg="info">
+                                                <Badge bg={getCategoriaColor(item.Categoria)}>
                                                     {item.Categoria}
                                                 </Badge>
                                             </td>
