@@ -51,15 +51,28 @@ import Mapa from '../Mapa/Mapa'
 const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
     const { currentUser } = useAuth();
 
+    console.log('🔍 ProtectedRoute - Usuario actual:', currentUser);
+    console.log('🔍 ProtectedRoute - Rol requerido:', requiredRole);
+    console.log('🔍 ProtectedRoute - Rol del usuario:', currentUser?.rol);
+
     if (!currentUser) {
+        console.log('🔍 ProtectedRoute - No hay usuario, redirigiendo a login');
         return <Navigate to="/login" />;
     }
 
     // Si se requiere un rol específico y el usuario no lo tiene
-    if (requiredRole !== 'user' && currentUser.rol !== requiredRole) {
+    // Manejar tanto roles como string como roles como array
+    const userRoles = Array.isArray(currentUser.rol) ? currentUser.rol : [currentUser.rol];
+    const hasRequiredRole = userRoles.includes(requiredRole);
+    
+    if (requiredRole !== 'user' && !hasRequiredRole) {
+        console.log('🔍 ProtectedRoute - Rol no coincide, redirigiendo a home');
+        console.log('🔍 ProtectedRoute - Rol requerido:', requiredRole);
+        console.log('🔍 ProtectedRoute - Roles del usuario:', userRoles);
         return <Navigate to="/home" />;
     }
 
+    console.log('🔍 ProtectedRoute - Acceso permitido');
     return children;
 };
 
@@ -372,7 +385,9 @@ const Navigation = () => {
 
                             {/* Rutas de administración */}
                             <Route path="/admin/*" element={
+                                <ProtectedRoute requiredRole="admin">
                                     <AdminLayout />
+                                </ProtectedRoute>
                             } />
                         </Routes>
                     </div>

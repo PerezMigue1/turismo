@@ -8,7 +8,7 @@ import axios from "axios";
 const hospedajeIcon = new L.Icon({ iconUrl: "/icons/hospedaje.jpeg", iconSize: [32, 32] });
 const restauranteIcon = new L.Icon({ iconUrl: "/icons/restaurante.jpeg", iconSize: [32, 32] });
 const lugarTuristicoIcon = new L.Icon({ iconUrl: "/icons/lugarTuristico.jpeg", iconSize: [32, 32] });
-const API_BASE = process.env.REACT_APP_API_URL || "https://backend-iota-seven-19.vercel.app/api";
+const API_BASE = "https://backend-iota-seven-19.vercel.app/api";
 
 const CarruselImagenes = ({ imagenes }) => {
   const [indice, setIndice] = useState(0);
