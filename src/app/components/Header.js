@@ -224,39 +224,6 @@ const Header = () => {
                         </Navbar.Brand>
                     </div>
 
-                    {/* Barra de búsqueda (igual que antes) */}
-                    <Form className="mx-3" style={{ flex: 1, maxWidth: "500px" }}>
-                        <div style={{
-                            display: "flex",
-                            backgroundColor: "white",
-                            borderRadius: "25px",
-                            overflow: "hidden",
-                            border: "1px solid #ddd"
-                        }}>
-                            <FormControl
-                                type="text"
-                                placeholder="Buscar experiencias..."
-                                style={{
-                                    border: "none",
-                                    boxShadow: "none",
-                                    padding: "10px 15px"
-                                }}
-                            />
-                            <Button
-                                variant="outline-light"
-                                style={{
-                                    backgroundColor: "#9A1E47",
-                                    color: "white",
-                                    border: "none",
-                                    borderRadius: "0 25px 25px 0",
-                                    padding: "0 20px"
-                                }}
-                            >
-                                <FaSearch />
-                            </Button>
-                        </div>
-                    </Form>
-
                     {/* Parte modificada del menú de usuario */}
                     <div className="header-user-section" style={{ display: "flex", alignItems: "center", gap: "15px" }}>
                         {currentUser ? (

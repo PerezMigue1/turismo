@@ -80,7 +80,7 @@ const Mapa = () => {
   });
 
   return (
-    <div>
+    <div style={{ backgroundColor: 'white', minHeight: '100vh', padding: '20px' }}>
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', margin: '16px 0 8px 0', flexWrap: 'wrap' }}>
         <div>
           {["todos", "hospedaje", "lugar", "restaurante"].map(tipo => (

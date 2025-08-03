@@ -39,7 +39,7 @@ const Home = () => {
 
     const slides = [
         {
-            image: "https://res.cloudinary.com/dfxyn9ngk/image/upload/v1752075194/home-img-1_em4b3a.jpg",
+            image: "https://res.cloudinary.com/dlisat1cx/image/upload/v1754252500/zaca_lhrw7i.jpg",
             title: "GASTRONOMIA",
             subtitle: "A solo 10 minutos de Pachuca encuentras este bonito Pueblo Mágico",
             description: "Descubre la magia de la Huasteca Hidalguense con experiencias auténticas y sostenibles",
@@ -47,7 +47,7 @@ const Home = () => {
             buttonLink: "/gastronomia"
         },
         {
-            image: "https://res.cloudinary.com/dfxyn9ngk/image/upload/v1752074608/home-img2_bgy4uj.jpg",
+            image: "https://res.cloudinary.com/dlisat1cx/image/upload/v1754252273/cascada_rwm1i2.jpg",
             title: "CASCADAS ESCONDIDAS",
             subtitle: "Rutas para evitar aglomeraciones y disfrutar de la naturaleza",
             description: "Conecta con la cultura y naturaleza local de forma responsable",
@@ -55,7 +55,7 @@ const Home = () => {
             buttonLink: "/lugares"
         },
         {
-            image: "https://res.cloudinary.com/dfxyn9ngk/image/upload/v1752073986/home-img_hqb33n.jpg",
+            image: "https://res.cloudinary.com/dlisat1cx/image/upload/v1754252495/artesanales_cha14y.jpg",
             title: "TRADICIONES VIVAS",
             subtitle: "Conoce las danzas huastecas y patrimonio cultural",
             description: "Apoyando directamente a las comunidades locales",
@@ -69,7 +69,7 @@ const Home = () => {
             icon: <FaMapMarkerAlt style={{ fontSize: '2.5rem', color: '#0FA89C' }} />,
             title: 'Mapas y Rutas',
             text: 'Descubre atracciones con nuestros mapas interactivos y rutas dinámicas.',
-            link: '/lugares',
+            link: '/mapa',
             color: '#0FA89C'
         },
         {
@@ -2024,7 +2024,7 @@ const Home = () => {
                     <Modal.Body>
                         <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
                             <iframe
-                                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                                src="https://www.youtube.com/embed/YjQJG7g44RA?si=-sgurpTQIa-qPeRc"
                                 style={{
                                     position: 'absolute',
                                     top: 0,

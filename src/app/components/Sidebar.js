@@ -1,7 +1,7 @@
 import React from "react";
 import { Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FaTimes, FaHome, FaMapMarkedAlt, FaRoute, FaStore, FaBook, FaHiking, FaUtensils, FaShoppingBasket, FaBed, FaUserPlus, FaPlus } from "react-icons/fa";
+import { FaTimes, FaHome, FaMapMarkedAlt, FaRoute, FaStore, FaCalendarAlt, FaHiking, FaUtensils, FaShoppingBasket, FaBed, FaUserPlus, FaPlus, FaMapMarkerAlt } from "react-icons/fa";
 
 const Sidebar = ({ isOpen, onClose }) => {
     return (
@@ -68,39 +68,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                     alignItems: "center"
                 }}>
                     <FaMapMarkedAlt style={{ marginRight: "10px" }} /> Mapas interactivos
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/rutas" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaRoute style={{ marginRight: "10px" }} /> Rutas sugeridas
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/servicios" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaStore style={{ marginRight: "10px" }} /> Directorio de servicios
-                </Nav.Link>
-
-                <Nav.Link as={Link} to="/guias" onClick={onClose} style={{
-                    color: "#9A1E47",
-                    padding: "10px 15px",
-                    marginBottom: "5px",
-                    borderRadius: "5px",
-                    display: "flex",
-                    alignItems: "center"
-                }}>
-                    <FaBook style={{ marginRight: "10px" }} /> Guías turísticas
                 </Nav.Link>
 
                 <div style={{ 
@@ -176,7 +143,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaBook style={{ marginRight: "10px" }} /> Festividades
+                    <FaCalendarAlt style={{ marginRight: "10px" }} /> Festividades
                 </Nav.Link>
 
                 <Nav.Link as={Link} to="/negocios" onClick={onClose} style={{
@@ -198,7 +165,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     display: "flex",
                     alignItems: "center"
                 }}>
-                    <FaStore style={{ marginRight: "10px" }} /> Lugares
+                    <FaMapMarkerAlt style={{ marginRight: "10px" }} /> Lugares
                 </Nav.Link>
 
                 <div style={{ 
