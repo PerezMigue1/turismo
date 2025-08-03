@@ -23,6 +23,7 @@ const Register = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [securityQuestions, setSecurityQuestions] = useState([]);
     const [loadingQuestions, setLoadingQuestions] = useState(true);
+    const [passwordErrors, setPasswordErrors] = useState([]);
     const navigate = useNavigate();
 
     const sexoOptions = ['Masculino', 'Femenino', 'Otro'];
@@ -50,12 +51,44 @@ const Register = () => {
         fetchSecurityQuestions();
     }, []);
 
+    const validatePassword = (password) => {
+        const errors = [];
+        
+        if (password.length < 8) {
+            errors.push("Mínimo 8 caracteres");
+        }
+        
+        if (!/[A-Z]/.test(password)) {
+            errors.push("Al menos una mayúscula");
+        }
+        
+        if (!/[a-z]/.test(password)) {
+            errors.push("Al menos una minúscula");
+        }
+        
+        if (!/[0-9]/.test(password)) {
+            errors.push("Al menos un número");
+        }
+        
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            errors.push("Al menos un carácter especial");
+        }
+        
+        return errors;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
+        
+        // Validar contraseña en tiempo real
+        if (name === 'password') {
+            const errors = validatePassword(value);
+            setPasswordErrors(errors);
+        }
     };
 
     const togglePasswordVisibility = () => {
@@ -68,6 +101,12 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validar contraseña antes de enviar
+        const passwordValidationErrors = validatePassword(formData.password);
+        if (passwordValidationErrors.length > 0) {
+            return setError('La contraseña no cumple con los requisitos de seguridad');
+        }
 
         if (formData.password !== formData.confirmPassword) {
             return setError('Las contraseñas no coinciden');
@@ -229,21 +268,34 @@ const Register = () => {
                                         type={showPassword ? "text" : "password"}
                                         name="password"
                                         required
-                                        minLength="6"
                                         value={formData.password}
                                         onChange={handleChange}
-                                        style={{ borderColor: '#0FA89C' }}
+                                        style={{ 
+                                            borderColor: passwordErrors.length > 0 ? '#dc3545' : '#0FA89C' 
+                                        }}
                                     />
                                     <InputGroup.Text
-                                        style={{ cursor: 'pointer', backgroundColor: 'white', borderColor: '#0FA89C' }}
+                                        style={{ cursor: 'pointer', backgroundColor: 'white', borderColor: passwordErrors.length > 0 ? '#dc3545' : '#0FA89C' }}
                                         onClick={togglePasswordVisibility}
                                     >
                                         {showPassword ? <FaEyeSlash /> : <FaEye />}
                                     </InputGroup.Text>
                                 </InputGroup>
-                                <Form.Text className="text-muted">
-                                    La contraseña debe tener al menos 6 caracteres.
-                                </Form.Text>
+                                {passwordErrors.length > 0 && (
+                                    <div className="mt-2">
+                                        <small className="text-danger">Requisitos de contraseña:</small>
+                                        <ul className="text-danger" style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>
+                                            {passwordErrors.map((error, index) => (
+                                                <li key={index}>{error}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                {passwordErrors.length === 0 && formData.password && (
+                                    <Form.Text className="text-success">
+                                        ✓ Contraseña válida
+                                    </Form.Text>
+                                )}
                             </Form.Group>
 
                             <Form.Group id="confirmPassword" className="mb-3">
