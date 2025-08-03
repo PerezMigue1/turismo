@@ -5,9 +5,9 @@ import "leaflet/dist/leaflet.css";
 import axios from "axios";
 
 // Iconos personalizados
-const hospedajeIcon = new L.Icon({ iconUrl: "/icons/hospedaje.jpeg", iconSize: [32, 32] });
-const restauranteIcon = new L.Icon({ iconUrl: "/icons/restaurante.jpeg", iconSize: [32, 32] });
-const lugarTuristicoIcon = new L.Icon({ iconUrl: "/icons/lugarTuristico.jpeg", iconSize: [32, 32] });
+const hospedajeIcon = new L.Icon({ iconUrl: "/icons/hospedaje.png", iconSize: [32, 32] });
+const restauranteIcon = new L.Icon({ iconUrl: "/icons/restaurante.png", iconSize: [32, 32] });
+const lugarTuristicoIcon = new L.Icon({ iconUrl: "/icons/lugarTuristico.png", iconSize: [32, 32] });
 const API_BASE = "https://backend-iota-seven-19.vercel.app/api";
 
 const CarruselImagenes = ({ imagenes }) => {
@@ -80,7 +80,7 @@ const Mapa = () => {
   });
 
   return (
-    <div style={{ backgroundColor: 'white', minHeight: '100vh', padding: '20px' }}>
+    <div>
       <div style={{ display: 'flex', gap: 16, alignItems: 'center', margin: '16px 0 8px 0', flexWrap: 'wrap' }}>
         <div>
           {["todos", "hospedaje", "lugar", "restaurante"].map(tipo => (
