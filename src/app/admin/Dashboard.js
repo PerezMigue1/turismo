@@ -192,85 +192,143 @@ const Dashboard = ({ onNavigate }) => {
         performance: 92,
         uptime: 99.9
     });
+    const [statsData, setStatsData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Función para cargar datos en tiempo real
+    const fetchDashboardData = async () => {
+        try {
+            setLoading(true);
+            
+            // Cargar estadísticas en tiempo real
+            const [usersRes, productsRes, lugaresRes, hospedajesRes, restaurantesRes, ecoturismoRes] = await Promise.all([
+                fetch('https://backend-iota-seven-19.vercel.app/api/usuarios'),
+                fetch('https://backend-iota-seven-19.vercel.app/api/productos'),
+                fetch('https://backend-iota-seven-19.vercel.app/api/lugares'),
+                fetch('https://backend-iota-seven-19.vercel.app/api/hospedajes'),
+                fetch('https://backend-iota-seven-19.vercel.app/api/restaurantes'),
+                fetch('https://backend-iota-seven-19.vercel.app/api/ecoturismo')
+            ]);
+
+            const [users, products, lugares, hospedajes, restaurantes, ecoturismo] = await Promise.all([
+                usersRes.json(),
+                productsRes.json(),
+                lugaresRes.json(),
+                hospedajesRes.json(),
+                restaurantesRes.json(),
+                ecoturismoRes.json()
+            ]);
+
+            // Actualizar estadísticas con datos reales
+            const realStatsData = [
+                { 
+                    title: 'Usuarios Registrados', 
+                    value: Array.isArray(users) ? users.length.toString() : '0', 
+                    icon: <FaUsers />, 
+                    change: '+3.48%', 
+                    color: '#0FA89C',
+                    bgGradient: '#f0fdfa',
+                    bgGradientEnd: '#ecfeff',
+                    section: 'users'
+                },
+                { 
+                    title: 'Lugares Turísticos', 
+                    value: Array.isArray(lugares) ? lugares.length.toString() : '0', 
+                    icon: <FaMapMarkedAlt />, 
+                    change: '+2', 
+                    color: '#1E8546',
+                    bgGradient: '#f0fdf4',
+                    bgGradientEnd: '#ecfdf5',
+                    section: 'lugares'
+                },
+                { 
+                    title: 'Hospedajes', 
+                    value: Array.isArray(hospedajes) ? hospedajes.length.toString() : '0', 
+                    icon: <FaBed />, 
+                    change: '+1', 
+                    color: '#F28B27',
+                    bgGradient: '#fffbeb',
+                    bgGradientEnd: '#fef3c7',
+                    section: 'hospedajeequests'
+                },
+                { 
+                    title: 'Restaurantes', 
+                    value: Array.isArray(restaurantes) ? restaurantes.length.toString() : '0', 
+                    icon: <FaUtensils />, 
+                    change: '+4', 
+                    color: '#9A1E47',
+                    bgGradient: '#fdf2f8',
+                    bgGradientEnd: '#fce7f3',
+                    section: 'restauranterequests'
+                },
+                { 
+                    title: 'Productos Artesanales', 
+                    value: Array.isArray(products) ? products.length.toString() : '0', 
+                    icon: <FaStore />, 
+                    change: '+12', 
+                    color: '#6366f1',
+                    bgGradient: '#f5f3ff',
+                    bgGradientEnd: '#ede9fe',
+                    section: 'products'
+                },
+                { 
+                    title: 'Actividades Ecoturísticas', 
+                    value: Array.isArray(ecoturismo) ? ecoturismo.length.toString() : '0', 
+                    icon: <FaMountain />, 
+                    change: '+1', 
+                    color: '#059669',
+                    bgGradient: '#ecfdf5',
+                    bgGradientEnd: '#d1fae5',
+                    section: 'ecoturismo'
+                },
+            ];
+
+            setStatsData(realStatsData);
+
+            // Cargar solicitudes pendientes reales
+            const requestsRes = await fetch('https://backend-iota-seven-19.vercel.app/api/solicitudes/pendientes');
+            const requests = await requestsRes.json();
+            
+            if (Array.isArray(requests)) {
+                setPendingRequests(requests.slice(0, 5)); // Solo mostrar las primeras 5
+            }
+
+            // Cargar actividad reciente real
+            const activityRes = await fetch('https://backend-iota-seven-19.vercel.app/api/actividad/reciente');
+            const activity = await activityRes.json();
+            
+            if (Array.isArray(activity)) {
+                setRecentActivity(activity.slice(0, 4)); // Solo mostrar las primeras 4
+            }
+
+        } catch (error) {
+            console.error('Error cargando datos del dashboard:', error);
+            // Mantener datos de ejemplo si hay error
+            setRecentActivity([
+                { id: 1, type: 'Nuevo lugar', description: 'Cascada de Yahualica agregada', time: '2 horas', status: 'completed' },
+                { id: 2, type: 'Solicitud', description: 'Nuevo restaurante pendiente', time: '4 horas', status: 'pending' },
+                { id: 3, type: 'Usuario', description: 'Nuevo artesano registrado', time: '6 horas', status: 'completed' },
+                { id: 4, type: 'Producto', description: 'Artesanía aprobada', time: '1 día', status: 'completed' },
+            ]);
+
+            setPendingRequests([
+                { id: 1, type: 'Restaurante', name: 'El Sabor de Yahualica', status: 'Pendiente', date: '2024-01-15' },
+                { id: 2, type: 'Hospedaje', name: 'Casa Rural San José', status: 'En revisión', date: '2024-01-14' },
+                { id: 3, type: 'Producto', name: 'Cerámica tradicional', status: 'Pendiente', date: '2024-01-13' },
+            ]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        // Simular datos de actividad reciente
-        setRecentActivity([
-            { id: 1, type: 'Nuevo lugar', description: 'Cascada de Yahualica agregada', time: '2 horas', status: 'completed' },
-            { id: 2, type: 'Solicitud', description: 'Nuevo restaurante pendiente', time: '4 horas', status: 'pending' },
-            { id: 3, type: 'Usuario', description: 'Nuevo artesano registrado', time: '6 horas', status: 'completed' },
-            { id: 4, type: 'Producto', description: 'Artesanía aprobada', time: '1 día', status: 'completed' },
-        ]);
-
-        setPendingRequests([
-            { id: 1, type: 'Restaurante', name: 'El Sabor de Yahualica', status: 'Pendiente', date: '2024-01-15' },
-            { id: 2, type: 'Hospedaje', name: 'Casa Rural San José', status: 'En revisión', date: '2024-01-14' },
-            { id: 3, type: 'Producto', name: 'Cerámica tradicional', status: 'Pendiente', date: '2024-01-13' },
-        ]);
+        fetchDashboardData();
+        
+        // Actualizar datos cada 30 segundos
+        const interval = setInterval(fetchDashboardData, 30000);
+        
+        return () => clearInterval(interval);
     }, []);
-
-    const statsData = [
-        { 
-            title: 'Usuarios Registrados', 
-            value: '1,458', 
-            icon: <FaUsers />, 
-            change: '+3.48%', 
-            color: '#0FA89C',
-            bgGradient: '#f0fdfa',
-            bgGradientEnd: '#ecfeff',
-            section: 'users'
-        },
-        { 
-            title: 'Lugares Turísticos', 
-            value: '24', 
-            icon: <FaMapMarkedAlt />, 
-            change: '+2', 
-            color: '#1E8546',
-            bgGradient: '#f0fdf4',
-            bgGradientEnd: '#ecfdf5',
-            section: 'lugares'
-        },
-        { 
-            title: 'Hospedajes', 
-            value: '18', 
-            icon: <FaBed />, 
-            change: '+1', 
-            color: '#F28B27',
-            bgGradient: '#fffbeb',
-            bgGradientEnd: '#fef3c7',
-            section: 'hospedajeequests'
-        },
-        { 
-            title: 'Restaurantes', 
-            value: '32', 
-            icon: <FaUtensils />, 
-            change: '+4', 
-            color: '#9A1E47',
-            bgGradient: '#fdf2f8',
-            bgGradientEnd: '#fce7f3',
-            section: 'restauranterequests'
-        },
-        { 
-            title: 'Productos Artesanales', 
-            value: '156', 
-            icon: <FaStore />, 
-            change: '+12', 
-            color: '#6366f1',
-            bgGradient: '#f5f3ff',
-            bgGradientEnd: '#ede9fe',
-            section: 'products'
-        },
-        { 
-            title: 'Actividades Ecoturísticas', 
-            value: '8', 
-            icon: <FaMountain />, 
-            change: '+1', 
-            color: '#059669',
-            bgGradient: '#ecfdf5',
-            bgGradientEnd: '#d1fae5',
-            section: 'ecoturismo'
-        },
-    ];
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -305,7 +363,7 @@ const Dashboard = ({ onNavigate }) => {
     return (
         <DashboardContent>
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4" style={{ width: '100%' }}>
-                <h2>Dashboard - Yahualica Turístico</h2>
+                <h2>Dashboard - El Turismo</h2>
                 <div className="d-flex gap-2 mt-2 mt-md-0">
                     <QuickActionButton variant="primary" onClick={() => navigate('/')}>
                         <FaEye className="me-2" />
@@ -401,10 +459,8 @@ const Dashboard = ({ onNavigate }) => {
                 <Col xl={6} lg={12} md={12} className="mb-3" style={{ padding: '0.75rem' }}>
                     <SectionCard>
                         <SectionTitle>
-                            <div>
-                                <FaChartLine className="me-2" />
-                                Actividad Reciente
-                            </div>
+                            <FaChartLine className="me-2" />
+                            Actividad Reciente
                         </SectionTitle>
                         <Card.Body>
                             <div className="activity-list">

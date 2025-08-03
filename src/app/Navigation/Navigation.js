@@ -45,6 +45,7 @@ import DetalleEcoturismo from '../screens/DetalleEcoturismo';
 import Encuestas from '../screens/Encuestas';
 import ResponderEncuesta from '../screens/ResponderEncuesta';
 
+import Mapa from '../Mapa/Mapa'
 
 // Componente para proteger rutas
 const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
@@ -81,6 +82,16 @@ const Navigation = () => {
                                     <Footer />
                                 </>
                             } />
+
+                            <Route path="/mapa" element={
+                                <>
+                                    <Header />
+                                    <Mapa />
+                                    <Footer />
+                                </>
+                            } />
+
+
                             <Route path="/artesanias" element={
                                 <>
                                     <Header />

@@ -160,7 +160,7 @@ const TopNavbar = ({ toggleSidebar, sidebarCollapsed, isMobile }) => {
                 
                 <Navbar.Brand href="#" className="me-auto">
                     <BrandText>
-                        {isMobile ? 'Admin' : 'Panel Administrativo'}
+                        {isMobile ? 'El Turismo' : 'El Turismo - Admin'}
                     </BrandText>
                 </Navbar.Brand>
 

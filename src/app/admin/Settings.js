@@ -1,5 +1,5 @@
 // src/app/admin/Settings.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Form, Button, Alert, Nav, Tab } from 'react-bootstrap';
 import {
     FaCog,
@@ -61,11 +61,14 @@ const TabIcon = styled.span`
 const Settings = () => {
     const [activeTab, setActiveTab] = useState('general');
     const [showAlert, setShowAlert] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertVariant, setAlertVariant] = useState('success');
+    const [loading, setLoading] = useState(false);
     const [settings, setSettings] = useState({
         // Configuración general
-        siteName: 'Yahualica Turístico',
-        siteDescription: 'Portal turístico de Yahualica',
-        contactEmail: 'admin@yahualica.com',
+        siteName: 'El Turismo',
+        siteDescription: 'Portal turístico de la Huasteca Hidalguense',
+        contactEmail: 'admin@elturismo.com',
         contactPhone: '+52 123 456 7890',
         
         // Configuración de usuario
@@ -91,6 +94,23 @@ const Settings = () => {
         maxFileSize: 10
     });
 
+    // Cargar configuración existente
+    useEffect(() => {
+        const loadSettings = async () => {
+            try {
+                const response = await fetch('https://backend-iota-seven-19.vercel.app/api/configuracion');
+                if (response.ok) {
+                    const data = await response.json();
+                    setSettings(prev => ({ ...prev, ...data }));
+                }
+            } catch (error) {
+                console.error('Error cargando configuración:', error);
+            }
+        };
+
+        loadSettings();
+    }, []);
+
     const handleSettingChange = (key, value) => {
         setSettings(prev => ({
             ...prev,
@@ -98,26 +118,56 @@ const Settings = () => {
         }));
     };
 
-    const handleSave = () => {
-        // Aquí se guardarían los cambios en la base de datos
-        setShowAlert(true);
-        setTimeout(() => setShowAlert(false), 3000);
+    const handleSave = async () => {
+        try {
+            setLoading(true);
+            setShowAlert(false);
+
+            const response = await fetch('https://backend-iota-seven-19.vercel.app/api/configuracion', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(settings)
+            });
+
+            if (response.ok) {
+                setAlertMessage('Configuración guardada exitosamente');
+                setAlertVariant('success');
+                setShowAlert(true);
+                
+                // Actualizar el título de la página si se cambió el nombre del sitio
+                if (settings.siteName) {
+                    document.title = `Admin - ${settings.siteName}`;
+                }
+            } else {
+                throw new Error('Error al guardar configuración');
+            }
+        } catch (error) {
+            console.error('Error guardando configuración:', error);
+            setAlertMessage('Error al guardar la configuración');
+            setAlertVariant('danger');
+            setShowAlert(true);
+        } finally {
+            setLoading(false);
+            setTimeout(() => setShowAlert(false), 3000);
+        }
     };
 
     return (
         <SettingsContainer>
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2>Configuración del Sistema</h2>
-                <SaveButton onClick={handleSave}>
+                <SaveButton onClick={handleSave} disabled={loading}>
                     <FaSave className="me-2" />
-                    Guardar Cambios
+                    {loading ? 'Guardando...' : 'Guardar Cambios'}
                 </SaveButton>
             </div>
 
             {showAlert && (
-                <Alert variant="success" dismissible onClose={() => setShowAlert(false)}>
+                <Alert variant={alertVariant} dismissible onClose={() => setShowAlert(false)}>
                     <FaSave className="me-2" />
-                    Configuración guardada exitosamente
+                    {alertMessage}
                 </Alert>
             )}
 

@@ -5,7 +5,7 @@ import {
     FaSearch, FaChevronLeft, FaChevronRight, FaBed, FaMountain, FaCalendarAlt, FaStar, FaHeart,
     FaPhone, FaEnvelope, FaGlobe, FaClock, FaInfoCircle, FaArrowRight, FaPlay, FaPause
 } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 // Importar componentes reales
 import ListaArtesanias from './ListaArtesanias';
@@ -110,6 +110,32 @@ const Home = () => {
         }
     ];
 
+    const testimonials = [
+        {
+            name: "María González",
+            role: "Turista",
+            text: "Una experiencia increíble. Los lugares son hermosos y la gente muy amable.",
+            rating: 5,
+            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
+        },
+        {
+            name: "Carlos Rodríguez",
+            role: "Viajero",
+            text: "Las artesanías son únicas y los precios muy justos. Definitivamente volveré.",
+            rating: 5,
+            avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
+        },
+        {
+            name: "Ana Martínez",
+            role: "Fotógrafa",
+            text: "Los paisajes son espectaculares. Perfecto para fotografía de naturaleza.",
+            rating: 5,
+            avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face"
+        }
+    ];
+
+
+
     // Cargar datos desde la API
     useEffect(() => {
         const fetchData = async () => {
@@ -138,7 +164,7 @@ const Home = () => {
 
                 // Intentar cargar otros datos opcionalmente
                 try {
-                    const restaurantesRes = await fetch('https://backend-iota-seven-19.vercel.app/api/restaurante');
+                    const restaurantesRes = await fetch('https://backend-iota-seven-19.vercel.app/api/restaurantes');
                     if (restaurantesRes.ok) {
                         const restaurantesData = await restaurantesRes.json();
                         setRestaurantes(Array.isArray(restaurantesData) ? restaurantesData.slice(0, 6) : []);
@@ -149,7 +175,7 @@ const Home = () => {
                 }
 
                 try {
-                    const hospedajesRes = await fetch('https://backend-iota-seven-19.vercel.app/api/hospedaje');
+                    const hospedajesRes = await fetch('https://backend-iota-seven-19.vercel.app/api/hospedajes');
                     if (hospedajesRes.ok) {
                         const hospedajesData = await hospedajesRes.json();
                         setHospedajes(Array.isArray(hospedajesData) ? hospedajesData.slice(0, 6) : []);
@@ -160,12 +186,10 @@ const Home = () => {
                 }
 
                 try {
-                    const ecoturismoRes = await fetch('https://backend-iota-seven-19.vercel.app/api/ecoturismo/public');
+                    const ecoturismoRes = await fetch('https://backend-iota-seven-19.vercel.app/api/ecoturismo');
                     if (ecoturismoRes.ok) {
                         const ecoturismoData = await ecoturismoRes.json();
-                        // Verificar si la respuesta tiene la estructura esperada
-                        const data = ecoturismoData.data || ecoturismoData;
-                        setEcoturismo(Array.isArray(data) ? data.slice(0, 6) : []);
+                        setEcoturismo(Array.isArray(ecoturismoData) ? ecoturismoData.slice(0, 6) : []);
                     }
                 } catch (error) {
                     console.log('Ecoturismo no disponible:', error.message);
@@ -280,6 +304,7 @@ const Home = () => {
             border-radius: 15px;
             max-width: 800px;
             margin: 0 auto;
+            backdrop-filter: blur(10px);
         }
         
         .carousel-caption h1 {
@@ -295,30 +320,50 @@ const Home = () => {
         }
         
         .nav-tabs-custom {
-            background-color: #9A1E47;
+            background: linear-gradient(135deg, #9A1E47 0%, #D24D10 100%);
             border: none;
+            padding: 0;
+            box-shadow: 0 4px 15px rgba(154, 30, 71, 0.3);
         }
         
         .nav-tabs-custom .nav-link {
             border: none;
             color: white;
             font-weight: bold;
-            background-color: #9A1E47;
-            padding: 15px 30px;
+            background: transparent;
+            padding: 18px 35px;
             margin: 0;
             border-radius: 0;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
         }
         
         .nav-tabs-custom .nav-link:hover {
-            background-color: #D24D10;
+            background-color: rgba(255,255,255,0.1);
             color: white;
             border: none;
+            transform: translateY(-2px);
         }
         
         .nav-tabs-custom .nav-link.active {
-            background-color: #D24D10;
+            background-color: rgba(255,255,255,0.2);
             color: white;
             border: none;
+            box-shadow: inset 0 -3px 0 #F28B27;
+        }
+        
+        .nav-tabs-custom .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background-color: #F28B27;
+            border-radius: 2px;
         }
         
         .card-hover {
@@ -349,7 +394,7 @@ const Home = () => {
         }
         
         .stats-card {
-            background-color: #9A1E47;
+            background: linear-gradient(135deg, #9A1E47 0%, #D24D10 100%);
             color: white;
             border-radius: 15px;
             padding: 30px;
@@ -368,120 +413,24 @@ const Home = () => {
             opacity: 0.9;
         }
         
-        .content-section {
-            padding: 20px 0;
-        }
-        
-        .section-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .section-header h2 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #9A1E47;
-            margin-bottom: 8px;
-        }
-        
-        .section-header p {
-            font-size: 0.9rem;
-            color: #6c757d;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .content-grid {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .content-item {
+        .testimonial-card {
             background: white;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border: 1px solid #e0e0e0;
-            min-height: 220px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .content-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-color: #9A1E47;
-        }
-        
-        .content-icon {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .content-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #9A1E47;
-            margin-bottom: 8px;
-            text-align: center;
-        }
-        
-        .content-description {
-            color: #6c757d;
-            text-align: center;
-            margin-bottom: 10px;
-            flex-grow: 1;
-            font-size: 0.8rem;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 15px 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border: 1px dashed #9A1E47;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .empty-state-icon {
-            font-size: 2rem;
-            color: #9A1E47;
-            margin-bottom: 10px;
-        }
-        
-        .empty-state h4 {
-            color: #9A1E47;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-        }
-        
-        .empty-state p {
-            color: #6c757d;
-            margin-bottom: 0;
-            font-size: 0.75rem;
-        }
-        
-        .view-all-button {
-            text-align: center;
-            margin-top: auto;
-            padding-top: 10px;
-        }
-        
-        .view-all-button .btn {
-            padding: 6px 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
             border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
         }
         
         .video-section {
-            background-color: #0FA89C;
+            background: linear-gradient(135deg, #0FA89C 0%, #1E8546 100%);
             color: white;
             padding: 80px 0;
         }
@@ -534,6 +483,117 @@ const Home = () => {
             margin-bottom: 15px;
         }
         
+        .content-section {
+            padding: 60px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #9A1E47;
+            margin-bottom: 15px;
+        }
+        
+        .section-header p {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .content-grid {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .content-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #9A1E47;
+        }
+        
+        .content-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .content-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #9A1E47;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .content-description {
+            color: #6c757d;
+            text-align: center;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        
+
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 2px dashed #9A1E47;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            color: #9A1E47;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h4 {
+            color: #9A1E47;
+            margin-bottom: 10px;
+        }
+        
+        .empty-state p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .view-all-button {
+            text-align: center;
+            margin-top: auto;
+            padding-top: 20px;
+        }
+        
+        .view-all-button .btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 25px;
+        }
+        
         @media (max-width: 1200px) {
             .content-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -548,6 +608,9 @@ const Home = () => {
                 font-size: 1rem;
             }
             .section-title {
+                font-size: 2rem;
+            }
+            .stats-number {
                 font-size: 2rem;
             }
             .carousel-item {
@@ -602,9 +665,48 @@ const Home = () => {
             .stats-card {
                 padding: 20px;
             }
+            .stats-number {
+                font-size: 1.8rem;
+            }
             .nav-tabs-custom .nav-link {
                 padding: 8px 12px;
                 font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .carousel-caption {
+                padding: 15px;
+                bottom: 5%;
+            }
+            .carousel-caption h1 {
+                font-size: 1.3rem;
+            }
+            .carousel-caption p {
+                font-size: 0.8rem;
+            }
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+            .content-item {
+                padding: 15px;
+                min-height: 250px;
+            }
+            .content-icon {
+                font-size: 1.8rem;
+            }
+            .content-title {
+                font-size: 1rem;
+            }
+            .stats-card {
+                padding: 15px;
+            }
+            .stats-number {
+                font-size: 1.5rem;
+            }
+            .nav-tabs-custom .nav-link {
+                padding: 6px 10px;
+                font-size: 0.7rem;
             }
         }
     `;
@@ -637,7 +739,7 @@ const Home = () => {
                                 <p>Descubre lo mejor que tenemos para ofrecerte en esta región mágica</p>
                             </div>
                             
-                            <div className="content-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                            <div className="content-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
                                 {/* Artesanías */}
                                 <div className="content-item">
                                     <div className="content-icon" style={{ color: '#9A1E47' }}>
@@ -649,7 +751,7 @@ const Home = () => {
                                     </div>
                                     
                                     {artesanias.length > 0 ? (
-                                        <div style={{ flex: 1, minHeight: '120px', overflow: 'hidden' }}>
+                                        <div style={{ flex: 1, minHeight: '200px', overflow: 'hidden' }}>
                                             <ListaArtesanias artesanias={artesanias.slice(0, 2)} />
                                         </div>
                                     ) : (
@@ -680,7 +782,7 @@ const Home = () => {
                                     </div>
                                     
                                     {lugares.length > 0 ? (
-                                        <div style={{ flex: 1, minHeight: '120px', overflow: 'hidden' }}>
+                                        <div style={{ flex: 1, minHeight: '200px', overflow: 'hidden' }}>
                                             <ListaLugares lugares={lugares.slice(0, 2)} />
                                         </div>
                                     ) : (
@@ -711,7 +813,7 @@ const Home = () => {
                                     </div>
                                     
                                     {restaurantes.length > 0 ? (
-                                        <div style={{ flex: 1, minHeight: '120px', overflow: 'hidden' }}>
+                                        <div style={{ flex: 1, minHeight: '200px', overflow: 'hidden' }}>
                                             <ListaRestaurantes restaurantes={restaurantes.slice(0, 2)} />
                                         </div>
                                     ) : (
@@ -744,7 +846,7 @@ const Home = () => {
                                 <p>Vive aventuras inolvidables en la naturaleza y descansa en lugares mágicos</p>
                             </div>
                             
-                            <div className="content-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+                            <div className="content-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
                                 {/* Ecoturismo */}
                                 <div className="content-item">
                                     <div className="content-icon" style={{ color: '#1E8546' }}>
@@ -756,7 +858,7 @@ const Home = () => {
                                     </div>
                                     
                                     {ecoturismo.length > 0 ? (
-                                        <div style={{ flex: 1, minHeight: '120px', overflow: 'hidden' }}>
+                                        <div style={{ flex: 1, minHeight: '200px', overflow: 'hidden' }}>
                                             <ListaEcoturismo ecoturismos={ecoturismo.slice(0, 2)} />
                                         </div>
                                     ) : (
@@ -787,7 +889,7 @@ const Home = () => {
                                     </div>
                                     
                                     {hospedajes.length > 0 ? (
-                                        <div style={{ flex: 1, minHeight: '120px', overflow: 'hidden' }}>
+                                        <div style={{ flex: 1, minHeight: '200px', overflow: 'hidden' }}>
                                             {hospedajes.slice(0, 2).map((hospedaje) => (
                                                 <Card key={hospedaje._id} className="card-hover mb-3">
                                                     <Card.Body>
@@ -831,7 +933,7 @@ const Home = () => {
                             </div>
                             
                             {festividades.length > 0 ? (
-                                <div className="content-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+                                <div className="content-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
                                     {festividades.slice(0, 6).map((festividad) => (
                                         <div key={festividad._id} className="content-item">
                                             <CardFestividades 
@@ -842,7 +944,7 @@ const Home = () => {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="empty-state" style={{ minHeight: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                <div className="empty-state" style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                                     <div className="empty-state-icon">
                                         <FaCalendarAlt />
                                     </div>
@@ -1047,6 +1149,8 @@ const Home = () => {
                         </Row>
                     </Container>
                 </section>
+
+
 
                 {/* Contact Section */}
                 <section style={{ padding: '60px 0', backgroundColor: '#f8f9fa' }}>

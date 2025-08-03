@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     Explorar
                 </div>
 
-                <Nav.Link as={Link} to="/mapas" onClick={onClose} style={{
+                <Nav.Link as={Link} to="/mapa" onClick={onClose} style={{
                     color: "#9A1E47",
                     padding: "10px 15px",
                     marginBottom: "5px",
