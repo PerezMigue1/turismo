@@ -164,8 +164,11 @@ const Users = () => {
                 mostrarToast('Usuario actualizado correctamente', 'success');
                 setShowEditModal(false);
                 setEditingUser(null);
-                // Recargar usuarios
-                window.location.reload();
+                // Recargar usuarios sin recargar la página
+                const updatedUsers = users.map(user => 
+                    user._id === editingUser._id ? { ...user, ...userDataToSend } : user
+                );
+                setUsers(updatedUsers);
             } else {
                 throw new Error('Error al actualizar usuario');
             }
@@ -205,8 +208,9 @@ const Users = () => {
                 mostrarToast('Usuario eliminado correctamente', 'success');
                 setShowDeleteModal(false);
                 setDeletingUser(null);
-                // Recargar usuarios
-                window.location.reload();
+                // Recargar usuarios sin recargar la página
+                const updatedUsers = users.filter(user => user._id !== deletingUser._id);
+                setUsers(updatedUsers);
             } else {
                 throw new Error('Error al eliminar usuario');
             }

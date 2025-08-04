@@ -6,7 +6,7 @@ import {
   FaUsers,
   FaBox,
   FaCog,
-
+  FaPalette,
   FaInbox,
   FaBullseye,
   FaShieldAlt,
@@ -265,7 +265,7 @@ const Sidebar = ({ activeSection, setActiveSection, collapsed, isMobile }) => {
     {
       title: 'Solicitudes',
       items: [
-        { id: 'requests', label: 'Productos', icon: <FaBox /> },
+        { id: 'artesanias', label: 'Artesanias', icon: <FaPalette /> },
         { id: 'gastrorequests', label: 'Gastronomía', icon: <FaUtensils /> },
         { id: 'hospedajeequests', label: 'Hospedaje', icon: <FaBed /> },
         { id: 'restauranterequests', label: 'Restaurantes', icon: <FaUtensils /> }

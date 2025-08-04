@@ -52,17 +52,14 @@ const Footer = () => {
                             fontWeight: 'bold',
                             fontSize: '1.2rem'
                         }}>
-                            Enlaces rápidos
+                            Sobre nosotros
                         </h5>
                         <ul style={{ listStyle: 'none', padding: 0 }}>
                             {[
-                                { path: '/ecoturismo', label: 'Ecoturismo' },
-                                { path: '/cultura', label: 'Turismo cultural' },
                                 { path: '/encuestas', label: 'Encuestas' },
                                 { path: '/mision-vision', label: 'Misión y Visión' },
                                 { path: '/politicas', label: 'Políticas' },
                                 { path: '/faq', label: 'FAQ' },
-                                { path: '/nosotros', label: 'Sobre nosotros' }
                             ].map((link, index) => (
                                 <li key={index} style={{ marginBottom: '10px' }}>
                                     <Link

@@ -26,7 +26,7 @@ import {
     FaImage
 } from "react-icons/fa";
 
-const ProductoRevision = () => {
+const ArtesaniasRequests = () => {
     const [productos, setProductos] = useState([]);
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -179,7 +179,7 @@ const ProductoRevision = () => {
             <Row className="mb-4">
                 <Col>
                     <h1 style={{ color: customStyles.primary.backgroundColor }}>
-                        <strong>Productos en Revisión</strong>
+                        <strong>Artesanias en Revisión</strong>
                     </h1>
                     <div style={{ width: '80px', height: '4px', backgroundColor: customStyles.secondary.backgroundColor, borderRadius: '2px' }}></div>
                 </Col>
@@ -595,4 +595,4 @@ const ProductoRevision = () => {
     );
 };
 
-export default ProductoRevision;
+export default ArtesaniasRequests;

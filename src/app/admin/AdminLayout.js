@@ -8,7 +8,7 @@ import Users from '../admin/Users';
 import Products from '../admin/Products';
 import Settings from '../admin/Settings';
 import styled from 'styled-components';
-import ProductRequests from '../admin/ProductRequests'
+import ArtesaniasRequests from '../admin/ArtesaniasRequests'
 import GastroRequests from '../admin/GastronomiaRequests'
 import HospedajeRequests from '../admin/HospedajeRequests';
 import RestauranteRequests from '../admin/RestauranteRequests';
@@ -162,8 +162,8 @@ const AdminLayout = () => {
                 return <Users />;
             case 'products':
                 return <Products />;
-            case 'requests':
-                return <ProductRequests />;
+            case 'artesanias':
+                return <ArtesaniasRequests />;
             case 'gastrorequests':
                 return <GastroRequests />;
             case 'hospedajeequests':

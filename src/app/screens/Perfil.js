@@ -11,6 +11,8 @@ const Perfil = () => {
     const [alert, setAlert] = useState({ show: false, message: "", variant: "success" });
     const [artesano, setArtesano] = useState(null);
     const [hospedero, setHospedero] = useState(null);
+    const [chef, setChef] = useState(null);
+    const [restaurante, setRestaurante] = useState(null);
     const navigate = useNavigate();
 
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -61,9 +63,29 @@ const Perfil = () => {
             }
         };
 
+        const fetchChef = async () => {
+            try {
+                const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/contactoChef/por-usuario/${id}`);
+                setChef(res.data);
+            } catch (err) {
+                setChef(null);
+            }
+        };
+
+        const fetchRestaurante = async () => {
+            try {
+                const res = await axios.get(`https://backend-iota-seven-19.vercel.app/api/contactoRestaurante/por-usuario/${id}`);
+                setRestaurante(res.data);
+            } catch (err) {
+                setRestaurante(null);
+            }
+        };
+
         fetchUserData();
         fetchArtesano();
         fetchHospedero();
+        fetchChef();
+        fetchRestaurante();
     }, [id]);
 
     const handleInputChange = (e) => {
@@ -192,11 +214,36 @@ const Perfil = () => {
                                 <Form.Group className="mb-4">
                                     <Form.Label style={{ color: "#9A1E47", fontWeight: "500" }}>Roles</Form.Label>
                                     <div className="p-2 rounded">
-                                        {(Array.isArray(user.rol) ? user.rol : [user.rol]).map((rol, idx) => (
-                                            <Badge key={rol + idx} bg={rol === "turista" ? "info" : rol === "artesano" ? "warning" : rol === "admin" ? "danger" : "success"} className="me-2 text-capitalize">
-                                                {rol}
-                                            </Badge>
-                                        ))}
+                                        {(Array.isArray(user.rol) ? user.rol : [user.rol]).map((rol, idx) => {
+                                            let badgeColor;
+                                            switch(rol) {
+                                                case "turista":
+                                                    badgeColor = "info";
+                                                    break;
+                                                case "artesano":
+                                                    badgeColor = "warning";
+                                                    break;
+                                                case "hospedero":
+                                                    badgeColor = "primary";
+                                                    break;
+                                                case "chef":
+                                                    badgeColor = "danger";
+                                                    break;
+                                                case "restaurante":
+                                                    badgeColor = "success";
+                                                    break;
+                                                case "admin":
+                                                    badgeColor = "dark";
+                                                    break;
+                                                default:
+                                                    badgeColor = "secondary";
+                                            }
+                                            return (
+                                                <Badge key={rol + idx} bg={badgeColor} className="me-2 text-capitalize">
+                                                    {rol}
+                                                </Badge>
+                                            );
+                                        })}
                                     </div>
                                 </Form.Group>
                             </Form>
@@ -236,6 +283,44 @@ const Perfil = () => {
                                     </ul>
                                     <p><strong>Teléfono:</strong> {hospedero.telefono}</p>
                                     <p><strong>Correo:</strong> {hospedero.correo}</p>
+                                </>
+                            )}
+
+                            {/* DATOS DE CHEF (si está registrado) */}
+                            {chef && (
+                                <>
+                                    <hr />
+                                    <h5 style={{ color: "#9A1E47" }}>👨‍🍳 Datos como chef</h5>
+                                    <p><strong>Especialidad:</strong> {chef.especialidad}</p>
+                                    <p><strong>Ubicación:</strong> <FaMapMarkerAlt className="me-1" /> {chef.ubicacion}</p>
+                                    <p><strong>Descripción:</strong> {chef.descripcion}</p>
+                                    <p><strong>Redes sociales:</strong></p>
+                                    <ul>
+                                        {chef.redesSociales?.facebook && <li>Facebook: {chef.redesSociales.facebook}</li>}
+                                        {chef.redesSociales?.instagram && <li>Instagram: {chef.redesSociales.instagram}</li>}
+                                        {chef.redesSociales?.whatsapp && <li>WhatsApp: {chef.redesSociales.whatsapp}</li>}
+                                    </ul>
+                                    <p><strong>Teléfono:</strong> {chef.telefono}</p>
+                                    <p><strong>Correo:</strong> {chef.correo}</p>
+                                </>
+                            )}
+
+                            {/* DATOS DE RESTAURANTE (si está registrado) */}
+                            {restaurante && (
+                                <>
+                                    <hr />
+                                    <h5 style={{ color: "#9A1E47" }}>🍽️ Datos como restaurante</h5>
+                                    <p><strong>Especialidad:</strong> {restaurante.especialidad}</p>
+                                    <p><strong>Ubicación:</strong> <FaMapMarkerAlt className="me-1" /> {restaurante.ubicacion}</p>
+                                    <p><strong>Descripción:</strong> {restaurante.descripcion}</p>
+                                    <p><strong>Redes sociales:</strong></p>
+                                    <ul>
+                                        {restaurante.redesSociales?.facebook && <li>Facebook: {restaurante.redesSociales.facebook}</li>}
+                                        {restaurante.redesSociales?.instagram && <li>Instagram: {restaurante.redesSociales.instagram}</li>}
+                                        {restaurante.redesSociales?.whatsapp && <li>WhatsApp: {restaurante.redesSociales.whatsapp}</li>}
+                                    </ul>
+                                    <p><strong>Teléfono:</strong> {restaurante.telefono}</p>
+                                    <p><strong>Correo:</strong> {restaurante.correo}</p>
                                 </>
                             )}
 
