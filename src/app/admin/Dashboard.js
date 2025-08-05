@@ -20,7 +20,10 @@ import {
     FaCheckCircle,
     FaExclamationTriangle,
     FaClock,
-    FaCog
+    FaCog,
+    FaQuestionCircle,
+    FaFileAlt,
+    FaClipboardList
 } from 'react-icons/fa';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -482,95 +485,175 @@ const Dashboard = ({ onNavigate }) => {
                 </Col>
             </Row>
 
-            {/* Estado del Sistema */}
+            {/* Gestión de Contenido */}
             <Row>
                 <Col lg={6} md={12} className="mb-4">
                     <SectionCard>
                         <SectionTitle>
                             <FaCog className="me-2" />
-                            Estado del Sistema
+                            Gestión de Contenido
                         </SectionTitle>
                         <Card.Body>
-                            <ProgressCard>
-                                <Card.Body>
-                                    <div className="d-flex justify-content-between mb-2">
-                                        <span>Almacenamiento</span>
-                                        <span>{systemStats.storage}%</span>
+                            <div className="row g-3">
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaUsers className="text-primary mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Usuarios</h6>
+                                        <small className="text-muted">Gestionar usuarios</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-primary" onClick={() => handleViewAll('users')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <ProgressBar 
-                                        variant={systemStats.storage > 80 ? 'danger' : systemStats.storage > 60 ? 'warning' : 'success'}
-                                        now={systemStats.storage} 
-                                    />
-                                </Card.Body>
-                            </ProgressCard>
-                            
-                            <ProgressCard>
-                                <Card.Body>
-                                    <div className="d-flex justify-content-between mb-2">
-                                        <span>Rendimiento</span>
-                                        <span>{systemStats.performance}%</span>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaStore className="text-success mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Productos</h6>
+                                        <small className="text-muted">Artesanías</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-success" onClick={() => handleViewAll('products')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <ProgressBar 
-                                        variant={systemStats.performance > 90 ? 'success' : 'warning'}
-                                        now={systemStats.performance} 
-                                    />
-                                </Card.Body>
-                            </ProgressCard>
-                            
-                            <ProgressCard>
-                                <Card.Body>
-                                    <div className="d-flex justify-content-between mb-2">
-                                        <span>Tiempo de Actividad</span>
-                                        <span>{systemStats.uptime}%</span>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaMapMarkedAlt className="text-info mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Lugares</h6>
+                                        <small className="text-muted">Turísticos</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-info" onClick={() => handleViewAll('lugares')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <ProgressBar 
-                                        variant="success"
-                                        now={systemStats.uptime} 
-                                    />
-                                </Card.Body>
-                            </ProgressCard>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaMountain className="text-warning mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Ecoturismo</h6>
+                                        <small className="text-muted">Actividades</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-warning" onClick={() => handleViewAll('ecoturismo')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaCalendarAlt className="text-danger mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Festividades</h6>
+                                        <small className="text-muted">Eventos</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-danger" onClick={() => handleViewAll('festividadesAdmin')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaInbox className="text-secondary mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Solicitudes</h6>
+                                        <small className="text-muted">Pendientes</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-secondary" onClick={() => handleViewAll('artesanias')}>
+                                                Revisar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </Card.Body>
                     </SectionCard>
                 </Col>
 
-                {/* Resumen de Contenido */}
+                {/* Configuración del Sistema */}
                 <Col lg={6} md={12} className="mb-4">
                     <SectionCard>
                         <SectionTitle>
-                            <FaCalendarAlt className="me-2" />
-                            Resumen de Contenido
+                            <FaCog className="me-2" />
+                            Configuración del Sistema
                         </SectionTitle>
                         <Card.Body>
-                            <Row>
-                                <Col md={6} sm={6} className="text-center mb-3">
-                                    <div className="p-3 bg-light rounded">
-                                        <FaMapMarkedAlt className="text-primary mb-2" style={{fontSize: '2rem'}} />
-                                        <h5>24 Lugares</h5>
-                                        <small className="text-muted">Turísticos registrados</small>
+                            <div className="row g-3">
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaCog className="text-primary mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Configuración</h6>
+                                        <small className="text-muted">Ajustes generales</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-primary" onClick={() => handleViewAll('settings')}>
+                                                Configurar
+                                            </Button>
+                                        </div>
                                     </div>
-                                </Col>
-                                <Col md={6} sm={6} className="text-center mb-3">
-                                    <div className="p-3 bg-light rounded">
-                                        <FaBed className="text-success mb-2" style={{fontSize: '2rem'}} />
-                                        <h5>18 Hospedajes</h5>
-                                        <small className="text-muted">Disponibles</small>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaChartLine className="text-success mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Reportes</h6>
+                                        <small className="text-muted">Estadísticas</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-success" onClick={() => handleViewAll('reports')}>
+                                                Ver Reportes
+                                            </Button>
+                                        </div>
                                     </div>
-                                </Col>
-                                <Col md={6} sm={6} className="text-center mb-3">
-                                    <div className="p-3 bg-light rounded">
-                                        <FaUtensils className="text-warning mb-2" style={{fontSize: '2rem'}} />
-                                        <h5>32 Restaurantes</h5>
-                                        <small className="text-muted">Gastronomía local</small>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaQuestionCircle className="text-info mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>FAQ</h6>
+                                        <small className="text-muted">Preguntas frecuentes</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-info" onClick={() => handleViewAll('faq')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
                                     </div>
-                                </Col>
-                                <Col md={6} sm={6} className="text-center mb-3">
-                                    <div className="p-3 bg-light rounded">
-                                        <FaStore className="text-info mb-2" style={{fontSize: '2rem'}} />
-                                        <h5>156 Productos</h5>
-                                        <small className="text-muted">Artesanías</small>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaFileAlt className="text-warning mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Políticas</h6>
+                                        <small className="text-muted">Términos y condiciones</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-warning" onClick={() => handleViewAll('politicas')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
                                     </div>
-                                </Col>
-                            </Row>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaEye className="text-danger mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Misión y Visión</h6>
+                                        <small className="text-muted">Información institucional</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-danger" onClick={() => handleViewAll('misionVision')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-6">
+                                    <div className="p-3 bg-light rounded text-center">
+                                        <FaClipboardList className="text-secondary mb-2" style={{fontSize: '1.5rem'}} />
+                                        <h6>Encuestas</h6>
+                                        <small className="text-muted">Gestión de encuestas</small>
+                                        <div className="mt-2">
+                                            <Button size="sm" variant="outline-secondary" onClick={() => handleViewAll('encuestas')}>
+                                                Administrar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </Card.Body>
                     </SectionCard>
                 </Col>

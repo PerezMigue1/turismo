@@ -1,5 +1,5 @@
 // src/Navigation.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Home from '../components/Home';
@@ -50,10 +50,56 @@ import Mapa from '../Mapa/Mapa'
 // Componente para proteger rutas
 const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
     const { currentUser } = useAuth();
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Verificar si hay usuario en localStorage mientras se carga el contexto
+    useEffect(() => {
+        const checkUser = () => {
+            const user = localStorage.getItem('user');
+            if (user) {
+                try {
+                    const parsedUser = JSON.parse(user);
+                    if (parsedUser && parsedUser.token) {
+                        setIsLoading(false);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error parseando usuario:', error);
+                }
+            }
+            // Si no hay usuario válido, esperar un poco más antes de redirigir
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 1000);
+        };
+
+        checkUser();
+    }, []);
 
     console.log('🔍 ProtectedRoute - Usuario actual:', currentUser);
     console.log('🔍 ProtectedRoute - Rol requerido:', requiredRole);
     console.log('🔍 ProtectedRoute - Rol del usuario:', currentUser?.rol);
+    console.log('🔍 ProtectedRoute - Cargando:', isLoading);
+
+    // Mostrar loading mientras se verifica la autenticación
+    if (isLoading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                backgroundColor: '#FDF2E0'
+            }}>
+                <div className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="mt-3" style={{ color: '#9A1E47' }}>Verificando sesión...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (!currentUser) {
         console.log('🔍 ProtectedRoute - No hay usuario, redirigiendo a login');
