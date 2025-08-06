@@ -284,7 +284,7 @@ const Sidebar = ({ activeSection, setActiveSection, collapsed, isMobile }) => {
       title: 'Gestión',
       items: [
         { id: 'users', label: 'Usuarios', icon: <FaUsers /> },
-        { id: 'products', label: 'Productos', icon: <FaBox /> }
+        { id: 'products', label: 'Gestión de publicaciones', icon: <FaBox /> }
       ]
     },
 
