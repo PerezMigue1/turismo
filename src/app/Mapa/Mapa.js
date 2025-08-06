@@ -213,8 +213,8 @@ const Mapa = () => {
   });
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: 16, alignItems: 'center', margin: '16px 0 8px 0', flexWrap: 'wrap' }}>
+    <div style={{ paddingTop: '20px' }}>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', margin: '20px 0 12px 0', flexWrap: 'wrap' }}>
         <div>
           {["todos", "hospedaje", "lugar", "restaurante", "ecoturismo"].map(tipo => (
             <button
@@ -257,7 +257,8 @@ const Mapa = () => {
         </div>
       </div>
 
-      <MapContainer center={mapCenter} zoom={mapZoom} style={{ height: "80vh", width: "100%" }}>
+      <div style={{ marginTop: '15px' }}>
+        <MapContainer center={mapCenter} zoom={mapZoom} style={{ height: "80vh", width: "100%" }}>
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -407,7 +408,8 @@ const Mapa = () => {
             </Marker>
           )
         ))}
-      </MapContainer>
+        </MapContainer>
+      </div>
     </div>
   );
 };
