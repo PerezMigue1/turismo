@@ -25,7 +25,12 @@ const HorizontalMenu = () => {
             padding: "12px 0",
             boxShadow: "0 4px 12px rgba(30, 133, 70, 0.3)",
             position: "relative",
-            overflow: "hidden"
+            overflow: "hidden",
+            margin: 0,
+            marginTop: 0,
+            marginBottom: 0,
+            borderTop: "none",
+            borderBottom: "none"
         }}>
             {/* Efecto de fondo decorativo */}
             <div style={{

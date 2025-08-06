@@ -186,7 +186,7 @@ const Navigation = () => {
             <AuthProvider>
                 <CartProvider>
                     <Router>
-                    <div style={{ backgroundColor: '#FDF2E0', minHeight: '100vh' }}>
+                    <div style={{ backgroundColor: '#FDF2E0', minHeight: '100vh', paddingTop: '125px' }}>
                         <Routes>
                             {/* Ruta principal redirige a Home */}
                             <Route path="/" element={<Navigate to="/home" replace />} />

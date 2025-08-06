@@ -24,12 +24,65 @@ import NegociosAdmin from './NegociosAdmin';
 
 const AdminContainer = styled(Container)`
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  display: block;
   padding: 0;
   width: 100vw;
   max-width: 100vw;
   margin: 0;
+  margin-top: 0;
+  position: relative;
+  
+  /* Estilos específicos para el área administrativa */
+  .admin-area {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* Asegurar que el header administrativo no se vea afectado por estilos del header principal */
+  .admin-navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1050 !important;
+    width: 100% !important;
+    border-bottom: 2px solid #FDF2E0 !important;
+  }
+  
+  /* Eliminar cualquier gap entre header y contenido */
+  .admin-sidebar {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+  }
+  
+  .admin-content {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+    position: fixed !important;
+    top: 70px !important;
+    right: 0 !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Eliminar separaciones entre header, sidebar y contenido */
+  .admin-layout {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  
+  .admin-sidebar {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+  }
+  
+  .admin-content {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    border-top: none !important;
+  }
 `;
 
 
@@ -42,18 +95,27 @@ const SidebarCol = styled.div`
   min-width: ${props => props.collapsed ? '70px' : '280px'};
   max-width: ${props => props.collapsed ? '70px' : '280px'};
   flex-shrink: 0;
+  margin-top: 0;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  height: calc(100vh - 70px);
+  z-index: 1000;
+  margin-top: 0;
+  padding-top: 0;
   
   @media (max-width: 768px) {
     position: fixed;
-    top: 56px;
+    top: 70px;
     left: 0;
-    height: calc(100vh - 56px);
+    height: calc(100vh - 70px);
     z-index: 1000;
     width: 250px;
     min-width: 250px;
     max-width: 250px;
     box-shadow: ${props => props.isOpen ? '2px 0 10px rgba(0,0,0,0.1)' : 'none'};
     transform: translateX(${props => props.isOpen ? '0' : '-100%'});
+    margin-top: 0;
   }
   
   @media (max-width: 576px) {
@@ -72,30 +134,42 @@ const SidebarCol = styled.div`
 const MainContentCol = styled.div`
   padding: 1rem;
   background-color: #f8f9fa;
-  min-height: calc(100vh - 56px);
+  min-height: calc(100vh - 70px);
   transition: all 0.3s ease;
   flex: 1;
   overflow-x: hidden;
+  margin-top: 0;
+  height: calc(100vh - 70px);
+  position: fixed;
+  top: 70px;
+  right: 0;
+  width: calc(100vw - ${props => props.sidebarCollapsed ? '70px' : '280px'});
+  overflow-y: auto;
   
   @media (max-width: 768px) {
     padding: 0.75rem;
-    width: 100vw;
-    position: relative;
+    width: calc(100vw - 250px);
+    position: fixed;
+    top: 70px;
+    right: 0;
     z-index: 1;
+    overflow-y: auto;
   }
   
   @media (max-width: 576px) {
     padding: 0.5rem;
+    width: calc(100vw - 220px);
   }
   
   @media (max-width: 480px) {
     padding: 0.25rem;
+    width: calc(100vw - 200px);
   }
 `;
 
 const Overlay = styled.div`
   position: fixed;
-  top: 56px;
+  top: 70px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -195,32 +269,31 @@ const AdminLayout = () => {
     };
 
     return (
-        <AdminContainer fluid>
+        <AdminContainer fluid className="admin-area admin-layout">
             <TopNavbar
                 toggleSidebar={toggleSidebar}
                 sidebarCollapsed={sidebarCollapsed}
                 isMobile={isMobile}
             />
-            <div style={{ display: 'flex', width: '100vw', height: 'calc(100vh - 56px)' }}>
-                <Overlay isOpen={sidebarOpen} onClick={closeSidebar} />
-                <SidebarCol 
+            <Overlay isOpen={sidebarOpen} onClick={closeSidebar} />
+            <SidebarCol
+                collapsed={sidebarCollapsed}
+                isOpen={sidebarOpen}
+                className="admin-sidebar"
+            >
+                <Sidebar
+                    activeSection={activeSection}
+                    setActiveSection={(section) => {
+                        setActiveSection(section);
+                        closeSidebar();
+                    }}
                     collapsed={sidebarCollapsed}
-                    isOpen={sidebarOpen}
-                >
-                    <Sidebar
-                        activeSection={activeSection}
-                        setActiveSection={(section) => {
-                            setActiveSection(section);
-                            closeSidebar();
-                        }}
-                        collapsed={sidebarCollapsed}
-                        isMobile={isMobile}
-                    />
-                </SidebarCol>
-                <MainContentCol sidebarCollapsed={sidebarCollapsed}>
-                    {renderContent()}
-                </MainContentCol>
-            </div>
+                    isMobile={isMobile}
+                />
+            </SidebarCol>
+            <MainContentCol sidebarCollapsed={sidebarCollapsed} className="admin-content">
+                {renderContent()}
+            </MainContentCol>
         </AdminContainer>
     );
 };

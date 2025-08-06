@@ -15,7 +15,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             boxShadow: "2px 0 10px rgba(0,0,0,0.1)",
             transform: isOpen ? "translateX(0)" : "translateX(-100%)",
             transition: "transform 0.3s ease-in-out",
-            zIndex: 1001,
+            zIndex: 1070,
             padding: "20px",
             overflowY: "auto"
         }}>

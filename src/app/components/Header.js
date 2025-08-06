@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Container, Navbar, Nav, Button, Form, FormControl, Dropdown, Badge } from "react-bootstrap";
+import { Container, Navbar, Button, Dropdown, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { FaSearch, FaBars, FaUser, FaSignOutAlt, FaBell, FaTimes, FaCheck } from "react-icons/fa";
+import { FaBars, FaUser, FaSignOutAlt, FaBell, FaCheck } from "react-icons/fa";
 import Sidebar from "./Sidebar";
 import HorizontalMenu from "./HorizontalMenu";
 import logo from "../image/turismo.jpeg";
@@ -12,6 +12,7 @@ const Header = () => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     // Verificar sesión leyendo localStorage
     const { currentUser, logout } = useAuth();
@@ -26,6 +27,17 @@ const Header = () => {
             fetchNotifications();
         }
     }, [currentUser]);
+
+    // Detectar scroll para efectos visuales del header
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            setIsScrolled(scrollTop > 10);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const fetchNotifications = async () => {
         try {
@@ -175,15 +187,86 @@ const Header = () => {
                     .notifications-dropdown::-webkit-scrollbar-thumb:hover {
                         background: #7a1a3a;
                     }
+                    
+                    /* Estilos para header fijo */
+                    .fixed-header {
+                        transition: all 0.3s ease;
+                        backdrop-filter: blur(10px);
+                        -webkit-backdrop-filter: blur(10px);
+                    }
+                    
+                    .fixed-header.scrolled {
+                        background-color: rgba(253, 242, 224, 0.95) !important;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                    }
+                    
+                    /* Asegurar que el contenido no se esconda detrás del header */
+                    body {
+                        padding-top: 0 !important;
+                    }
+                    
+                    /* Eliminar separaciones entre header y menu horizontal */
+                    .navbar {
+                        margin-bottom: 0 !important;
+                        border-bottom: none !important;
+                    }
+                    
+                    .fixed-header + div {
+                        margin-top: 0 !important;
+                        padding-top: 0 !important;
+                        border-top: none !important;
+                    }
+                    
+                    /* Estilos responsivos para header fijo */
+                    @media (max-width: 768px) {
+                        .fixed-header {
+                            padding: 8px 0 !important;
+                        }
+                        
+                        .fixed-header .navbar-brand img {
+                            height: 40px !important;
+                        }
+                        
+                        .fixed-header .navbar-brand span {
+                            font-size: 1.2rem !important;
+                        }
+                    }
+                    
+                    @media (max-width: 576px) {
+                        .fixed-header {
+                            padding: 5px 0 !important;
+                        }
+                        
+                        .fixed-header .navbar-brand img {
+                            height: 35px !important;
+                        }
+                        
+                        .fixed-header .navbar-brand span {
+                            font-size: 1rem !important;
+                        }
+                    }
                 `}
             </style>
 
-            <Navbar expand="lg" className="py-2" style={{
-                backgroundColor: "#FDF2E0",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                position: "relative",
-                zIndex: 1000
-            }}>
+            <Navbar 
+                expand="lg" 
+                className={`py-2 fixed-header ${isScrolled ? 'scrolled' : ''}`} 
+                style={{
+                    backgroundColor: isScrolled ? "rgba(253, 242, 224, 0.95)" : "#FDF2E0",
+                    boxShadow: isScrolled ? "0 4px 12px rgba(0,0,0,0.15)" : "0 2px 4px rgba(0,0,0,0.1)",
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    zIndex: 1050,
+                    width: "100%",
+                    transition: "all 0.3s ease",
+                    backdropFilter: isScrolled ? "blur(10px)" : "none",
+                    WebkitBackdropFilter: isScrolled ? "blur(10px)" : "none",
+                    borderBottom: "none",
+                    marginBottom: 0
+                }}
+            >
                 <Container>
                     {/* Logo y menú hamburguesa (igual que antes) */}
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -529,7 +612,17 @@ const Header = () => {
                 </Container>
             </Navbar>
 
-            <HorizontalMenu />
+            <div style={{ 
+                position: "fixed", 
+                top: "76px", 
+                left: 0, 
+                right: 0, 
+                zIndex: 1040,
+                marginTop: 0,
+                paddingTop: 0
+            }}>
+                <HorizontalMenu />
+            </div>
 
             <Sidebar isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
         </>

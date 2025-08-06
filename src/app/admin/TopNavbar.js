@@ -8,30 +8,46 @@ import styled from 'styled-components';
 
 const StyledNavbar = styled(Navbar)`
   background-color: #9A1E47; /* Rojo Guinda */
-  padding: 0.8rem 1rem;
+  padding: 1rem 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 1020;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid #FDF2E0;
+  
+  /* Asegurar que no se vea afectado por estilos del header principal */
+  &.admin-navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1050 !important;
+  }
 `;
 
 const BrandText = styled.span`
   font-weight: 600;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   
   @media (max-width: 576px) {
-    font-size: 1rem;
+    font-size: 1.1rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 `;
 
 const NavLink = styled(Nav.Link)`
   color: rgba(255, 255, 255, 0.85) !important;
-  padding: 0.5rem 1rem;
+  padding: 0.7rem 1.2rem;
   display: flex;
   align-items: center;
   transition: color 0.2s;
@@ -42,17 +58,17 @@ const NavLink = styled(Nav.Link)`
 `;
 
 const NavIcon = styled(NavLink)`
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   
   @media (max-width: 576px) {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
+    width: 38px;
+    height: 38px;
+    font-size: 1.2rem;
   }
 `;
 
@@ -93,6 +109,16 @@ const UserDropdown = styled(Dropdown)`
     &::after {
       display: none;
     }
+  }
+  
+  /* Estilos específicos para evitar conflictos con el header principal */
+  .admin-navbar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1050 !important;
+    width: 100% !important;
   }
   
   .dropdown-menu {
@@ -149,7 +175,7 @@ const TopNavbar = ({ toggleSidebar, sidebarCollapsed, isMobile }) => {
     };
 
     return (
-        <StyledNavbar expand="lg" variant="dark">
+        <StyledNavbar expand="lg" variant="dark" className="admin-navbar">
             <Container fluid>
                 <ToggleButton
                     onClick={toggleSidebar}
