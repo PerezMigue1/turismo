@@ -27,7 +27,12 @@ const Gastronomia = () => {
                 console.log('Datos de gastronomía cargados:', gastronomiaRes.data);
                 console.log('Primer elemento de ejemplo:', gastronomiaRes.data[0]);
                 console.log('Campos disponibles en el primer elemento:', Object.keys(gastronomiaRes.data[0] || {}));
-                setGastronomia(gastronomiaRes.data);
+                
+                // Filtrar solo elementos aceptados
+                const gastronomiaAceptada = gastronomiaRes.data.filter(item => 
+                    item.estado === 'aceptado'
+                );
+                setGastronomia(gastronomiaAceptada);
                 setLoading(false);
             } catch (err) {
                 setError(err.message);

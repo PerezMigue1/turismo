@@ -26,9 +26,14 @@ const Hospedajes = () => {
             try {
                 setLoading(true);
                 const hotelesRes = await axios.get('https://backend-iota-seven-19.vercel.app/api/hospedaje');
-                setHoteles(hotelesRes.data);
                 
-                const categoriasUnicas = [...new Set(hotelesRes.data.map(hotel => hotel.Categoria))];
+                // Filtrar solo hospedajes aceptados
+                const hotelesAceptados = hotelesRes.data.filter(hotel => 
+                    hotel.estado === 'aceptado'
+                );
+                setHoteles(hotelesAceptados);
+                
+                const categoriasUnicas = [...new Set(hotelesAceptados.map(hotel => hotel.Categoria))];
                 setCategorias(categoriasUnicas.map(cat => ({ Nombre: cat, idCategoria: cat })));
                 
                 setLoading(false);

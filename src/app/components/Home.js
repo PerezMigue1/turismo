@@ -136,7 +136,10 @@ const Home = () => {
                     lugaresRes.json()
                 ]);
 
-                setArtesanias(Array.isArray(artesaniasData) ? artesaniasData.slice(0, 6) : []);
+                // Filtrar solo elementos aceptados para artesanías
+                const artesaniasAceptadas = Array.isArray(artesaniasData) ? 
+                    artesaniasData.filter(item => item.estado === 'aceptado').slice(0, 6) : [];
+                setArtesanias(artesaniasAceptadas);
                 setLugares(Array.isArray(lugaresData) ? lugaresData.slice(0, 6) : []);
                 
                 // Debug: Ver qué datos llegan
@@ -158,7 +161,10 @@ const Home = () => {
                     const restaurantesRes = await fetch('https://backend-iota-seven-19.vercel.app/api/restaurante');
                     if (restaurantesRes.ok) {
                         const restaurantesData = await restaurantesRes.json();
-                        setRestaurantes(Array.isArray(restaurantesData) ? restaurantesData.slice(0, 6) : []);
+                        // Filtrar solo restaurantes aceptados
+                        const restaurantesAceptados = Array.isArray(restaurantesData) ? 
+                            restaurantesData.filter(item => item.estado === 'aceptado').slice(0, 6) : [];
+                        setRestaurantes(restaurantesAceptados);
                         console.log('Restaurantes:', restaurantesData);
                     }
                 } catch (error) {
@@ -170,7 +176,10 @@ const Home = () => {
                     const hospedajesRes = await fetch('https://backend-iota-seven-19.vercel.app/api/hospedaje');
                     if (hospedajesRes.ok) {
                         const hospedajesData = await hospedajesRes.json();
-                        setHospedajes(Array.isArray(hospedajesData) ? hospedajesData.slice(0, 6) : []);
+                        // Filtrar solo hospedajes aceptados
+                        const hospedajesAceptados = Array.isArray(hospedajesData) ? 
+                            hospedajesData.filter(item => item.estado === 'aceptado').slice(0, 6) : [];
+                        setHospedajes(hospedajesAceptados);
                         console.log('Hospedajes:', hospedajesData);
                     }
                 } catch (error) {
@@ -208,7 +217,10 @@ const Home = () => {
                     const gastronomiaRes = await fetch('https://backend-iota-seven-19.vercel.app/api/gastronomia');
                     if (gastronomiaRes.ok) {
                         const gastronomiaData = await gastronomiaRes.json();
-                        setGastronomia(Array.isArray(gastronomiaData) ? gastronomiaData.slice(0, 6) : []);
+                        // Filtrar solo gastronomía aceptada
+                        const gastronomiaAceptada = Array.isArray(gastronomiaData) ? 
+                            gastronomiaData.filter(item => item.estado === 'aceptado').slice(0, 6) : [];
+                        setGastronomia(gastronomiaAceptada);
                     }
                 } catch (error) {
                     console.log('Gastronomía no disponible:', error.message);

@@ -20,7 +20,12 @@ const Restaurantes = () => {
         const fetchData = async () => {
             try {
                 const res = await axios.get('https://backend-iota-seven-19.vercel.app/api/restaurante');
-                setRestaurantes(res.data);
+                
+                // Filtrar solo restaurantes aceptados
+                const restaurantesAceptados = res.data.filter(restaurante => 
+                    restaurante.estado === 'aceptado'
+                );
+                setRestaurantes(restaurantesAceptados);
                 setLoading(false);
             } catch (err) {
                 setError(err.message);

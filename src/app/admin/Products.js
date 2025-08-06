@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     Table, Button, Form, InputGroup, Badge, Container,
     Row, Col, Card, Spinner, Alert, Toast, Modal
 } from 'react-bootstrap';
 import {
     FaEye, FaInfoCircle, FaImage,
-    FaSearch, FaEdit, FaTrash, FaPlus,
+    FaSearch, FaEdit, FaTrash,
     FaSync, FaPalette, FaUtensils,
-    FaBed, FaStore
+    FaBed, FaStore, FaCheck, FaClock,
+    FaCheckCircle
 } from 'react-icons/fa';
 
 const Products = () => {
@@ -28,7 +29,7 @@ const Products = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [filter, setFilter] = useState('todos');
+    const [statusFilter, setStatusFilter] = useState('todos');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [toastVariant, setToastVariant] = useState("success");
@@ -45,7 +46,7 @@ const Products = () => {
     const [deleteLoading, setDeleteLoading] = useState(false);
     
     // Configuración de secciones
-    const sections = {
+    const sections = useMemo(() => ({
         artesanias: {
             title: 'Artesanías',
             icon: <FaPalette />,
@@ -63,7 +64,8 @@ const Products = () => {
                 technique: 'Técnica',
                 dimensions: 'Dimensiones',
                 colors: 'Colores',
-                availability: 'Disponibilidad'
+                availability: 'Disponibilidad',
+                status: 'estado'
             }
         },
         gastronomia: {
@@ -83,7 +85,8 @@ const Products = () => {
                 ingredients: 'ingredientes',
                 preparation: 'tiempoPreparacion',
                 cooking: 'tiempoCoccion',
-                portions: 'porciones'
+                portions: 'porciones',
+                status: 'estado'
             }
         },
         hospedaje: {
@@ -102,7 +105,8 @@ const Products = () => {
                 guests: 'Huespedes',
                 services: 'Servicios',
                 schedule: 'Horario',
-                phone: 'Telefono'
+                phone: 'Telefono',
+                status: 'estado'
             }
         },
         restaurantes: {
@@ -120,10 +124,11 @@ const Products = () => {
                 location: 'Ubicacion',
                 specialty: 'Especialidad',
                 municipality: 'Ubicacion.Municipio',
-                state: 'Ubicacion.Estado'
+                state: 'Ubicacion.Estado',
+                status: 'estado'
             }
         }
-    };
+    }), []);
 
     // Función de notificación
     const mostrarToast = (message, variant = "success") => {
@@ -134,7 +139,7 @@ const Products = () => {
     };
 
     // Cargar items según la sección activa
-    const fetchItems = async () => {
+    const fetchItems = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
@@ -164,7 +169,7 @@ const Products = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [activeSection, sections]);
 
     // Cargar detalles del item
     const handleShowDetail = async (itemId) => {
@@ -280,21 +285,65 @@ const Products = () => {
         }
     };
 
+    // Función para cambiar el estado de un item
+    const handleChangeStatus = async (item, newStatus) => {
+        try {
+            const currentSection = sections[activeSection];
+            const statusField = currentSection.fields.status;
+            
+            const updatedItem = {
+                ...item,
+                [statusField]: newStatus
+            };
+
+            const response = await fetch(`${currentSection.api}/${item._id || item.idProducto}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedItem)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.message || data.success !== false) {
+                const statusText = newStatus === 'aceptado' ? 'aceptado' : 'pendiente';
+                mostrarToast(`Estado cambiado a ${statusText}`, 'success');
+                fetchItems();
+            } else {
+                throw new Error('Error al actualizar estado');
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            mostrarToast('Error al cambiar estado: ' + error.message, 'danger');
+        }
+    };
+
     // Filtrar items
     const filteredItems = items.filter(item => {
         const name = item[sections[activeSection].fields.name] || '';
         const description = item[sections[activeSection].fields.description] || '';
+        const status = item[sections[activeSection].fields.status] || 'pendiente';
+        
         const matchesSearch =
             name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             description.toLowerCase().includes(searchTerm.toLowerCase());
 
-        return matchesSearch;
+        const matchesStatus = statusFilter === 'todos' || 
+                            (statusFilter === 'pendiente' && status === 'pendiente') ||
+                            (statusFilter === 'aceptado' && status === 'aceptado');
+
+        return matchesSearch && matchesStatus;
     });
 
     // Efectos
     useEffect(() => {
         fetchItems();
-    }, [activeSection]);
+    }, [fetchItems]);
 
     if (loading) {
         return (
@@ -372,17 +421,37 @@ const Products = () => {
             <Card className="mb-4 shadow-sm">
                 <Card.Body>
                     <Row className="align-items-center">
-                        <Col md={8}>
-                            <div className="d-flex flex-wrap">
-                                <Button variant="outline-secondary" onClick={fetchItems} className="me-2">
+                        <Col md={6}>
+                            <div className="d-flex flex-wrap align-items-center">
+                                <Button variant="outline-secondary" onClick={fetchItems} className="me-3">
                                     <FaSync className="me-2" /> Actualizar
                                 </Button>
+                                <div className="d-flex align-items-center">
+                                    <span className="me-2 text-muted">Filtrar por estado:</span>
+                                    <Form.Select 
+                                        size="sm" 
+                                        value={statusFilter} 
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                        style={{ width: '130px' }}
+                                    >
+                                        <option value="todos">Todos</option>
+                                        <option value="pendiente">Pendientes</option>
+                                        <option value="aceptado">Aceptados</option>
+                                    </Form.Select>
+                                </div>
                             </div>
                         </Col>
-                        <Col md={4} className="d-flex justify-content-end">
-                            <Button variant="outline-secondary" onClick={fetchItems}>
-                                <FaSync className="me-2" /> Actualizar
-                            </Button>
+                        <Col md={6} className="d-flex justify-content-end">
+                            <div className="d-flex align-items-center">
+                                <Badge bg="warning" className="me-2">
+                                    <FaClock className="me-1" />
+                                    Pendientes: {items.filter(item => (item[sections[activeSection].fields.status] || 'pendiente') === 'pendiente').length}
+                                </Badge>
+                                <Badge bg="success">
+                                    <FaCheckCircle className="me-1" />
+                                    Aceptados: {items.filter(item => (item[sections[activeSection].fields.status] || 'pendiente') === 'aceptado').length}
+                                </Badge>
+                            </div>
                         </Col>
                     </Row>
                 </Card.Body>
@@ -413,6 +482,7 @@ const Products = () => {
                             <tr className="text-white">
                                 <th>Item</th>
                                 <th>Usuario</th>
+                                <th className="text-center">Estado</th>
                                 <th className="text-center">Precio</th>
                                 <th className="text-center">Acciones</th>
                             </tr>
@@ -471,43 +541,91 @@ const Products = () => {
                                             </div>
                                         </td>
                                         <td className="align-middle">{item[sections[activeSection].fields.user] || 'N/A'}</td>
+                                        <td className="text-center align-middle">
+                                            {(() => {
+                                                const status = item[sections[activeSection].fields.status] || 'pendiente';
+                                                const isAcepted = status === 'aceptado';
+                                                return (
+                                                    <Badge 
+                                                        bg={isAcepted ? 'success' : 'warning'}
+                                                        className="d-flex align-items-center justify-content-center"
+                                                        style={{ 
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.5rem 0.75rem',
+                                                            minWidth: '80px'
+                                                        }}
+                                                    >
+                                                        {isAcepted ? <FaCheckCircle className="me-1" /> : <FaClock className="me-1" />}
+                                                        {isAcepted ? 'Aceptado' : 'Pendiente'}
+                                                    </Badge>
+                                                );
+                                            })()}
+                                        </td>
                                         <td className="text-center align-middle fw-bold" style={{ color: customStyles.success.backgroundColor }}>
                                             ${item[sections[activeSection].fields.price] || 0}
                                         </td>
                                         <td className="text-center align-middle">
-                                            <Button
-                                                variant="outline-primary"
-                                                size="sm"
-                                                className="me-2"
-                                                style={{ borderColor: customStyles.info.backgroundColor, color: customStyles.info.backgroundColor }}
-                                                onClick={() => handleShowDetail(item._id || item.idProducto)}
-                                            >
-                                                <FaEye />
-                                            </Button>
-                                            <Button
-                                                variant="outline-success"
-                                                size="sm"
-                                                className="me-2"
-                                                style={{ borderColor: customStyles.success.backgroundColor, color: customStyles.success.backgroundColor }}
-                                                onClick={() => handleEdit(item)}
-                                            >
-                                                <FaEdit />
-                                            </Button>
-                                            <Button
-                                                variant="outline-danger"
-                                                size="sm"
-                                                className="me-2"
-                                                style={{ borderColor: customStyles.danger.backgroundColor, color: customStyles.danger.backgroundColor }}
-                                                onClick={() => handleDelete(item)}
-                                            >
-                                                <FaTrash />
-                                            </Button>
+                                            <div className="d-flex justify-content-center flex-wrap gap-1">
+                                                <Button
+                                                    variant="outline-primary"
+                                                    size="sm"
+                                                    style={{ borderColor: customStyles.info.backgroundColor, color: customStyles.info.backgroundColor }}
+                                                    onClick={() => handleShowDetail(item._id || item.idProducto)}
+                                                    title="Ver detalles"
+                                                >
+                                                    <FaEye />
+                                                </Button>
+                                                <Button
+                                                    variant="outline-success"
+                                                    size="sm"
+                                                    style={{ borderColor: customStyles.success.backgroundColor, color: customStyles.success.backgroundColor }}
+                                                    onClick={() => handleEdit(item)}
+                                                    title="Editar"
+                                                >
+                                                    <FaEdit />
+                                                </Button>
+                                                {(() => {
+                                                    const status = item[sections[activeSection].fields.status] || 'pendiente';
+                                                    const isAccepted = status === 'aceptado';
+                                                    
+                                                    return isAccepted ? (
+                                                        <Button
+                                                            variant="outline-warning"
+                                                            size="sm"
+                                                            style={{ borderColor: customStyles.warning.backgroundColor, color: customStyles.warning.backgroundColor }}
+                                                            onClick={() => handleChangeStatus(item, 'pendiente')}
+                                                            title="Marcar como pendiente"
+                                                        >
+                                                            <FaClock />
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="outline-success"
+                                                            size="sm"
+                                                            style={{ borderColor: '#28a745', color: '#28a745' }}
+                                                            onClick={() => handleChangeStatus(item, 'aceptado')}
+                                                            title="Aceptar"
+                                                        >
+                                                            <FaCheck />
+                                                        </Button>
+                                                    );
+                                                })()}
+                                                <Button
+                                                    variant="outline-danger"
+                                                    size="sm"
+                                                    style={{ borderColor: customStyles.danger.backgroundColor, color: customStyles.danger.backgroundColor }}
+                                                    onClick={() => handleDelete(item)}
+                                                    title="Eliminar"
+                                                >
+                                                    <FaTrash />
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="4" className="text-center py-5">
+                                    <td colSpan="5" className="text-center py-5">
                                         <FaInfoCircle size={48} style={{ color: customStyles.info.backgroundColor }} className="mb-3" />
                                         <h5>No se encontraron {sections[activeSection].itemType}s</h5>
                                         <p className="text-muted">No hay {sections[activeSection].itemType}s que coincidan con tu búsqueda</p>
@@ -609,6 +727,29 @@ const Products = () => {
                                                 <div className="mb-3">
                                                     <h6 className="text-muted">Categoría</h6>
                                                     <p>{selectedItem[sections[activeSection].fields.category] || 'N/A'}</p>
+                                                </div>
+                                            </Col>
+                                            <Col sm={6}>
+                                                <div className="mb-3">
+                                                    <h6 className="text-muted">Estado</h6>
+                                                    {(() => {
+                                                        const status = selectedItem[sections[activeSection].fields.status] || 'pendiente';
+                                                        const isAcepted = status === 'aceptado';
+                                                        return (
+                                                            <Badge 
+                                                                bg={isAcepted ? 'success' : 'warning'}
+                                                                className="d-flex align-items-center justify-content-center"
+                                                                style={{ 
+                                                                    fontSize: '0.85rem',
+                                                                    padding: '0.5rem 0.75rem',
+                                                                    maxWidth: '120px'
+                                                                }}
+                                                            >
+                                                                {isAcepted ? <FaCheckCircle className="me-1" /> : <FaClock className="me-1" />}
+                                                                {isAcepted ? 'Aceptado' : 'Pendiente'}
+                                                            </Badge>
+                                                        );
+                                                    })()}
                                                 </div>
                                             </Col>
                                             {activeSection === 'artesanias' && (

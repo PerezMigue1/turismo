@@ -29,7 +29,21 @@ const Artesanias = () => {
                     axios.get('https://backend-iota-seven-19.vercel.app/api/artesano')
                 ]);
 
-                setProductos(productosRes.data);
+                // Debug: Verificar estructura de datos
+                console.log('🔍 Datos de productos recibidos:', productosRes.data);
+                if (productosRes.data.length > 0) {
+                    console.log('🔍 Primer producto:', productosRes.data[0]);
+                    console.log('🔍 Campos disponibles:', Object.keys(productosRes.data[0]));
+                    console.log('🔍 Campo estado:', productosRes.data[0].estado);
+                }
+                
+                // Filtrar solo productos aceptados
+                const productosAceptados = productosRes.data.filter(producto => {
+                    console.log(`🔍 Producto "${producto.Nombre}" tiene estado: "${producto.estado}"`);
+                    return producto.estado === 'aceptado';
+                });
+                console.log(`🔍 Total productos: ${productosRes.data.length}, Aceptados: ${productosAceptados.length}`);
+                setProductos(productosAceptados);
                 setCategorias(categoriasRes.data);
                 setArtesanos(artesanosRes.data);
                 setLoading(false);
@@ -66,6 +80,7 @@ const Artesanias = () => {
             Colores: producto.Colores,
             Disponibilidad: producto.Disponibilidad,
             Comentarios: producto.Comentarios,
+            estado: producto.estado || 'aceptado', // Campo de estado agregado
             Artesano: artesano || {}
         };
     });
