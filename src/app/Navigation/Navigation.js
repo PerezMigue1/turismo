@@ -1,5 +1,5 @@
 // src/Navigation.js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Home from '../components/Home';
@@ -47,34 +47,91 @@ import ResponderEncuesta from '../screens/ResponderEncuesta';
 
 import Mapa from '../Mapa/Mapa'
 
+// Error Boundary para capturar errores y evitar pantallas en blanco
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+    }
+
+    static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+    }
+
+    componentDidCatch(error, errorInfo) {
+        console.error('🔍 ErrorBoundary - Error capturado:', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    justifyContent: 'center', 
+                    alignItems: 'center', 
+                    height: '100vh',
+                    backgroundColor: '#FDF2E0',
+                    padding: '20px',
+                    textAlign: 'center'
+                }}>
+                    <h2 style={{ color: '#9A1E47', marginBottom: '20px' }}>
+                        ¡Oops! Algo salió mal
+                    </h2>
+                    <p style={{ color: '#6B4F3F', marginBottom: '30px' }}>
+                        Parece que hubo un problema. Te redirigiremos al inicio.
+                    </p>
+                    <button 
+                        className="btn btn-primary"
+                        onClick={() => window.location.href = '/home'}
+                        style={{ backgroundColor: '#9A1E47', borderColor: '#9A1E47' }}
+                    >
+                        Ir al Inicio
+                    </button>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+// Componente para rutas que requieren redirección si no hay usuario
+const RouteWithFallback = ({ children, fallbackPath = "/home" }) => {
+    const { currentUser, isLoading } = useAuth();
+
+    // Mostrar loading mientras se verifica la autenticación
+    if (isLoading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                backgroundColor: '#FDF2E0'
+            }}>
+                <div className="text-center">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="mt-3" style={{ color: '#9A1E47' }}>Cargando...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Si no hay usuario, redirigir al home o login
+    if (!currentUser) {
+        console.log('🔍 RouteWithFallback - No hay usuario, redirigiendo a:', fallbackPath);
+        return <Navigate to={fallbackPath} />;
+    }
+
+    return children;
+};
+
 // Componente para proteger rutas
 const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
-    const { currentUser } = useAuth();
-    const [isLoading, setIsLoading] = useState(true);
-
-    // Verificar si hay usuario en localStorage mientras se carga el contexto
-    useEffect(() => {
-        const checkUser = () => {
-            const user = localStorage.getItem('user');
-            if (user) {
-                try {
-                    const parsedUser = JSON.parse(user);
-                    if (parsedUser && parsedUser.token) {
-                        setIsLoading(false);
-                        return;
-                    }
-                } catch (error) {
-                    console.error('Error parseando usuario:', error);
-                }
-            }
-            // Si no hay usuario válido, esperar un poco más antes de redirigir
-            setTimeout(() => {
-                setIsLoading(false);
-            }, 1000);
-        };
-
-        checkUser();
-    }, []);
+    const { currentUser, isLoading } = useAuth();
 
     console.log('🔍 ProtectedRoute - Usuario actual:', currentUser);
     console.log('🔍 ProtectedRoute - Rol requerido:', requiredRole);
@@ -125,9 +182,10 @@ const ProtectedRoute = ({ children, requiredRole = 'user' }) => {
 
 const Navigation = () => {
     return (
-        <AuthProvider>
-            <CartProvider>
-                <Router>
+        <ErrorBoundary>
+            <AuthProvider>
+                <CartProvider>
+                    <Router>
                     <div style={{ backgroundColor: '#FDF2E0', minHeight: '100vh' }}>
                         <Routes>
                             {/* Ruta principal redirige a Home */}
@@ -167,19 +225,19 @@ const Navigation = () => {
                             } />
 
                             <Route path="/perfil" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <Perfil />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
                             <Route path="/cambiar-contrasena" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <CambiarContrasena />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
                             <Route path="/RegistroArtesano" element={
@@ -191,11 +249,11 @@ const Navigation = () => {
                             } />
 
                             <Route path="/PublicarProducto" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <PublicarProducto />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
                             <Route path="/hospedajes" element={
@@ -223,11 +281,11 @@ const Navigation = () => {
                             } />
 
                             <Route path="/PublicarHospedaje" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <PublicarHospedaje />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
 
@@ -257,11 +315,11 @@ const Navigation = () => {
                             } />
 
                             <Route path="/PublicaChef" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <PublicaChef />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
 
@@ -290,11 +348,11 @@ const Navigation = () => {
                             } />
 
                             <Route path="/PublicarRestaurante" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <PublicarRestaurante />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
 
@@ -334,11 +392,11 @@ const Navigation = () => {
 
 
                             <Route path="/Notificaciones" element={
-                                <>
+                                <RouteWithFallback fallbackPath="/login">
                                     <Header />
                                     <Notificaciones />
                                     <Footer />
-                                </>
+                                </RouteWithFallback>
                             } />
 
                             <Route path="/festividades" element={
@@ -439,7 +497,8 @@ const Navigation = () => {
                     </div>
                 </Router>
             </CartProvider>
-        </AuthProvider >
+        </AuthProvider>
+        </ErrorBoundary>
     );
 };
 
