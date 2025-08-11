@@ -619,7 +619,10 @@ const Header = () => {
                 right: 0, 
                 zIndex: 1040,
                 marginTop: 0,
-                paddingTop: 0
+                paddingTop: 0,
+                "@media (max-width: 768px)": {
+                    top: "80px"
+                }
             }}>
                 <HorizontalMenu />
             </div>

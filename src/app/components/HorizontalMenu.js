@@ -20,18 +20,21 @@ const HorizontalMenu = () => {
     };
 
     return (
-        <div style={{
-            background: "linear-gradient(135deg, #1E8546 0%, #2A9D5A 50%, #1E8546 100%)",
-            padding: "12px 0",
-            boxShadow: "0 4px 12px rgba(30, 133, 70, 0.3)",
-            position: "relative",
-            overflow: "hidden",
-            margin: 0,
-            marginTop: 0,
-            marginBottom: 0,
-            borderTop: "none",
-            borderBottom: "none"
-        }}>
+        <div 
+            className="horizontal-menu"
+            style={{
+                background: "linear-gradient(135deg, #1E8546 0%, #2A9D5A 50%, #1E8546 100%)",
+                padding: "12px 0",
+                boxShadow: "0 4px 12px rgba(30, 133, 70, 0.3)",
+                position: "relative",
+                overflow: "hidden",
+                margin: 0,
+                marginTop: 0,
+                marginBottom: 0,
+                borderTop: "none",
+                borderBottom: "none"
+            }}
+        >
             {/* Efecto de fondo decorativo */}
             <div style={{
                 position: "absolute",
@@ -170,6 +173,31 @@ const HorizontalMenu = () => {
                     
                     @media (max-width: 576px) {
                         .menu-item {
+                            padding: 6px 8px !important;
+                            margin: 1px !important;
+                        }
+                    }
+                    
+                    /* Estilos para móvil - evitar encimamiento */
+                    @media (max-width: 768px) {
+                        .horizontal-menu {
+                            margin-top: 0 !important;
+                            padding-top: 8px !important;
+                        }
+                        
+                        .horizontal-menu .menu-item {
+                            padding: 8px 12px !important;
+                            font-size: 0.85rem !important;
+                            margin: 2px !important;
+                        }
+                    }
+                    
+                    @media (max-width: 576px) {
+                        .horizontal-menu {
+                            padding-top: 6px !important;
+                        }
+                        
+                        .horizontal-menu .menu-item {
                             padding: 6px 8px !important;
                             margin: 1px !important;
                         }
